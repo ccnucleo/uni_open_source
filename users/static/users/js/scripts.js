@@ -143,10 +143,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Botón para eliminar foto
     document.getElementById('btn-remove-photo').addEventListener('click', function () {
-        photoPreviewImg.src = profileAvatar.src.includes('avatar.jpg')
-            ? photoPreviewImg.src
-            : '{% static "users/img/avatar.jpg" %}';
-        photoPreviewImg.src = '/static/users/img/avatar.jpg';
+        const defaultSrc = photoPreviewImg.dataset.default;
+        photoPreviewImg.src = defaultSrc;
+        profileAvatar.src = defaultSrc;
         selectedPhotoFile = null;
         inputPhoto.value = '';
         this.style.display = 'none';
