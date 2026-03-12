@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Abrir modal y cargar datos actuales
     btnEditProfile.addEventListener('click', function () {
         const partes = profileFullname.innerHTML.split('<br>');
-        inputNombre.value = partes[0].trim() || '';
-        inputApellido.value = (partes[1] || '').trim();
+        inputNombre.value = profileFullname.dataset.nombre || '';
+        inputApellido.value = profileFullname.dataset.apellido || '';
         photoPreviewImg.src = profileAvatar.src;
         selectedPhotoFile = null;
         // Cargar username actual sin el @
@@ -168,6 +168,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        profileFullname.dataset.nombre = nombre;
+        profileFullname.dataset.apellido = apellido;
         profileFullname.innerHTML = nombre + '<br>' + apellido;
 
         if (selectedPhotoFile) {
