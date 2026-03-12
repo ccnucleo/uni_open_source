@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', function () {
         inputApellido.value = nombreCompleto.slice(1).join(' ') || '';
         photoPreviewImg.src = profileAvatar.src;
         selectedPhotoFile = null;
+        // Cargar username actual sin el @
+        document.getElementById('input-username').value =
+            document.querySelector('.username').textContent.replace('@', '').trim();
         modal.classList.add('active');
     });
 
@@ -166,19 +169,22 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Actualizar nombre en el sidebar
-        profileFullname.textContent = nombre + ' ' + apellido;
+        profileFullname.innerHTML = nombre + '<br>' + apellido;
 
-        // Actualizar foto si se seleccionó una nueva
         if (selectedPhotoFile) {
             profileAvatar.src = photoPreviewImg.src;
+            if (topbarAv) topbarAv.src = photoPreviewImg.src;
         }
 
-        // Cerrar modal
+        // Guardar username
+        const newUsername = document.getElementById('input-username').value.trim();
+        if (newUsername) {
+            document.querySelector('.username').textContent = '@' + newUsername;
+        }
+
         modal.classList.remove('active');
         selectedPhotoFile = null;
     });
-
     // ============================================
     // GUARDAR DATOS ORIGINALES
     // ============================================
