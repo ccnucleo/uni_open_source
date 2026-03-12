@@ -131,9 +131,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const reader = new FileReader();
             reader.onload = function (event) {
                 photoPreviewImg.src = event.target.result;
+                // Mostrar botón X
+                document.getElementById('btn-remove-photo').style.display = 'inline-flex';
             };
             reader.readAsDataURL(file);
         }
+    });
+
+    // Botón para eliminar foto
+    document.getElementById('btn-remove-photo').addEventListener('click', function () {
+        photoPreviewImg.src = profileAvatar.src.includes('avatar.jpg')
+            ? photoPreviewImg.src
+            : '{% static "users/img/avatar.jpg" %}';
+        photoPreviewImg.src = '/static/users/img/avatar.jpg';
+        selectedPhotoFile = null;
+        inputPhoto.value = '';
+        this.style.display = 'none';
     });
 
     // Guardar cambios del perfil
