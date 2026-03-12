@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Abrir modal y cargar datos actuales
     btnEditProfile.addEventListener('click', function () {
-        const nombreCompleto = profileFullname.textContent.trim().split(' ');
-        inputNombre.value = nombreCompleto[0] || '';
-        inputApellido.value = nombreCompleto.slice(1).join(' ') || '';
+        const partes = profileFullname.innerHTML.split('<br>');
+        inputNombre.value = partes[0].trim() || '';
+        inputApellido.value = (partes[1] || '').trim();
         photoPreviewImg.src = profileAvatar.src;
         selectedPhotoFile = null;
         // Cargar username actual sin el @
