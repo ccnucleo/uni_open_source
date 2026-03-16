@@ -29,11 +29,11 @@
     <main class="card-container">
         <div class="card">
             <h1>Regístrate</h1>
-            <form action="#" method="POST">
+            <form method="POST">
                 {% csrf_token %}
                 <div class="input-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" required>
+                    <label for="username">Nombre</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
                 <div class="input-group">
                     <label for="email">Email</label>
