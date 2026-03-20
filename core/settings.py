@@ -117,3 +117,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Configuración de Servidor de Correos (SMTP Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Aquí pones el correo desde el que se enviarán los mensajes
+EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
+
+# Clave de 16 letras que te dio Google
+EMAIL_HOST_PASSWORD = 'xzfg mecm mwzj fmpp'
