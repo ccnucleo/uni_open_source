@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI Open Source - Construye el mundo del software libre</title>
+    <link rel="stylesheet" href="{% static 'users/css/inicio.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Inter:wght@500;600&family=Rubik:wght@600&family=DM+Sans:wght@500;700&family=Roboto:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page">
+        <!-- Navigation -->
+        <div class="top-header">
+            <div class="menu">
+                <div class="company">
+                    <h2 class="company-text">UNI <span class="accent">OPEN SOURCE</span></h2>
+                </div>
+                <nav class="nav-links">
+                    <a href="/">Inicio</a>
+                    <a href="#proyectos">Proyectos</a>
+                    <a href="#cursos">Academy</a>
+                </nav>
+                <div class="auth">
+                    <a href="{% url 'login' %}" class="login">Inicia Sesión</a>
+                    <a href="{% url 'register' %}" class="register">Regístrate</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <img class="hero-bg" src="{% static 'users/img/backgroundHero.jpg' %}" alt="Hero background">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>Construye el mundo del software libre</h1>
+                <h2>UNI OPEN SOURCE</h2>
+                <div class="hero-buttons">
+                    <a href="{% url 'register' %}" class="btn-primary">Registrate</a>
+                    <a href="#proyectos" class="btn-secondary">Explora Proyectos</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metrics Section -->
+        <section class="metrics">
+            <article class="metric">
+                <p class="number number-black">+100</p>
+                <div class="line line-black"></div>
+                <p class="label label-black">Proyectos</p>
+            </article>
+            <article class="metric">
+                <p class="number number-orange">+3200</p>
+                <div class="line line-orange"></div>
+                <p class="label label-orange">Estudiantes</p>
+            </article>
+            <article class="metric">
+                <p class="number number-grad">+10</p>
+                <div class="line line-grad"></div>
+                <p class="label label-grad">Tecnologías</p>
+            </article>
+            <article class="metric">
+                <p class="number number-pink">100%</p>
+                <div class="line line-pink"></div>
+                <p class="label label-pink">Open Source</p>
+            </article>
+        </section>
+
+        <!-- About Section -->
+        <section class="about">
+            <h3>¿Que es UNI Open Source?</h3>
+            <p class="about-subtitle">
+                Una plataforma creada por y para estudiantes de la UNI, donde puedes compartir tus proyectos de programación, colaborar con otros desarrolladores y construir un portafolio que destaque tu talento.
+            </p>
+            <div class="feature-cards">
+                <article class="feature-card">
+                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Comparte tus proyectos">
+                    <div class="card-body">
+                        <h4>COMPARTE TUS PROYECTOS</h4>
+                        <p>Sube tus desarrollos y dale visibilidad a tu trabajo. Cada proyecto cuenta tu historia como desarrollador.</p>
+                    </div>
+                </article>
+                <article class="feature-card">
+                    <img src="https://www.figma.com/api/mcp/asset/376b2000-1676-4a28-9470-97e37a18fa1e" alt="Crece profesionalmente">
+                    <div class="card-body">
+                        <h4>CRECE PROFESIONALMENTE</h4>
+                        <p>Construye tu portafolio, aprende de otros desarrolladores y destaca en la industria tecnológica.</p>
+                    </div>
+                </article>
+                <article class="feature-card">
+                    <img src="https://www.figma.com/api/mcp/asset/ff8515ff-971f-465c-92a4-d7a11fff5e7b" alt="Colabora en equipo">
+                    <div class="card-body">
+                        <h4>COLABORA EN EQUIPO</h4>
+                        <p>Únete a proyectos existentes, conoce a otros estudiantes y trabaja en equipo en desarrollos que generen impacto real.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="projects" id="proyectos">
+            <div class="section-title">
+                <h3 class="mid-title">Proyectos Destacados</h3>
+                <p>Los proyectos más destacados de nuestra comunidad</p>
+            </div>
+            <div class="project-grid">
+                <article class="project-card">
+                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                    <div class="project-body">
+                        <h4>Nombre Proyecto</h4>
+                        <div class="tags">
+                            <span>Etiqueta1</span>
+                            <span>Etiqueta2</span>
+                            <span>Etiqueta3</span>
+                        </div>
+                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
+                    </div>
+                </article>
+                <article class="project-card">
+                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                    <div class="project-body">
+                        <h4>Nombre Proyecto</h4>
+                        <div class="tags">
+                            <span>Etiqueta1</span>
+                            <span>Etiqueta2</span>
+                            <span>Etiqueta3</span>
+                        </div>
+                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
+                    </div>
+                </article>
+                <article class="project-card">
+                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                    <div class="project-body">
+                        <h4>Nombre Proyecto</h4>
+                        <div class="tags">
+                            <span>Etiqueta1</span>
+                            <span>Etiqueta2</span>
+                            <span>Etiqueta3</span>
+                        </div>
+                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section class="courses" id="cursos">
+            <h3 class="big-title">Cursos</h3>
+            <div class="course-row">
+                <article class="course-card">
+                    <h4>Course Name</h4>
+                    <p>&lt;Description&gt;</p>
+                    <div class="progress">
+                        <span style="width: 33%"></span>
+                    </div>
+                </article>
+                <article class="course-card">
+                    <h4>Course Name</h4>
+                    <p>&lt;Description&gt;</p>
+                    <div class="progress">
+                        <span style="width: 50%"></span>
+                    </div>
+                </article>
+                <article class="course-card">
+                    <h4>Course Name</h4>
+                    <p>&lt;Description&gt;</p>
+                    <div class="progress">
+                        <span style="width: 67%"></span>
+                    </div>
+                </article>
+                <article class="course-card">
+                    <h4>Course Name</h4>
+                    <p>&lt;Description&gt;</p>
+                    <div class="progress">
+                        <span style="width: 80%"></span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Allies Section -->
+        <section class="allies">
+            <h3 class="big-title">Nuestros Aliados</h3>
+            <div class="allies-logos">
+                <img src="https://www.figma.com/api/mcp/asset/34be17d1-1faf-404c-a7e4-4b831e2d9dfe" alt="Aliado 1">
+                <img src="https://www.figma.com/api/mcp/asset/da21bf04-9546-4a21-af54-169f56637010" alt="Aliado 2">
+                <img src="https://www.figma.com/api/mcp/asset/2bb76faf-583b-422b-98ce-ea66c9e40617" alt="Aliado 3">
+            </div>
+        </section>
+
+        <!-- Footer Section -->
+        <footer class="footer-wrap">
+            <div class="footer">
+                <div class="footer-col">
+                    <h4>Desarrolladora</h4>
+                    <div class="dev-row">
+                        <img src="https://www.figma.com/api/mcp/asset/cddeb2c6-fcfc-4df1-a167-469e25365e8d" alt="Centro Cultural Nucleo">
+                        <p>Centro Cultural Nucleo</p>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Enlaces</h4>
+                    <a href="/">Inicio</a>
+                    <a href="#proyectos">Proyectos</a>
+                    <a href="#cursos">Academy</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Aliados</h4>
+                    <p>Apesol</p>
+                    <p>Centro Cultural Nucleo</p>
+                    <p>Universidad Nacional de Ingeniería</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Contactos</h4>
+                    <p>ccnucleo.fiis@uni.edu.pe</p>
+                    <p>Av. Túpac Amaru 280, Lima 15333</p>
+                    <p>Universidad Nacional de Ingeniería</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -4,6 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 
+def index_view(request):
+    """Página de inicio - primer punto de acceso"""
+    return render(request, "users/index.html")
+
+
 def login_view(request):
 
     if request.method == "POST":
