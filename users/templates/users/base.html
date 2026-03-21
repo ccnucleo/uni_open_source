@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UNI Open Source{% endblock %}</title>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="background-overlay"></div>
+    
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{% static 'users/img/logo_uos_circular.png' %}" width="32" height="32">
+            <span class="logo-text">UNI <span class="highlight">OPEN SOURCE</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Inicio</a>
+            <a href="/#proyectos">Proyectos</a>
+            <a href="/#cursos">Academy</a>
+        </div>
+        
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="btn-login active">Mi Perfil</a>
+                <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register" style="border: none; cursor: pointer;">Cerrar Sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-login">Iniciar Sesión</a>
+                <a href="{% url 'register' %}" class="btn-register">Registrarse</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

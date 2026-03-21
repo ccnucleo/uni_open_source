@@ -2,14 +2,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
-
+@never_cache
 def index_view(request):
     """Página de inicio - primer punto de acceso"""
     return render(request, "users/index.html")
 
-
+@never_cache
 def login_view(request):
+    # SEGURIDAD: Si el usuario ya inició sesión, no tiene sentido que vea el login.
+    # Lo redirigimos automáticamente a su perfil.
+    if request.user.is_authenticated:
+        return redirect("profile")
 
     if request.method == "POST":
 
@@ -30,14 +36,21 @@ def login_view(request):
         else:
             messages.error(request, "Correo o contraseña incorrectos")
 
-    return render(request, "users/login.html")
+    return render(request, "users/auth/login.html")
 
 
+# SEGURIDAD: Este decorador obliga a iniciar sesión antes de ver el perfil.
+# Si alguien no logueado intenta entrar, lo manda a la vista 'login'.
+@login_required(login_url="login")
+@never_cache
 def profile_view(request):
     return render(request, "users/profile.html")
 
-
+@never_cache
 def register_view(request):
+    # SEGURIDAD: Igual que en el login, si ya estás logueado, vas directo al perfil.
+    if request.user.is_authenticated:
+        return redirect("profile")
 
     if request.method == "POST":
 
@@ -62,4 +75,4 @@ def register_view(request):
         messages.success(request, "Cuenta creada correctamente")
         return redirect("login")
 
-    return render(request, "users/register.html")
+    return render(request, "users/auth/register.html")

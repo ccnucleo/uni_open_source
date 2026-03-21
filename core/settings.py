@@ -124,7 +124,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Aquí pones el correo desde el que se enviarán los mensajes
+# Correo desde el que se enviarán los mensajes
 EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
 
 # Clave de 16 letras que te dio Google
