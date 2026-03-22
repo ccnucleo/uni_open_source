@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'users/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/themes.css' %}">
 </head>
 
 <body>
@@ -61,6 +62,26 @@
             <div class="topbar-left">
                 <div class="platform-name"><strong>UNI</strong> OPEN SOURCE</div>
             </div>
+
+            <!-- SELECTOR DE TEMAS -->
+            <div class="theme-selector">
+                <button class="theme-btn" id="theme-toggle-btn" title="Cambiar tema">☀️</button>
+                <div class="theme-dropdown" id="theme-dropdown">
+                    <button class="theme-option active" data-theme="light">
+                        <span class="theme-dot theme-dot-light"></span> Light
+                    </button>
+                    <button class="theme-option" data-theme="dark">
+                        <span class="theme-dot theme-dot-dark"></span> Dark
+                    </button>
+                    <button class="theme-option" data-theme="ocean">
+                        <span class="theme-dot theme-dot-ocean"></span> Ocean
+                    </button>
+                    <button class="theme-option" data-theme="forest">
+                        <span class="theme-dot theme-dot-forest"></span> Forest
+                    </button>
+                </div>
+            </div>
+
             <div class="topbar-right">
                 <div class="auth-btns">
                     <button class="btn-login-top"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
@@ -749,6 +770,7 @@
     </div>
 
     <script src="{% static 'users/js/scripts.js' %}"></script>
+    <script src="{% static 'users/js/themes.js' %}"></script>
 </body>
 
 </html>
