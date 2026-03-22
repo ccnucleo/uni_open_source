@@ -59,7 +59,7 @@
 
         <!-- TOPBAR -->
         <header class="topbar">
-            <div class="topbar-left" style="display:flex; align-items:center; gap:14px;">
+            <div class="topbar-left">
                 <div class="platform-name"><strong>UNI</strong> OPEN SOURCE</div>
                 <div class="theme-selector">
                     <button class="theme-btn" id="theme-toggle-btn" title="Cambiar tema">☀️</button>
@@ -78,16 +78,16 @@
                         </button>
                     </div>
                 </div>
-
-                <div class="topbar-right">
-                    <div class="auth-btns">
-                        <button class="btn-login-top"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
-                        <button class="btn-reg-top"><i class="fas fa-user-plus"></i> Registrarse</button>
-                    </div>
-                    <div class="topbar-avatar">
-                        <img src="{% static 'users/img/avatar.jpg' %}" alt="Usuario" id="topbar-avatar-img">
-                    </div>
+            </div>
+            <div class="topbar-right">
+                <div class="auth-btns">
+                    <button class="btn-login-top"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+                    <button class="btn-reg-top"><i class="fas fa-user-plus"></i> Registrarse</button>
                 </div>
+                <div class="topbar-avatar">
+                    <img src="{% static 'users/img/avatar.jpg' %}" alt="Usuario" id="topbar-avatar-img">
+                </div>
+            </div>
         </header>
 
         <!-- ÁREA DE CONTENIDO -->

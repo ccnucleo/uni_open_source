@@ -715,23 +715,19 @@ body.theme-forest .theme-option:hover {
 }
 
 /* ============================================
-   FOOTER — TEMAS OSCUROS
+   FOOTER — TEMAS OSCUROS 
 ============================================ */
 body.theme-dark .footer {
-    background: #07070f;
-    color: rgba(255, 255, 255, .85);
-}
-
-body.theme-dark .footer-brand p {
-    opacity: 0.7;
+    background: #1a1020;
+    color: rgba(255, 255, 255, .9);
 }
 
 body.theme-dark .footer-col h4 {
-    color: #eeeef8;
+    color: #ffffff;
 }
 
 body.theme-dark .footer-col ul li a {
-    color: rgba(255, 255, 255, .6);
+    color: rgba(255, 255, 255, .7);
 }
 
 body.theme-dark .footer-col ul li a:hover {
@@ -739,24 +735,35 @@ body.theme-dark .footer-col ul li a:hover {
 }
 
 body.theme-dark .contact-data li {
-    color: rgba(255, 255, 255, .55) !important;
+    color: rgba(255, 255, 255, .65) !important;
+}
+
+body.theme-dark .footer-brand p {
+    color: rgba(255, 255, 255, .7);
+    opacity: 1;
 }
 
 body.theme-dark .line {
-    background: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .15);
 }
 
 body.theme-dark .footer-bottom p {
-    color: rgba(255, 255, 255, .4);
+    color: rgba(255, 255, 255, .45);
 }
 
 body.theme-dark .social-links a {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .7);
+}
+
+body.theme-dark .social-links a:hover {
+    background: var(--orange-primary);
+    color: white;
 }
 
 body.theme-ocean .footer {
-    background: #040a14;
-    color: rgba(255, 255, 255, .85);
+    background: #051525;
+    color: rgba(255, 255, 255, .9);
 }
 
 body.theme-ocean .footer-brand .footer-logo {
@@ -768,15 +775,16 @@ body.theme-ocean .footer-brand .footer-logo i {
 }
 
 body.theme-ocean .footer-brand p {
-    opacity: 0.7;
+    color: rgba(255, 255, 255, .7);
+    opacity: 1;
 }
 
 body.theme-ocean .footer-col h4 {
-    color: #e0f0f8;
+    color: #ffffff;
 }
 
 body.theme-ocean .footer-col ul li a {
-    color: rgba(255, 255, 255, .6);
+    color: rgba(255, 255, 255, .7);
 }
 
 body.theme-ocean .footer-col ul li a:hover {
@@ -784,7 +792,7 @@ body.theme-ocean .footer-col ul li a:hover {
 }
 
 body.theme-ocean .contact-data li {
-    color: rgba(255, 255, 255, .55) !important;
+    color: rgba(255, 255, 255, .65) !important;
 }
 
 body.theme-ocean .contact-data li i {
@@ -792,11 +800,11 @@ body.theme-ocean .contact-data li i {
 }
 
 body.theme-ocean .line {
-    background: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .15);
 }
 
 body.theme-ocean .footer-bottom p {
-    color: rgba(255, 255, 255, .4);
+    color: rgba(255, 255, 255, .45);
 }
 
 body.theme-ocean .footer-bottom p i {
@@ -804,16 +812,18 @@ body.theme-ocean .footer-bottom p i {
 }
 
 body.theme-ocean .social-links a {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .7);
 }
 
 body.theme-ocean .social-links a:hover {
     background: #06b6d4;
+    color: white;
 }
 
 body.theme-forest .footer {
-    background: #030a03;
-    color: rgba(255, 255, 255, .85);
+    background: #0a1f0a;
+    color: rgba(255, 255, 255, .9);
 }
 
 body.theme-forest .footer-brand .footer-logo {
@@ -825,15 +835,16 @@ body.theme-forest .footer-brand .footer-logo i {
 }
 
 body.theme-forest .footer-brand p {
-    opacity: 0.7;
+    color: rgba(255, 255, 255, .7);
+    opacity: 1;
 }
 
 body.theme-forest .footer-col h4 {
-    color: #e0f0e0;
+    color: #ffffff;
 }
 
 body.theme-forest .footer-col ul li a {
-    color: rgba(255, 255, 255, .6);
+    color: rgba(255, 255, 255, .7);
 }
 
 body.theme-forest .footer-col ul li a:hover {
@@ -841,7 +852,7 @@ body.theme-forest .footer-col ul li a:hover {
 }
 
 body.theme-forest .contact-data li {
-    color: rgba(255, 255, 255, .55) !important;
+    color: rgba(255, 255, 255, .65) !important;
 }
 
 body.theme-forest .contact-data li i {
@@ -849,11 +860,11 @@ body.theme-forest .contact-data li i {
 }
 
 body.theme-forest .line {
-    background: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .15);
 }
 
 body.theme-forest .footer-bottom p {
-    color: rgba(255, 255, 255, .4);
+    color: rgba(255, 255, 255, .45);
 }
 
 body.theme-forest .footer-bottom p i {
@@ -861,9 +872,11 @@ body.theme-forest .footer-bottom p i {
 }
 
 body.theme-forest .social-links a {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .7);
 }
 
 body.theme-forest .social-links a:hover {
     background: #84cc16;
+    color: white;
 }

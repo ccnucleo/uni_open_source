@@ -240,6 +240,12 @@ h5 {
     box-shadow: var(--shadow-sm);
 }
 
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
 .platform-name {
     font-family: 'ADLaM Display', sans-serif;
     font-size: 1.4rem;
