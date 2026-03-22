@@ -238,6 +238,14 @@ h5 {
     justify-content: space-between;
     z-index: 50;
     box-shadow: var(--shadow-sm);
+    flex-wrap: nowrap;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
 }
 
 .platform-name {
