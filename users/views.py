@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+import random
+import json
+from django.core.mail import send_mail
+from django.http import JsonResponse
 
 @never_cache
 def index_view(request):
@@ -48,16 +52,15 @@ def profile_view(request):
 
 @never_cache
 def register_view(request):
-    # SEGURIDAD: Igual que en el login, si ya estás logueado, vas directo al perfil.
     if request.user.is_authenticated:
         return redirect("profile")
 
     if request.method == "POST":
-
         username = request.POST.get("username")
         email = request.POST.get("email").lower()
         password = request.POST.get("password")
 
+        # Validación normal de errores
         if User.objects.filter(username=username).exists():
             messages.error(request, "El usuario ya existe")
             return redirect("register")
@@ -66,13 +69,106 @@ def register_view(request):
             messages.error(request, "El correo ya está registrado")
             return redirect("register")
 
-        User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
+        # 1. Generar código de 6 dígitos
+        codigo_verificacion = str(random.randint(100000, 999999))
 
-        messages.success(request, "Cuenta creada correctamente")
-        return redirect("login")
+        # 2. Guardar datos TEMPORALMENTE en la sesión (no creamos el usuario aún)
+        request.session['temp_user_data'] = {
+            'username': username,
+            'email': email,
+            'password': password,
+            'codigo': codigo_verificacion
+        }
+
+        # 3. Enviar el correo de verdad
+        try:
+            send_mail(
+                'Código de Verificación - UNI Open Source',
+                f'Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.',
+                'angelhuamanivarg0206@gmail.com', # Cambia esto si usas otro correo
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.error(request, "Hubo un error al enviar el correo. Intenta de nuevo.")
+            return redirect("register")
+
+        # 4. Recargar la página abriendo el Modal
+        return render(request, "users/auth/register.html", {
+            "show_modal": True, 
+            "email_digitado": email
+        })
 
     return render(request, "users/auth/register.html")
+
+# ==========================================
+# APIs PARA QUE JAVASCRIPT HABLE CON DJANGO
+# ==========================================
+
+def check_username_api(request):
+    """API para que la ventanita sutil revise si el usuario existe en tiempo real"""
+    username = request.GET.get('username', '').lower()
+    is_taken = User.objects.filter(username__iexact=username).exists()
+    return JsonResponse({'is_taken': is_taken})
+
+def verify_code_api(request):
+    """API para verificar los 6 dígitos del modal"""
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            codigo_ingresado = data.get('code')
+            
+            temp_data = request.session.get('temp_user_data')
+            
+            if not temp_data:
+                return JsonResponse({'success': False, 'error': 'La sesión expiró. Vuelve a registrarte.'})
+
+            # Si el código es correcto, CREAMOS AL USUARIO
+            if codigo_ingresado == temp_data['codigo']:
+                User.objects.create_user(
+                    username=temp_data['username'],
+                    email=temp_data['email'],
+                    password=temp_data['password']
+                )
+                # Limpiamos la memoria temporal
+                del request.session['temp_user_data']
+                
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'El código es incorrecto.'})
+                
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': 'Error de servidor.'})
+            
+    return JsonResponse({'success': False, 'error': 'Método no permitido.'})
+
+def resend_code_api(request):
+    """API para reenviar el código de 6 dígitos"""
+    if request.method == "POST":
+        temp_data = request.session.get('temp_user_data')
+        
+        if not temp_data:
+            return JsonResponse({'success': False, 'error': 'La sesión expiró.'})
+
+        # 1. Generamos un código NUEVO
+        nuevo_codigo = str(random.randint(100000, 999999))
+        
+        # 2. Lo actualizamos en la sesión temporal
+        temp_data['codigo'] = nuevo_codigo
+        request.session['temp_user_data'] = temp_data
+        
+        # 3. Enviamos el correo de nuevo
+        email = temp_data['email']
+        try:
+            send_mail(
+                'Nuevo Código de Verificación - UNI Open Source',
+                f'Tu nuevo código de verificación es: {nuevo_codigo}\n\nBienvenido a la plataforma.',
+                'angelhuamanivarg0206@gmail.com', # OJO: Usa tu correo real o variables de entorno
+                [email],
+                fail_silently=False,
+            )
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': 'Error al enviar correo.'})
+            
+    return JsonResponse({'success': False, 'error': 'Método no permitido.'})

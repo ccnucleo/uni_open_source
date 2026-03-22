@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}UNI Open Source{% endblock %}</title>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -13,7 +17,7 @@
     
     <nav class="navbar">
         <div class="logo">
-            <img src="{% static 'users/img/logo_uos_circular.png' %}" width="32" height="32">
+            <img src="{% static 'users/img/logo_uos_circular.png' %}" width="32" height="32" alt="Logo UNI Open Source">
             <span class="logo-text">UNI <span class="highlight">OPEN SOURCE</span></span>
         </div>
         <div class="nav-links">
@@ -38,6 +42,18 @@
 
     {% block content %}
     {% endblock %}
+
+    {% if messages %}
+        <div id="django-messages" style="display: none;">
+            {% for message in messages %}
+                <span class="django-msg" data-icon="{{ message.tags }}">{{ message }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    {% block extra_js %}{% endblock %}
 
 </body>
 </html>

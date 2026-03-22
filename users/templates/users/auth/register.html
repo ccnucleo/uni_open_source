@@ -14,26 +14,106 @@
 
             {% if messages %}
                 {% for message in messages %}
-                    <p style="color: #ef4444; font-size: 14px; text-align: center; margin-bottom: 15px;">{{ message }}</p>
+                    {% if 'error' in message.tags %}
+                        <div class="custom-error-alert" id="register-error">
+                            <div class="error-content">
+                                <span class="custom-error-icon">⚠️</span>
+                                <span>{{ message }}</span>
+                            </div>
+                            <button type="button" class="close-error" aria-label="Cerrar error">✖</button>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 
-            <form method="POST">
+            <form method="POST" id="register-form">
                 {% csrf_token %}
-                <div class="input-group">
+                <div class="input-group" style="position: relative;">
                     <label for="username">Nombre</label>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username" placeholder="kike_uni" required autocomplete="off">
+                    
+                    <div id="username-status" class="username-tooltip">
+                        <span class="status-icon">✍️</span>
+                        <span class="status-text">Escribe un usuario...</span>
+                    </div>
                 </div>
+                
                 <div class="input-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" placeholder="correo@uni.edu.pe" required>
                 </div>
-                <div class="input-group">
+
+                <div class="input-group input-group-password">
                     <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <button type="button" id="toggle-password" class="toggle-btn" aria-label="Mostrar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="pswd-checker" class="password-checklist">
+                        <span class="checklist-title">Requisitos de seguridad:</span>
+                        <div class="check-item" id="length"><span>⬤</span> 8+ caracteres</div>
+                        <div class="check-item" id="number"><span>⬤</span> Al menos un número</div>
+                        <div class="check-item" id="upper"><span>⬤</span> Una mayúscula</div>
+                    </div>
                 </div>
+
                 <button type="submit" class="btn-submit">Crear Cuenta</button>
             </form>
         </div>
+
+        {% if show_modal %}
+        <div class="verification-overlay active" id="verification-modal">
+            <div class="verification-card">
+                
+                <div id="step-verification">
+                    <div class="verification-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <h2>Verifica tu correo</h2>
+                    <p>Hemos enviado un código de 6 dígitos a <br><strong>{{ email_digitado|default:"tu correo" }}</strong>.</p>
+                    
+                    <div class="code-inputs" id="code-inputs-container">
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off">
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off" disabled>
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off" disabled>
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off" disabled>
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off" disabled>
+                        <input type="text" maxlength="1" class="code-box" autocomplete="off" disabled>
+                    </div>
+
+                    <p id="code-error-msg" style="color: #ef4444; font-size: 13px; font-weight: 600; margin-top: -15px; margin-bottom: 15px; display: none;">Código incorrecto, ingrese el código de nuevo</p>
+
+                    <button type="button" class="btn-submit" id="btn-verify-code">Verificar y Entrar</button>
+                    
+                    <p class="resend-text">
+                        ¿No recibiste el código? 
+                        <a href="#" id="resend-code">Reenviar código</a>
+                        <span id="resend-timer" style="display: none; color: #6b7280; font-weight: 600;"></span>
+                    </p>
+                </div>
+
+                <div id="step-success" style="display: none;">
+                    <div class="success-icon-wrapper">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <h2>¡Cuenta Creada!</h2>
+                    <p>Tu correo ha sido verificado y tu cuenta de <br><strong>UNI Open Source</strong> está lista.</p>
+                    
+                    <a href="{% url 'login' %}" class="btn-submit" style="text-decoration: none; display: inline-block; box-sizing: border-box; margin-top: 15px;">Ir a Iniciar Sesión</a>
+                </div>
+
+            </div>
+        </div>
+        {% endif %}
+
     </main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'users/js/register.js' %}"></script>
 {% endblock %}
