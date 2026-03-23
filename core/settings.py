@@ -125,6 +125,12 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Aquí Django va a la caja fuerte (.env) y saca los valores
-EMAIL_HOST_USER = os.getenv('EMAIL_USER') 
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+# Correo desde el que se enviarán los mensajes
+EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
+
+# Clave de 16 letras que te dio Google
+EMAIL_HOST_PASSWORD = 'xzfg mecm mwzj fmpp'
+
+# Cuando sea definitivo, guardar en .env para no revelar contraseña:
+#EMAIL_HOST_USER = os.getenv('EMAIL_USER') 
+#EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
