@@ -1,282 +1,188 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UNI Open Source - Construye el mundo del software libre</title>
-    <link rel="stylesheet" href="{% static 'users/css/inicio.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Inter:wght@500;600&family=Rubik:wght@600&family=DM+Sans:wght@500;700&family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'users/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/themes.css' %}">
 </head>
+
 <body>
-    <div class="page">
-        <div class="top-header">
-            <div class="menu">
-                <div class="company">
-                    <h2 class="company-text">UNI <span class="accent">OPEN SOURCE</span></h2>
+
+    <!-- SIDEBAR IZQUIERDO -->
+    <aside class="sidebar-nav" id="sidebar-nav">
+        <div class="sidebar-logo">
+            <img src="{% static 'users/img/logo_uos.png' %}" alt="Logo UNI Open Source" class="sidebar-logo-img">
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/" class="sidebar-link active"><div class="sidebar-icon"><i class="fas fa-home"></i></div><span>Inicio</span></a>
+            <a href="#proyectos" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-search"></i></div><span>Proyectos</span></a>
+            <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-users"></i></div><span>Comunidad</span></a>
+            <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-star"></i></div><span>Destacados</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <a href="#" class="sidebar-link sidebar-link-sm"><div class="sidebar-icon"><i class="fas fa-cog"></i></div><span>Ajustes</span></a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="platform-name"><strong>UNI</strong> OPEN SOURCE</div>
+                <div class="theme-selector">
+                    <button class="theme-btn" id="theme-toggle-btn" title="Cambiar tema">☀️</button>
+                    <div class="theme-dropdown" id="theme-dropdown">
+                        <button class="theme-option active" data-theme="light"><span class="theme-emoji">☀️</span> Light</button>
+                        <button class="theme-option" data-theme="dark"><span class="theme-emoji">🌙</span> Dark</button>
+                        <button class="theme-option" data-theme="ocean"><span class="theme-emoji">🌊</span> Ocean</button>
+                        <button class="theme-option" data-theme="forest"><span class="theme-emoji">🌿</span> Forest</button>
+                    </div>
                 </div>
-                <nav class="nav-links">
-                    <a href="/">Inicio</a>
-                    <a href="#proyectos">Proyectos</a>
-                    <a href="#cursos">Academy</a>
-                </nav>
-                
-                <div class="auth">
+            </div>
+            <div class="topbar-right">
+                <div class="auth-btns">
                     {% if user.is_authenticated %}
-                        <div class="user-menu-container" style="position: relative; display: inline-block;">
-                            
-                            <button id="auth-dropdown-btn" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px; padding: 8px 16px; color: white; font-family: 'Inter', sans-serif; font-weight: 500; transition: background 0.3s;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                Hola, {{ user.username }}
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            
-                            <div id="auth-dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 10px; background-color: white; min-width: 180px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden; z-index: 1000;">
-                                <a href="{% url 'profile' %}" class="auth-dropdown-item" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; font-size: 14px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #f1f5f9; transition: background 0.2s;">
-                                    <i class="fas fa-user" style="margin-right: 8px; color: var(--orange-primary, #f97316);"></i> Mi Perfil
-                                </a>
-                                <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="auth-dropdown-item" style="width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: #ef4444; font-size: 14px; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.2s;">
-                                        <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Cerrar Sesión
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <style>
-                            #auth-dropdown-btn:hover { background: rgba(255, 255, 255, 0.2) !important; }
-                            .auth-dropdown-item:hover { background-color: #f8fafc !important; }
-                        </style>
-
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const btn = document.getElementById('auth-dropdown-btn');
-                                const menu = document.getElementById('auth-dropdown-menu');
-
-                                // Toggle al hacer clic en el botón
-                                btn.addEventListener('click', function(e) {
-                                    e.stopPropagation(); // Evita que el clic se pase al documento
-                                    if (menu.style.display === 'none' || menu.style.display === '') {
-                                        menu.style.display = 'block';
-                                        btn.style.background = 'rgba(255, 255, 255, 0.2)'; // Estilo activo
-                                    } else {
-                                        menu.style.display = 'none';
-                                        btn.style.background = 'rgba(255, 255, 255, 0.1)'; // Estilo normal
-                                    }
-                                });
-
-                                // Cerrar si haces clic en cualquier otra parte de la pantalla
-                                document.addEventListener('click', function(e) {
-                                    if (menu.style.display === 'block' && !menu.contains(e.target)) {
-                                        menu.style.display = 'none';
-                                        btn.style.background = 'rgba(255, 255, 255, 0.1)';
-                                    }
-                                });
-                            });
-                        </script>
-
+                        <a href="{% url 'logout' %}" class="btn-login-top"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="login">Inicia Sesión</a>
-                        <a href="{% url 'register' %}" class="register">Regístrate</a>
+                        <a href="{% url 'login' %}" class="btn-login-top"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+                        <a href="{% url 'register' %}" class="btn-reg-top"><i class="fas fa-user-plus"></i> Registrarse</a>
                     {% endif %}
                 </div>
-                </div>
-        </div>
-
-        <section class="hero">
-            <img class="hero-bg" src="{% static 'users/img/backgroundHero.jpg' %}" alt="Hero background">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1>Construye el mundo del software libre</h1>
-                <h2>UNI OPEN SOURCE</h2>
-                <div class="hero-buttons">
-                    <a href="{% url 'register' %}" class="btn-primary">Registrate</a>
-                    <a href="#proyectos" class="btn-secondary">Explora Proyectos</a>
-                </div>
-            </div>
-        </section>
-
-        <section class="metrics">
-            <article class="metric">
-                <p class="number number-black">+100</p>
-                <div class="line line-black"></div>
-                <p class="label label-black">Proyectos</p>
-            </article>
-            <article class="metric">
-                <p class="number number-orange">+3200</p>
-                <div class="line line-orange"></div>
-                <p class="label label-orange">Estudiantes</p>
-            </article>
-            <article class="metric">
-                <p class="number number-grad">+10</p>
-                <div class="line line-grad"></div>
-                <p class="label label-grad">Tecnologías</p>
-            </article>
-            <article class="metric">
-                <p class="number number-pink">100%</p>
-                <div class="line line-pink"></div>
-                <p class="label label-pink">Open Source</p>
-            </article>
-        </section>
-
-        <section class="about">
-            <h3>¿Que es UNI Open Source?</h3>
-            <p class="about-subtitle">
-                Una plataforma creada por y para estudiantes de la UNI, donde puedes compartir tus proyectos de programación, colaborar con otros desarrolladores y construir un portafolio que destaque tu talento.
-            </p>
-            <div class="feature-cards">
-                <article class="feature-card">
-                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Comparte tus proyectos">
-                    <div class="card-body">
-                        <h4>COMPARTE TUS PROYECTOS</h4>
-                        <p>Sube tus desarrollos y dale visibilidad a tu trabajo. Cada proyecto cuenta tu historia como desarrollador.</p>
+                {% if user.is_authenticated %}
+                    <div class="topbar-avatar">
+                        <img src="{% static 'users/img/avatar.jpg' %}" alt="Usuario" id="topbar-avatar-img">
                     </div>
-                </article>
-                <article class="feature-card">
-                    <img src="https://www.figma.com/api/mcp/asset/376b2000-1676-4a28-9470-97e37a18fa1e" alt="Crece profesionalmente">
-                    <div class="card-body">
-                        <h4>CRECE PROFESIONALMENTE</h4>
-                        <p>Construye tu portafolio, aprende de otros desarrolladores y destaca en la industria tecnológica.</p>
-                    </div>
-                </article>
-                <article class="feature-card">
-                    <img src="https://www.figma.com/api/mcp/asset/ff8515ff-971f-465c-92a4-d7a11fff5e7b" alt="Colabora en equipo">
-                    <div class="card-body">
-                        <h4>COLABORA EN EQUIPO</h4>
-                        <p>Únete a proyectos existentes, conoce a otros estudiantes y trabaja en equipo en desarrollos que generen impacto real.</p>
-                    </div>
-                </article>
+                {% endif %}
             </div>
-        </section>
+        </header>
 
-        <section class="projects" id="proyectos">
-            <div class="section-title">
-                <h3 class="mid-title">Proyectos Destacados</h3>
-                <p>Los proyectos más destacados de nuestra comunidad</p>
-            </div>
-            <div class="project-grid">
-                <article class="project-card">
-                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
-                    <div class="project-body">
-                        <h4>Nombre Proyecto</h4>
-                        <div class="tags">
-                            <span>Etiqueta1</span>
-                            <span>Etiqueta2</span>
-                            <span>Etiqueta3</span>
+        <main class="content-area">
+            <div class="profile-content">
+
+                <!-- HERO -->
+                <section class="profile-card hero-card">
+                    <div class="hero-section">
+                        <img class="hero-bg" src="{% static 'users/img/backgroundHero.jpg' %}" alt="Hero background">
+                        <div class="hero-overlay"></div>
+                        <div class="hero-content">
+                            <h1>Construye el mundo del software libre</h1>
+                            <h2>UNI OPEN SOURCE</h2>
+                            <div class="hero-buttons">
+                                <a href="{% url 'register' %}" class="btn-primary">Regístrate</a>
+                                <a href="#proyectos" class="btn-secondary">Explora Proyectos</a>
+                            </div>
                         </div>
-                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
                     </div>
-                </article>
-                <article class="project-card">
-                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
-                    <div class="project-body">
-                        <h4>Nombre Proyecto</h4>
-                        <div class="tags">
-                            <span>Etiqueta1</span>
-                            <span>Etiqueta2</span>
-                            <span>Etiqueta3</span>
-                        </div>
-                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
-                    </div>
-                </article>
-                <article class="project-card">
-                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
-                    <div class="project-body">
-                        <h4>Nombre Proyecto</h4>
-                        <div class="tags">
-                            <span>Etiqueta1</span>
-                            <span>Etiqueta2</span>
-                            <span>Etiqueta3</span>
-                        </div>
-                        <p>Su descripción iría aquí, hasta cierto punto, luego van sus etiquetas.</p>
-                    </div>
-                </article>
-            </div>
-        </section>
+                </section>
 
-        <section class="courses" id="cursos">
-            <h3 class="big-title">Cursos</h3>
-            <div class="course-row">
-                <article class="course-card">
-                    <h4>Course Name</h4>
-                    <p>&lt;Description&gt;</p>
-                    <div class="progress">
-                        <span style="width: 33%"></span>
+                <!-- MÉTRICAS -->
+                <section class="profile-card metrics-card">
+                    <div class="section-title"><h3>Estadísticas</h3></div>
+                    <div class="metrics">
+                        <article class="metric"><p class="number number-black">+100</p><div class="line line-black"></div><p class="label label-black">Proyectos</p></article>
+                        <article class="metric"><p class="number number-orange">+3200</p><div class="line line-orange"></div><p class="label label-orange">Estudiantes</p></article>
+                        <article class="metric"><p class="number number-grad">+10</p><div class="line line-grad"></div><p class="label label-grad">Tecnologías</p></article>
+                        <article class="metric"><p class="number number-pink">100%</p><div class="line line-pink"></div><p class="label label-pink">Open Source</p></article>
                     </div>
-                </article>
-                <article class="course-card">
-                    <h4>Course Name</h4>
-                    <p>&lt;Description&gt;</p>
-                    <div class="progress">
-                        <span style="width: 50%"></span>
-                    </div>
-                </article>
-                <article class="course-card">
-                    <h4>Course Name</h4>
-                    <p>&lt;Description&gt;</p>
-                    <div class="progress">
-                        <span style="width: 67%"></span>
-                    </div>
-                </article>
-                <article class="course-card">
-                    <h4>Course Name</h4>
-                    <p>&lt;Description&gt;</p>
-                    <div class="progress">
-                        <span style="width: 80%"></span>
-                    </div>
-                </article>
-            </div>
-        </section>
+                </section>
 
-        <section class="allies">
-            <h3 class="big-title">Nuestros Aliados</h3>
-            <div class="allies-logos">
-                <img src="https://www.figma.com/api/mcp/asset/34be17d1-1faf-404c-a7e4-4b831e2d9dfe" alt="Aliado 1">
-                <img src="https://www.figma.com/api/mcp/asset/da21bf04-9546-4a21-af54-169f56637010" alt="Aliado 2">
-                <img src="https://www.figma.com/api/mcp/asset/2bb76faf-583b-422b-98ce-ea66c9e40617" alt="Aliado 3">
-            </div>
-        </section>
+                <!-- SOBRE LA PLATAFORMA -->
+                <section class="profile-card about-card">
+                    <div class="section-title"><h3>¿Qué es UNI Open Source?</h3></div>
+                    <p class="about-subtitle">Una plataforma creada por y para estudiantes de la UNI, donde puedes compartir tus proyectos de programación, colaborar con otros desarrolladores y construir un portafolio que destaque tu talento.</p>
+                    <div class="feature-cards">
+                        <article class="feature-card">
+                            <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Comparte tus proyectos">
+                            <div class="card-body"><h4>COMPARTE TUS PROYECTOS</h4><p>Sube tus desarrollos y dale visibilidad a tu trabajo.</p></div>
+                        </article>
+                        <article class="feature-card">
+                            <img src="https://www.figma.com/api/mcp/asset/376b2000-1676-4a28-9470-97e37a18fa1e" alt="Crece profesionalmente">
+                            <div class="card-body"><h4>CRECE PROFESIONALMENTE</h4><p>Construye tu portafolio, aprende de otros desarrolladores y destaca en la industria.</p></div>
+                        </article>
+                        <article class="feature-card">
+                            <img src="https://www.figma.com/api/mcp/asset/ff8515ff-971f-465c-92a4-d7a11fff5e7b" alt="Colabora en equipo">
+                            <div class="card-body"><h4>COLABORA EN EQUIPO</h4><p>Únete a proyectos, conoce a estudiantes y genera impacto real.</p></div>
+                        </article>
+                    </div>
+                </section>
 
-        <footer class="footer-wrap">
-            <div class="footer">
-                <div class="footer-col">
-                    <h4>Desarrolladora</h4>
-                    <div class="dev-row">
-                        <img src="https://www.figma.com/api/mcp/asset/cddeb2c6-fcfc-4df1-a167-469e25365e8d" alt="Centro Cultural Nucleo">
-                        <p>Centro Cultural Nucleo</p>
+                <!-- PROYECTOS -->
+                <section class="profile-card projects-card" id="proyectos">
+                    <div class="section-title"><h3>Proyectos Destacados</h3><p>Los proyectos más destacados de nuestra comunidad</p></div>
+                    <div class="project-grid">
+                        <article class="project-card">
+                            <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                            <div class="project-body"><h4>Nombre Proyecto</h4><div class="tags"><span>Etiqueta1</span><span>Etiqueta2</span><span>Etiqueta3</span></div><p>Su descripción iría aquí, hasta cierto punto.</p></div>
+                        </article>
+                        <article class="project-card">
+                            <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                            <div class="project-body"><h4>Nombre Proyecto</h4><div class="tags"><span>Etiqueta1</span><span>Etiqueta2</span><span>Etiqueta3</span></div><p>Su descripción iría aquí, hasta cierto punto.</p></div>
+                        </article>
+                        <article class="project-card">
+                            <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba" alt="Nombre Proyecto">
+                            <div class="project-body"><h4>Nombre Proyecto</h4><div class="tags"><span>Etiqueta1</span><span>Etiqueta2</span><span>Etiqueta3</span></div><p>Su descripción iría aquí, hasta cierto punto.</p></div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- ALIADOS -->
+                <section class="profile-card allies-card">
+                    <div class="section-title"><h3>Nuestros Aliados</h3></div>
+                    <div class="allies-logos">
+                        <img src="https://www.figma.com/api/mcp/asset/34be17d1-1faf-404c-a7e4-4b831e2d9dfe" alt="Aliado 1">
+                        <img src="https://www.figma.com/api/mcp/asset/da21bf04-9546-4a21-af54-169f56637010" alt="Aliado 2">
+                        <img src="https://www.figma.com/api/mcp/asset/2bb76faf-583b-422b-98ce-ea66c9e40617" alt="Aliado 3">
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-circle-nodes"></i> <strong>UNI Open Source</strong></div>
+                    <p>Plataforma oficial de proyectos open source de la UNI.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
-                    <h4>Enlaces</h4>
-                    <a href="/">Inicio</a>
-                    <a href="#proyectos">Proyectos</a>
-                    <a href="#cursos">Academy</a>
+                    <h4>Centro Cultural Núcleo</h4>
+                    <ul><li><a href="#">Inicio</a></li><li><a href="#">¿Quiénes Somos?</a></li><li><a href="#">Proyectos Destacados</a></li></ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Aliados</h4>
-                    <p>Apesol</p>
-                    <p>Centro Cultural Nucleo</p>
-                    <p>Universidad Nacional de Ingeniería</p>
+                    <h4>Legal</h4>
+                    <ul><li><a href="#">Términos de uso</a></li><li><a href="#">Política de privacidad</a></li><li><a href="#">Aliados</a></li></ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Contactos</h4>
-                    <p>ccnucleo.fiis@uni.edu.pe</p>
-                    <p>Av. Túpac Amaru 280, Lima 15333</p>
-                    <p>Universidad Nacional de Ingeniería</p>
+                    <h4>Contacto</h4>
+                    <ul class="contact-data">
+                        <li><i class="fas fa-location-arrow"></i> Av. Túpac Amaru 280</li>
+                        <li><i class="fas fa-phone"></i> 00000000</li>
+                        <li><i class="fas fa-envelope"></i> 00000@gmail.com</li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <div class="line"></div>
-                <p>© 2026 UNI Open Source.</p>
-            </div>
+            <div class="footer-bottom"><div class="line"></div><p>© 2026 UNI Open Source.</p></div>
         </footer>
     </div>
+
+    <script src="{% static 'users/js/scripts.js' %}"></script>
+    <script src="{% static 'users/js/themes.js' %}"></script>
 </body>
+
 </html>
