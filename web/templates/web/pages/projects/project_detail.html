@@ -1,0 +1,27 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} | Proyecto{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="domain-page">
+    <a href="{% url 'projects:list' %}" class="back-link">Volver a Proyectos</a>
+    <article class="domain-card domain-card-detail">
+        <h1>{{ project.title }}</h1>
+        <p class="summary">{{ project.summary|default:'Sin resumen' }}</p>
+        <p>{{ project.description|default:'Este proyecto aun no tiene descripcion extendida.' }}</p>
+        <div class="domain-meta domain-meta-block">
+            <span><strong>Owner:</strong> {{ project.owner.username }}</span>
+            <span><strong>Stack:</strong> {{ project.tech_stack|default:'No definido' }}</span>
+            <span><strong>Publico:</strong> {{ project.is_public|yesno:'Si,No' }}</span>
+        </div>
+        {% if project.repository_url %}
+            <a href="{{ project.repository_url }}" target="_blank" rel="noopener" class="detail-link">Repositorio</a>
+        {% endif %}
+    </article>
+</main>
+{% endblock %}

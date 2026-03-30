@@ -1,0 +1,37 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Cursos | UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="domain-page">
+    <section class="domain-header">
+        <h1>Courses</h1>
+        <p>Catalogo inicial desacoplado de la app users para escalar contenidos academicos.</p>
+        <a class="api-link" href="/courses/api/courses/" target="_blank" rel="noopener">Ver API JSON</a>
+    </section>
+
+    <section class="domain-grid">
+        {% for course in courses %}
+            <article class="domain-card">
+                <h2>{{ course.title }}</h2>
+                <p>{{ course.short_description|default:'Sin descripcion corta por ahora.' }}</p>
+                <div class="domain-meta">
+                    <span><strong>Categoria:</strong> {{ course.category|default:'General' }}</span>
+                    <span><strong>Nivel:</strong> {{ course.get_level_display }}</span>
+                </div>
+                <a href="{% url 'courses:detail' course.id %}" class="detail-link">Ver detalle</a>
+            </article>
+        {% empty %}
+            <article class="domain-card domain-card-empty">
+                <h2>No hay cursos registrados</h2>
+                <p>Puedes crear uno con un POST autenticado a <code>/courses/api/courses/</code>.</p>
+            </article>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

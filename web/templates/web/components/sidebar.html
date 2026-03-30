@@ -1,0 +1,28 @@
+{% load static %}
+<aside class="sidebar-nav" id="sidebar-nav">
+    <div class="sidebar-logo">
+        <img src="{% static 'web/img/logo_uos.png' %}" alt="Logo UNI Open Source" class="sidebar-logo-img">
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/" class="sidebar-link{% if active_section == 'home' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-home"></i></div>
+            <span>Inicio</span>
+        </a>
+        <a href="/projects/" class="sidebar-link{% if active_section == 'projects' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-search"></i></div>
+            <span>Proyectos</span>
+        </a>
+        <a href="/courses/" class="sidebar-link{% if active_section == 'courses' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-graduation-cap"></i></div>
+            <span>Courses</span>
+        </a>
+        <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-users"></i></div><span>Comunidad</span></a>
+        <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-star"></i></div><span>Destacados</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <a href="#" class="sidebar-link sidebar-link-sm">
+            <div class="sidebar-icon"><i class="fas fa-cog"></i></div><span>Ajustes</span>
+        </a>
+    </div>
+</aside>

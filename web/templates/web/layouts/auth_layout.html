@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UNI Open Source{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'web/css/layouts.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="auth-shell">
+    <div class="auth-back-row">
+        <a href="javascript:history.back()" class="auth-back-link" aria-label="Volver a la vista anterior">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% if messages %}
+        <div id="django-messages" style="display: none;">
+            {% for message in messages %}
+                <span class="django-msg" data-icon="{{ message.tags }}">{{ message }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
