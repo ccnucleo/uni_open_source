@@ -1,0 +1,37 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Proyectos | UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="domain-page">
+    <section class="domain-header">
+        <h1>Proyectos</h1>
+        <p>Explora proyectos de la comunidad y administra tu portafolio desde una capa dedicada.</p>
+        <a class="api-link" href="/projects/api/projects/" target="_blank" rel="noopener">Ver API JSON</a>
+    </section>
+
+    <section class="domain-grid">
+        {% for project in projects %}
+            <article class="domain-card">
+                <h2>{{ project.title }}</h2>
+                <p>{{ project.summary|default:'Sin resumen por ahora.' }}</p>
+                <div class="domain-meta">
+                    <span><strong>Owner:</strong> {{ project.owner.username }}</span>
+                    <span><strong>Stack:</strong> {{ project.tech_stack|default:'No definido' }}</span>
+                </div>
+                <a href="{% url 'projects:detail' project.id %}" class="detail-link">Ver detalle</a>
+            </article>
+        {% empty %}
+            <article class="domain-card domain-card-empty">
+                <h2>No hay proyectos registrados</h2>
+                <p>Puedes crear uno con un POST autenticado a <code>/projects/api/projects/</code>.</p>
+            </article>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}
