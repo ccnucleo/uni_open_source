@@ -57,11 +57,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'web' / 'templates'],
-        'APP_DIRS': False,
+        'APP_DIRS': True,  # <-- CAMBIADO A TRUE
         'OPTIONS': {
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-            ],
+            # <-- ELIMINAMOS EL BLOQUE 'loaders' QUE BLOQUEABA AL ADMIN
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

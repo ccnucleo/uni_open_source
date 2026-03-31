@@ -1,9 +1,11 @@
 from django.contrib import admin
 from .models import Course
 
-
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-	list_display = ("id", "title", "category", "level", "owner", "is_published", "created_at")
-	list_filter = ("category", "level", "is_published", "created_at")
-	search_fields = ("title", "short_description", "owner__username", "owner__email")
+    # Esto hará que en el panel veas una tabla con estos datos
+    list_display = ('title', 'category', 'level', 'resource_type', 'is_published')
+    # Podrás filtrar por estos campos a la derecha
+    list_filter = ('category', 'level', 'resource_type', 'has_certification')
+    # Podrás buscar por nombre o descripción
+    search_fields = ('title', 'description')
