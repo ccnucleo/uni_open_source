@@ -1,7 +1,7 @@
 {% extends 'web/layouts/app_layout.html' %}
 {% load static %}
 
-{% block title %}{{ course.title }} | Curso{% endblock %}
+{% block title %}{{ course.title }} | UNI Open Source{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}">
@@ -9,17 +9,42 @@
 
 {% block content %}
 <main class="domain-page">
-    <a href="{% url 'courses:list' %}" class="back-link">Volver a Cursos</a>
-    <article class="domain-card domain-card-detail">
+    
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'courses:list' %}" style="color: #ea580c; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px;">
+            <span>←</span> Volver al catálogo de cursos
+        </a>
+    </div>
+    <section class="domain-header">
         <h1>{{ course.title }}</h1>
-        <p class="summary">{{ course.short_description|default:'Sin descripcion corta' }}</p>
-        <p>{{ course.description|default:'Este curso aun no tiene contenido extendido.' }}</p>
-        <div class="domain-meta domain-meta-block">
-            <span><strong>Categoria:</strong> {{ course.category|default:'General' }}</span>
-            <span><strong>Nivel:</strong> {{ course.get_level_display }}</span>
-            <span><strong>Owner:</strong> {{ course.owner.username }}</span>
-            <span><strong>Publicado:</strong> {{ course.is_published|yesno:'Si,No' }}</span>
+        <div class="course-badges" style="margin-top: 15px;">
+            <span class="badge">{{ course.get_level_display }}</span>
+            <span class="badge">{{ course.get_resource_type_display }}</span>
+            {% if course.has_certification %}
+                <span class="badge cert-badge">🏆 Certificado Disponible</span>
+            {% endif %}
         </div>
-    </article>
+    </section>
+
+    <section class="domain-content" style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        <h3>Sobre este curso</h3>
+        <p style="margin-top: 15px; line-height: 1.6; color: #334155;">
+            {{ course.description|default:course.short_description }}
+        </p>
+        
+        <p style="margin-top: 20px; font-weight: bold; color: #64748b;">
+            Categoría: {{ course.category }}
+        </p>
+
+        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            {% if course.url %}
+                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn-orange" style="font-size: 1.1rem; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">
+                    ▶️ Iniciar Curso en la Plataforma Oficial
+                </a>
+            {% else %}
+                <p>El enlace a este curso no está disponible en este momento.</p>
+            {% endif %}
+        </div>
+    </section>
 </main>
 {% endblock %}

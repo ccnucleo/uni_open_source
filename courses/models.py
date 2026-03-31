@@ -35,11 +35,12 @@ class Course(models.Model):
     
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default=BEGINNER, verbose_name="Nivel")
     
-    # --- NUEVOS CAMPOS ---
+    
     url = models.URLField(max_length=500, blank=True, verbose_name="Enlace al curso gratuito")
+    image = models.ImageField(upload_to="courses/thumbnails/", blank=True, null=True, verbose_name="Imagen del curso")
     resource_type = models.CharField(max_length=20, choices=RESOURCE_CHOICES, default=YOUTUBE, verbose_name="Tipo de Recurso")
     has_certification = models.BooleanField(default=False, verbose_name="¿Incluye Certificado?")
-    # ---------------------
+    
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

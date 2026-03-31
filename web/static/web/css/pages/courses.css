@@ -1,70 +1,189 @@
+/* ==========================================================================
+   VARIABLES GLOBALES (Colores de UNI Open Source)
+   ========================================================================== */
+:root {
+    --primary-orange: #ea580c;
+    --primary-orange-hover: #c2410c;
+    --dark-slate: #0f172a;
+    --dark-slate-light: #334155;
+    --text-main: #1f2937;
+    --text-muted: #64748b;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --transition-speed: 0.3s;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL
+   ========================================================================== */
 .domain-page {
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 0 1rem 2rem;
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+.domain-header {
+    text-align: center;
+    margin-bottom: 3rem;
 }
 
 .domain-header h1 {
-  margin-bottom: 0.35rem;
+    font-size: 2.5rem;
+    color: var(--dark-slate);
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .domain-header p {
-  margin: 0;
-  color: #4b5563;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-.api-link,
-.detail-link,
-.back-link {
-  display: inline-block;
-  margin-top: 0.9rem;
-  color: #0f766e;
-  font-weight: 600;
-  text-decoration: none;
-}
-
+/* ==========================================================================
+   GRILLA DE CURSOS
+   ========================================================================== */
 .domain-grid {
-  margin-top: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+    display: grid;
+    /* Las tarjetas ahora son un poco más anchas y respiran mejor */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
 }
 
+/* ==========================================================================
+   TARJETAS DE CURSOS (Cards)
+   ========================================================================== */
 .domain-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 1rem;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column; /* Permite empujar los botones siempre al fondo */
+    
+    /* Sombra suave y elegante */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-.domain-card h2,
-.domain-card h1 {
-  margin: 0;
+/* Animación al pasar el mouse por encima */
+.domain-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.domain-card h2 {
+    font-size: 1.35rem;
+    color: var(--dark-slate);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    font-weight: 700;
 }
 
 .domain-card p {
-  color: #374151;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    flex-grow: 1; /* Esto es magia: hace que todas las tarjetas midan lo mismo */
+    margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   ETIQUETAS Y METADATOS (Badges)
+   ========================================================================== */
+.course-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.badge { 
+    background-color: #f1f5f9; 
+    color: #475569; 
+    padding: 0.35rem 0.8rem; 
+    border-radius: 9999px; /* Forma de píldora moderna */
+    font-size: 0.75rem; 
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cert-badge { 
+    background-color: #dcfce7; 
+    color: #166534; 
 }
 
 .domain-meta {
-  margin-top: 0.75rem;
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  color: #6b7280;
-  font-size: 0.9rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
-.domain-meta-block {
-  flex-direction: column;
-  gap: 0.4rem;
+.domain-meta strong {
+    color: var(--dark-slate-light);
 }
 
+/* ==========================================================================
+   BOTONES Y ENLACES
+   ========================================================================== */
+.course-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Estilo base para todos los botones */
+.btn {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color var(--transition-speed) ease;
+    flex: 1; /* Hace que los botones midan lo mismo de ancho */
+}
+
+.btn-orange {
+    background-color: var(--primary-orange);
+    color: white;
+}
+
+.btn-orange:hover { 
+    background-color: var(--primary-orange-hover); 
+}
+
+.btn-dark {
+    background-color: var(--dark-slate-light);
+    color: white;
+}
+
+.btn-dark:hover { 
+    background-color: var(--dark-slate); 
+}
+
+/* ==========================================================================
+   ESTADO VACÍO (Cuando no hay cursos)
+   ========================================================================== */
 .domain-card-empty {
-  border-style: dashed;
+    border: 2px dashed #cbd5e1;
+    background: transparent;
+    text-align: center;
+    padding: 3rem 2rem;
+    box-shadow: none;
+    align-items: center;
+    justify-content: center;
 }
 
-.summary {
-  font-weight: 600;
+.domain-card-empty:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--text-muted);
 }

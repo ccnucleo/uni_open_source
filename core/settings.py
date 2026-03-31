@@ -140,3 +140,7 @@ EMAIL_HOST_PASSWORD = 'xzfg mecm mwzj fmpp'
 # Cuando sea definitivo, guardar en .env para no revelar contraseña:
 #EMAIL_HOST_USER = os.getenv('EMAIL_USER') 
 #EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+
+# Carpeta donde se guardarán los archivos subidos (en la raíz de tu proyecto)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

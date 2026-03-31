@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from accounts import views as accounts_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,3 +20,9 @@ urlpatterns = [
     path('reset_password/', accounts_views.reset_password_request_view, name='reset_password'),
     path('reset/<uidb64>/<token>/', accounts_views.reset_password_confirm_view, name='password_reset_confirm'),
 ]
+
+# ==============================================================================
+# ARCHIVOS MULTIMEDIA (Imágenes subidas por usuarios o administradores)
+# ==============================================================================
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
