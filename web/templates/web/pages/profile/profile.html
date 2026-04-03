@@ -313,9 +313,16 @@
                     </div>
 
                     <div class="projects-grid" id="projects-grid">
+                        
                         <div class="project-card-full" data-name="Sistema de Reconocimiento Facial"
                             data-date="2024-01-15" data-views="150" data-collaborators="3" data-theme="ia"
                             data-tech="python,tensorflow">
+                            
+                            <a href="/projects/1/" class="stretched-link"></a>
+                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+
                             <div class="project-card-img">
                                 <div class="project-card-img-placeholder"></div>
                             </div>
@@ -335,8 +342,15 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="project-card-full" data-name="E-commerce React" data-date="2024-02-20"
                             data-views="230" data-collaborators="5" data-theme="web" data-tech="javascript,react,node">
+                            
+                            <a href="/projects/2/" class="stretched-link"></a>
+                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+
                             <div class="project-card-img">
                                 <div class="project-card-img-placeholder"></div>
                             </div>
@@ -356,8 +370,15 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="project-card-full" data-name="API REST Django" data-date="2024-03-10"
                             data-views="89" data-collaborators="2" data-theme="api" data-tech="python,django">
+                            
+                            <a href="/projects/3/" class="stretched-link"></a>
+                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+
                             <div class="project-card-img">
                                 <div class="project-card-img-placeholder"></div>
                             </div>
@@ -377,8 +398,15 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="project-card-full" data-name="App Móvil Fitness" data-date="2024-01-05"
                             data-views="320" data-collaborators="4" data-theme="mobile" data-tech="javascript,react">
+                            
+                            <a href="/projects/4/" class="stretched-link"></a>
+                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+
                             <div class="project-card-img">
                                 <div class="project-card-img-placeholder"></div>
                             </div>
@@ -472,7 +500,7 @@
     <!-- ============================================ -->
     <!-- MODAL: NUEVO PROYECTO -->
     <!-- ============================================ -->
-    <div class="modal-overlay" id="modal-new-project">
+<div class="modal-overlay" id="modal-new-project">
         <div class="modal-content modal-large">
             <div class="modal-header">
                 <h3><i class="fas fa-plus-circle"></i> Nuevo Proyecto</h3>
@@ -540,6 +568,40 @@
                         <label for="input-project-repo">URL del repositorio (opcional)</label>
                         <input type="url" id="input-project-repo" placeholder="https://github.com/usuario/proyecto">
                     </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-input-wrapper">
+                            <div class="tags-list" id="new-project-tags-list"></div>
+                            <input type="text" id="input-project-tags" placeholder="Agregar tag y presionar Enter...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-section">
+                    <h4><i class="fas fa-align-left"></i> Contenido Detallado</h4>
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Descripción Completa</label>
+                    <div class="form-group">
+                        <textarea id="input-project-p1" placeholder="Párrafo 1: Descripción detallada del proyecto. Explicación del problema que resuelve, contexto y motivación..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="input-project-p2" placeholder="Párrafo 2: Funcionalidades principales y características destacadas..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="input-project-p3" placeholder="Párrafo 3: Detalles técnicos, arquitectura y beneficios..."></textarea>
+                    </div>
+                </div>
+
+                <div class="edit-section">
+                    <h4><i class="fas fa-images"></i> Galería de Imágenes</h4>
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Subir Imágenes</label>
+                    
+                    <div class="gallery-upload-area" id="gallery-upload-area">
+                        <i class="fas fa-image" style="font-size: 2rem; color: var(--orange-tag); margin-bottom: 8px;"></i>
+                        <span>Arrastra imágenes aquí o haz clic para seleccionar</span>
+                        <small>PNG, JPG, WebP</small>
+                    </div>
+                    <input type="file" id="input-gallery-images" accept="image/png, image/jpeg, image/webp" multiple hidden>
+                    <div class="gallery-preview-grid" id="gallery-preview-grid"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -554,7 +616,7 @@
     <!-- ============================================ -->
     <!-- MODAL: EDITAR PROYECTO -->
     <!-- ============================================ -->
-    <div class="modal-overlay" id="modal-edit-project">
+<div class="modal-overlay" id="modal-edit-project">
         <div class="modal-content modal-large">
             <div class="modal-header">
                 <h3><i class="fas fa-edit"></i> Editar Proyecto</h3>
@@ -620,6 +682,40 @@
                         <label for="edit-project-repo">URL del repositorio (opcional)</label>
                         <input type="url" id="edit-project-repo" placeholder="https://github.com/usuario/proyecto">
                     </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-input-wrapper">
+                            <div class="tags-list" id="edit-project-tags-list"></div>
+                            <input type="text" id="input-edit-project-tags" placeholder="Agregar tag y presionar Enter...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-section">
+                    <h4><i class="fas fa-align-left"></i> Contenido Detallado</h4>
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Descripción Completa</label>
+                    <div class="form-group">
+                        <textarea id="edit-project-p1" placeholder="Párrafo 1: Descripción detallada del proyecto. Explicación del problema que resuelve, contexto y motivación..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="edit-project-p2" placeholder="Párrafo 2: Funcionalidades principales y características destacadas..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="edit-project-p3" placeholder="Párrafo 3: Detalles técnicos, arquitectura y beneficios..."></textarea>
+                    </div>
+                </div>
+
+                <div class="edit-section">
+                    <h4><i class="fas fa-images"></i> Galería de Imágenes</h4>
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Subir Imágenes</label>
+                    
+                    <div class="gallery-upload-area" id="edit-gallery-upload-area">
+                        <i class="fas fa-image" style="font-size: 2rem; color: var(--orange-tag); margin-bottom: 8px;"></i>
+                        <span>Arrastra imágenes aquí o haz clic para seleccionar</span>
+                        <small>PNG, JPG, WebP</small>
+                    </div>
+                    <input type="file" id="input-edit-gallery-images" accept="image/png, image/jpeg, image/webp" multiple hidden>
+                    <div class="gallery-preview-grid" id="edit-gallery-preview-grid"></div>
                 </div>
             </div>
             <div class="modal-footer modal-footer-between">
