@@ -1,27 +1,296 @@
 {% extends 'web/layouts/app_layout.html' %}
 {% load static %}
 
-{% block title %}{{ project.title }} | Proyecto{% endblock %}
+{% block title %}{{ project.title }} | Detalle{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
+<style>
+    /* Ajuste de la Grilla para pegar el lateral al final */
+    .project-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        align-items: start;
+        width: 100%;
+    }
+
+    /* Lógica de visibilidad para botones de edición */
+    .section-edit-btn, .side-edit-btn {
+        display: none; 
+    }
+
+    .edit-mode-active .section-edit-btn,
+    .edit-mode-active .side-edit-btn {
+        display: flex;
+    }
+
+    .section-edit-btn, .side-edit-btn {
+        background: var(--gray-100);
+        border: none;
+        color: var(--gray-600);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .section-edit-btn:hover, .side-edit-btn:hover {
+        background: var(--orange-light);
+        color: var(--orange-primary);
+    }
+
+    /* Estilos del Lateral */
+    .sidebar-title-accent {
+        border-left: 3px solid var(--orange-primary);
+        padding-left: 10px;
+        color: var(--gray-900);
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dependency-box {
+        display: flex; justify-content: space-between; align-items: center;
+        background: var(--gray-50); padding: 10px 14px; border-radius: 8px;
+        border: 1px solid var(--gray-200); font-size: 0.85rem; font-weight: 600;
+        color: var(--gray-700); margin-bottom: 8px;
+    }
+    
+    .avatar-stack { display: flex; margin-left: 10px; margin-top: 15px; }
+    .avatar-stack-item {
+        width: 38px; height: 38px; border-radius: 50%; background: var(--orange-primary);
+        color: white; display: flex; align-items: center; justify-content: center;
+        border: 2.5px solid white; margin-left: -12px; font-weight: bold; font-size: 0.85rem;
+    }
+
+    .btn-orange-outline {
+        display: block; width: 100%; text-align: center; background: rgba(255,255,255,0.15);
+        color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px;
+        border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s;
+        margin-bottom: 10px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<main class="domain-page">
-    <a href="{% url 'projects:list' %}" class="back-link">Volver a Proyectos</a>
-    <article class="domain-card domain-card-detail">
-        <h1>{{ project.title }}</h1>
-        <p class="summary">{{ project.summary|default:'Sin resumen' }}</p>
-        <p>{{ project.description|default:'Este proyecto aun no tiene descripcion extendida.' }}</p>
-        <div class="domain-meta domain-meta-block">
-            <span><strong>Owner:</strong> {{ project.owner.username }}</span>
-            <span><strong>Stack:</strong> {{ project.tech_stack|default:'No definido' }}</span>
-            <span><strong>Publico:</strong> {{ project.is_public|yesno:'Si,No' }}</span>
-        </div>
-        {% if project.repository_url %}
-            <a href="{{ project.repository_url }}" target="_blank" rel="noopener" class="detail-link">Repositorio</a>
+<main class="content-area project-detail-area">
+            
+    <div class="project-hero" style="position: relative;">
+        {% if request.user == project.owner %}
+        <button class="btn-edit-card-icon" id="master-edit-btn" style="position: absolute; top: 24px; right: 24px;" title="Activar Modo Edición">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
         {% endif %}
-    </article>
+
+        <div class="hero-left">
+            <div class="badge-status">
+                <i class="fas fa-circle"></i> 
+                {% if project.is_public %}Público{% else %}Privado{% endif %}
+            </div>
+            
+            <h1 class="hero-title">{{ project.title }}</h1>
+            <p class="hero-desc">{{ project.summary|default:'Sin resumen' }}</p>
+            
+            <div class="hero-tags">
+                {% if project.tech_stack %}
+                    <span class="tag-hero"><i class="fas fa-code"></i> {{ project.tech_stack }}</span>
+                {% endif %}
+            </div>
+
+            <div class="hero-author-card">
+                <div class="author-info-group">
+                    <div class="author-avatar avatar-gradient">{{ project.owner.username|make_list|first|upper }}</div>
+                    <div class="author-text">
+                        <strong>{{ project.owner.username }}</strong>
+                        <span>@{{ project.owner.username }}</span>
+                    </div>
+                </div>
+
+                <div class="author-actions">
+                    {% if request.user != project.owner %}
+                        <button class="btn-author-primary"><i class="fas fa-plus"></i> Seguir</button>
+                        <button class="btn-author-secondary"><i class="fas fa-comment-dots"></i> Mensaje</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-right">
+            <div class="hero-stats-card">
+                <h4>ESTADÍSTICAS</h4>
+                <ul>
+                    <li><span><i class="fas fa-heart"></i> Likes</span> <strong>--</strong></li>
+                    <li><span><i class="fas fa-eye"></i> Vistas</span> <strong>--</strong></li>
+                    <li><span><i class="fas fa-history"></i> Estado</span> <strong>Activo</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div> 
+
+    <div class="project-content-grid">
+        <div class="project-main-col">
+            
+            <div class="detail-card">
+                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="icon-box icon-orange"><i class="fas fa-file-alt"></i></div>
+                        <div>
+                            <h3>Sobre este proyecto</h3>
+                            <span>Información detallada</span>
+                        </div>
+                    </div>
+                    <button class="section-edit-btn"><i class="fas fa-pen"></i> Editar</button>
+                </div>
+                <div class="card-body">
+                    <div class="paragraph-box">
+                        {{ project.description|default:'Sin descripción.'|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="icon-box icon-purple"><i class="fas fa-code"></i></div>
+                        <div>
+                            <h3>Tecnologías</h3>
+                            <span>Stack utilizado</span>
+                        </div>
+                    </div>
+                    <button class="section-edit-btn"><i class="fas fa-plus"></i> Gestionar</button>
+                </div>
+                <div class="card-body">
+                    <div class="tech-grid">
+                        {% if project.tech_stack %}
+                            <div class="tech-box"><i class="fas fa-laptop-code" style="color: #8b5cf6;"></i><span>{{ project.tech_stack }}</span></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="icon-box icon-blue"><i class="fas fa-image"></i></div>
+                        <div>
+                            <h3>Capturas</h3>
+                            <span>Visualiza el proyecto</span>
+                        </div>
+                    </div>
+                    <button class="section-edit-btn"><i class="fas fa-camera"></i> Subir</button>
+                </div>
+                <div class="card-body">
+                    <div class="gallery-grid-layout">
+                        <div class="gallery-item large" style="background: #fff7ed; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image fa-3x" style="color: #ffedd5;"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="icon-box icon-red"><i class="fas fa-users-cog"></i></div>
+                        <div>
+                            <h3>Cómo Contribuir</h3>
+                            <span>Únete al desarrollo</span>
+                        </div>
+                    </div>
+                    <button class="section-edit-btn"><i class="fas fa-tasks"></i> Gestionar Guía</button>
+                </div>
+                <div class="card-body">
+                    <div class="contribute-grid">
+                        <div class="contribute-box">
+                            <i class="fas fa-bug" style="color: #3b82f6;"></i>
+                            <h4>Reportar Bugs</h4>
+                            <p>Encuentra y documenta errores para mejorar la estabilidad.</p>
+                        </div>
+                        <div class="contribute-box">
+                            <i class="fas fa-lightbulb" style="color: #eab308;"></i>
+                            <h4>Sugerir Ideas</h4>
+                            <p>Propón nuevas funcionalidades o mejoras de diseño.</p>
+                        </div>
+                        <div class="contribute-box">
+                            <i class="fas fa-laptop-code" style="color: #4b5563;"></i>
+                            <h4>Contribuir Código</h4>
+                            <p>Envía tus Pull Requests y ayuda a programar el futuro.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <div class="project-side-col">
+            <div class="detail-card">
+                <h3 class="sidebar-title-accent">
+                    Información
+                    <button class="side-edit-btn"><i class="fas fa-cog"></i></button>
+                </h3>
+                <ul class="side-info-list">
+                    <li><span>Versión</span> <strong style="color: var(--orange-primary);">v1.2.0</strong></li>
+                    <li><span>Tamaño</span> <strong style="color: var(--orange-primary);">3.4 MB</strong></li>
+                    <li><span>Actualizado</span> <strong style="color: var(--orange-primary);">Hace 2 días</strong></li>
+                </ul>
+            </div>
+
+            <div class="detail-card">
+                <h3 class="sidebar-title-accent">
+                    Dependencias
+                    <button class="side-edit-btn"><i class="fas fa-plus"></i></button>
+                </h3>
+                <div class="dependency-box"><span>📦 Django</span><span style="color: var(--gray-400);">^4.2</span></div>
+            </div>
+
+            <div class="detail-card" style="background: var(--orange-primary); color: white;">
+                <h3 class="sidebar-title-accent" style="border-left-color: white; color: white;">
+                    Enlaces
+                    <button class="side-edit-btn" style="background: rgba(255,255,255,0.2); color: white;"><i class="fas fa-link"></i></button>
+                </h3>
+                {% if project.repository_url %}
+                    <a href="{{ project.repository_url }}" target="_blank" class="btn-orange-outline"><i class="fab fa-github"></i> GitHub</a>
+                {% endif %}
+                <a href="#" class="btn-orange-outline"><i class="fas fa-file-alt"></i> Documentación</a>
+            </div>
+
+            <div class="detail-card">
+                <h3 class="sidebar-title-accent">
+                    Colaboradores
+                    <button class="side-edit-btn"><i class="fas fa-user-plus"></i></button>
+                </h3>
+                <div class="avatar-stack">
+                    <div class="avatar-stack-item">{{ project.owner.username|make_list|first|upper }}</div>
+                    <div class="avatar-stack-item">B</div>
+                    <div class="avatar-stack-item">+3</div>
+                </div>
+            </div>
+        </div> 
+    </div> 
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const masterEditBtn = document.getElementById('master-edit-btn');
+        if (masterEditBtn) {
+            masterEditBtn.addEventListener('click', function() {
+                document.querySelector('.project-detail-area').classList.toggle('edit-mode-active');
+                this.classList.toggle('active');
+                if(this.classList.contains('active')) {
+                    this.style.background = 'var(--orange-primary)';
+                    this.style.color = 'white';
+                } else {
+                    this.style.background = '';
+                    this.style.color = '';
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
