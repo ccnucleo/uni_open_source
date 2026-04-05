@@ -715,9 +715,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('input-project-repo').value = '';
         document.getElementById('count-project-name').textContent = '0';
         document.getElementById('count-project-desc').textContent = '0';
+        
         const preview = document.getElementById('new-project-image-preview');
         preview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Haz clic o arrastra una imagen</span>';
         preview.classList.remove('has-image');
+        
+        if(document.getElementById('input-project-p1')) document.getElementById('input-project-p1').value = '';
+        if(document.getElementById('input-project-p2')) document.getElementById('input-project-p2').value = '';
+        if(document.getElementById('input-project-p3')) document.getElementById('input-project-p3').value = '';
+        if(document.getElementById('input-project-tags')) document.getElementById('input-project-tags').value = '';
+        if(document.getElementById('new-project-tags-list')) document.getElementById('new-project-tags-list').innerHTML = '';
+        if(document.getElementById('gallery-preview-grid')) document.getElementById('gallery-preview-grid').innerHTML = '';
+        if(document.getElementById('input-gallery-images')) document.getElementById('input-gallery-images').value = '';
+        window.newProjectTagsArray = []; // <-- LIMPIEZA DEL ARRAY
     }
 
     document.getElementById('input-project-name').addEventListener('input', function () {
@@ -831,11 +841,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputEditProjectImage = document.getElementById('input-edit-project-image');
 
     projectsGrid.addEventListener('click', function (e) {
-        const card = e.target.closest('.project-card-full');
-        if (card) {
-            currentEditingProject = card;
-            openEditProjectModal(card);
+        // 1. Detectamos si se hizo clic EXACTAMENTE en el lápiz
+        const editBtn = e.target.closest('.btn-edit-card-icon');
+        
+        if (editBtn) {
+            e.preventDefault(); // Evitamos que el enlace nos cambie de página
+            e.stopPropagation(); // Frenamos el clic para que no llegue a la tarjeta
+            
+            const card = editBtn.closest('.project-card-full');
+            if (card) {
+                currentEditingProject = card;
+                openEditProjectModal(card);
+            }
         }
+        // Si no hicimos clic en el lápiz, el JavaScript no hace nada,
+        // permitiendo que la etiqueta <a class="stretched-link"> navegue naturalmente.
     });
 
     function openEditProjectModal(card) {
@@ -868,8 +888,24 @@ document.addEventListener('DOMContentLoaded', function () {
         modalEditProject.classList.add('active');
     }
 
-    document.getElementById('btn-close-edit-project').addEventListener('click', () => { modalEditProject.classList.remove('active'); currentEditingProject = null; });
-    document.getElementById('btn-cancel-edit-project').addEventListener('click', () => { modalEditProject.classList.remove('active'); currentEditingProject = null; });
+    // Función para resetear el modal de Editar
+    function resetEditProjectForm() {
+        if(document.getElementById('edit-project-tags-list')) document.getElementById('edit-project-tags-list').innerHTML = '';
+        if(document.getElementById('input-edit-project-tags')) document.getElementById('input-edit-project-tags').value = '';
+        if(document.getElementById('edit-project-p1')) document.getElementById('edit-project-p1').value = '';
+        if(document.getElementById('edit-project-p2')) document.getElementById('edit-project-p2').value = '';
+        if(document.getElementById('edit-project-p3')) document.getElementById('edit-project-p3').value = '';
+        if(document.getElementById('edit-gallery-preview-grid')) document.getElementById('edit-gallery-preview-grid').innerHTML = '';
+        if(document.getElementById('input-edit-gallery-images')) document.getElementById('input-edit-gallery-images').value = '';
+        window.editProjectTagsArray = []; // <-- LIMPIEZA DEL ARRAY
+    }
+
+    document.getElementById('btn-close-edit-project').addEventListener('click', () => { 
+        modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); 
+    });
+    document.getElementById('btn-cancel-edit-project').addEventListener('click', () => { 
+        modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); 
+    });
 
     document.getElementById('edit-project-name').addEventListener('input', function () {
         document.getElementById('count-edit-project-name').textContent = this.value.length;
@@ -891,6 +927,112 @@ document.addEventListener('DOMContentLoaded', function () {
             reader.readAsDataURL(this.files[0]);
         }
     });
+
+    // ============================================
+    // LÓGICA DE TAGS UNIFICADA (NUEVO Y EDITAR PROYECTO)
+    // ============================================
+    window.newProjectTagsArray = [];
+    window.editProjectTagsArray = [];
+
+    function setupTagsLogic(inputId, listId, arrayVarName) {
+        const input = document.getElementById(inputId);
+        const list = document.getElementById(listId);
+        
+        if (!input || !list) return;
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.value.trim();
+                
+                if (value && !window[arrayVarName].includes(value)) {
+                    window[arrayVarName].push(value);
+                    renderTags(list, window[arrayVarName]);
+                }
+                this.value = '';
+            }
+        });
+
+        list.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tag-chip-remove')) {
+                const index = e.target.getAttribute('data-index');
+                window[arrayVarName].splice(index, 1);
+                renderTags(list, window[arrayVarName]);
+            }
+        });
+    }
+
+    function renderTags(listElement, currentArray) {
+        listElement.innerHTML = '';
+        currentArray.forEach((tag, index) => {
+            const chip = document.createElement('span');
+            chip.className = 'tag-chip';
+            chip.innerHTML = `#${tag} <span class="tag-chip-remove" data-index="${index}">x</span>`;
+            listElement.appendChild(chip);
+        });
+    }
+
+    setupTagsLogic('input-project-tags', 'new-project-tags-list', 'newProjectTagsArray');
+    setupTagsLogic('input-edit-project-tags', 'edit-project-tags-list', 'editProjectTagsArray');
+
+    // ============================================
+    // LÓGICA DE GALERÍAS UNIFICADAS (CLIC Y DRAG & DROP)
+    // ============================================
+    function setupGallery(dropAreaId, inputId, previewGridId) {
+        const dropArea = document.getElementById(dropAreaId);
+        const input = document.getElementById(inputId);
+        const previewGrid = document.getElementById(previewGridId);
+
+        if (!dropArea || !input || !previewGrid) return;
+
+        dropArea.addEventListener('click', () => input.click());
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.style.borderColor = 'var(--orange-primary)';
+                dropArea.style.backgroundColor = 'var(--orange-light)';
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.style.borderColor = 'var(--gray-300)';
+                dropArea.style.backgroundColor = 'white';
+            });
+        });
+
+        dropArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+        input.addEventListener('change', function() { handleFiles(this.files); this.value = ''; });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const thumbDiv = document.createElement('div');
+                        thumbDiv.className = 'gallery-thumbnail';
+                        thumbDiv.innerHTML = `
+                            <img src="${event.target.result}" alt="Gallery image">
+                            <button type="button" class="gallery-thumbnail-remove" title="Eliminar"><i class="fas fa-times"></i></button>
+                        `;
+                        thumbDiv.querySelector('.gallery-thumbnail-remove').addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            thumbDiv.remove();
+                        });
+                        previewGrid.appendChild(thumbDiv);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }
+
+    setupGallery('gallery-upload-area', 'input-gallery-images', 'gallery-preview-grid');
+    setupGallery('edit-gallery-upload-area', 'input-edit-gallery-images', 'edit-gallery-preview-grid');
 
     // ============================================
     // GUARDAR EDICIÓN DE PROYECTO
@@ -979,7 +1121,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.active').forEach(modal => modal.classList.remove('active'));
+            document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                modal.classList.remove('active');
+                if(modal.id === 'modal-edit-project') resetEditProjectForm();
+                if(modal.id === 'modal-new-project') resetNewProjectForm();
+            });
             currentEditingProject = null;
         }
     });
@@ -988,6 +1134,8 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) {
                 this.classList.remove('active');
+                if(this.id === 'modal-edit-project') resetEditProjectForm();
+                if(this.id === 'modal-new-project') resetNewProjectForm();
                 currentEditingProject = null;
             }
         });

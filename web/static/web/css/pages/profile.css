@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    PROFILE.CSS - Estilos exclusivos de la pagina de perfil
    ============================================ */
 
@@ -1621,4 +1621,108 @@
     }
 }
 
+/* ============================================
+   LÁPIZ FLOTANTE PARA TARJETAS (Stretched Link)
+============================================ */
+.project-card-full {
+    position: relative; 
+}
 
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1; 
+    content: ""; 
+    cursor: pointer;
+}
+
+.btn-edit-card-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    color: var(--orange-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 2; /* Por encima del enlace expandido */
+    transition: all 0.2s ease;
+}
+
+.btn-edit-card-icon:hover {
+    transform: scale(1.1);
+    color: #ea580c;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   NUEVOS ELEMENTOS MODAL PROYECTO (Tags, Galería)
+============================================ */
+.tags-input-wrapper {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    padding: 8px 14px; border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md); background: var(--gray-50);
+    min-height: 48px; transition: all 0.2s;
+}
+.tags-input-wrapper:focus-within {
+    border-color: var(--orange-primary); background: white;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, .1);
+}
+.tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; background: #e0f2fe; color: #0284c7;
+    border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;
+}
+.tag-chip-remove { cursor: pointer; font-weight: bold; color: #0ea5e9; transition: color 0.2s; }
+.tag-chip-remove:hover { color: #0369a1; }
+.tags-input-wrapper input {
+    flex: 1; min-width: 150px; border: none; background: transparent;
+    padding: 4px 0; font-size: 0.9rem; color: var(--gray-900); outline: none;
+}
+.gallery-upload-area {
+    border: 2px dashed var(--gray-300); border-radius: var(--radius-md);
+    padding: 30px 20px; text-align: center; cursor: pointer;
+    background: white; transition: all 0.2s; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+}
+.gallery-upload-area:hover { border-color: var(--orange-primary); background: var(--orange-light); }
+.gallery-upload-area span { font-size: 0.9rem; font-weight: 500; color: var(--gray-700); }
+.gallery-upload-area small { font-size: 0.75rem; color: var(--gray-400); margin-top: 6px; }
+.gallery-preview-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px; margin-top: 16px;
+}
+.gallery-thumbnail {
+    position: relative; width: 100%; aspect-ratio: 1;
+    border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--gray-200);
+}
+.gallery-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-thumbnail-remove {
+    position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6);
+    color: white; border: none; border-radius: 50%; width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; cursor: pointer; transition: background 0.2s;
+}
+.gallery-thumbnail-remove:hover { background: var(--error-red); }
+
+/* MEJORA UX: Portada - Hover para indicar cambio de imagen */
+.project-image-preview.has-image { position: relative; }
+.project-image-preview.has-image::after {
+    content: '\f030  Cambiar imagen';
+    font-family: 'Font Awesome 6 Free', 'DM Sans', sans-serif; font-weight: 900;
+    position: absolute; inset: 0; background: rgba(0,0,0,0.5); color: white;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.25s; font-size: 0.9rem;
+}
+.project-image-preview.has-image:hover::after { opacity: 1; }
