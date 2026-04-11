@@ -6,7 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
 <style>
-    /* Ajuste de la Grilla para pegar el lateral al final */
+
     .project-content-grid {
         display: grid;
         grid-template-columns: 1fr 320px;
@@ -15,7 +15,6 @@
         width: 100%;
     }
 
-    /* Lógica de visibilidad para botones de edición */
     .section-edit-btn, .side-edit-btn {
         display: none; 
     }
@@ -44,7 +43,6 @@
         color: var(--orange-primary);
     }
 
-    /* Estilos del Lateral */
     .sidebar-title-accent {
         border-left: 3px solid var(--orange-primary);
         padding-left: 10px;
@@ -76,6 +74,13 @@
         border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s;
         margin-bottom: 10px;
     }
+
+    .paragraph-box { margin-bottom: 20px; }
+    .paragraph-box h4 { color: var(--gray-800); margin-bottom: 8px; font-size: 1rem; }
+    .paragraph-box p { color: var(--gray-600); line-height: 1.6; font-size: 0.95rem; }
+    
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+    .gallery-item { height: 140px; border-radius: 8px; background-size: cover; background-position: center; border: 1px solid var(--gray-200); }
 </style>
 {% endblock %}
 
@@ -83,12 +88,6 @@
 <main class="content-area project-detail-area">
             
     <div class="project-hero" style="position: relative;">
-        {% if request.user == project.owner %}
-        <button class="btn-edit-card-icon" id="master-edit-btn" style="position: absolute; top: 24px; right: 24px;" title="Activar Modo Edición">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
-        {% endif %}
-
         <div class="hero-left">
             <div class="badge-status">
                 <i class="fas fa-circle"></i> 
@@ -96,29 +95,51 @@
             </div>
             
             <h1 class="hero-title">{{ project.title }}</h1>
-            <p class="hero-desc">{{ project.summary|default:'Sin resumen' }}</p>
+            <p class="hero-desc">{{ project.summary|default:'Sin resumen breve.' }}</p>
             
-            <div class="hero-tags">
-                {% if project.tech_stack %}
-                    <span class="tag-hero"><i class="fas fa-code"></i> {{ project.tech_stack }}</span>
+            <div class="hero-tags" style="margin-bottom: 25px;">
+                {% if project.main_tech %}
+                    <span class="tag-hero" style="background: var(--orange-primary); color: white; border-color: var(--orange-primary);">
+                        <i class="fas fa-star"></i> {{ project.main_tech }}
+                    </span>
                 {% endif %}
+                <span class="tag-hero" style="text-transform: capitalize;">
+                    <i class="fas fa-folder"></i> {{ project.get_theme_display }}
+                </span>
             </div>
 
-            <div class="hero-author-card">
+            <div class="hero-author-card" style="margin-bottom: 20px; max-width: max-content;">
                 <div class="author-info-group">
                     <div class="author-avatar avatar-gradient">{{ project.owner.username|make_list|first|upper }}</div>
                     <div class="author-text">
                         <strong>{{ project.owner.username }}</strong>
-                        <span>@{{ project.owner.username }}</span>
+                        <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            @{{ project.owner.username }} 
+                            <span>•</span> Publicado {{ project.created_at|timesince }} 
+                            <span>•</span> {{ project.owner.owned_projects.count }} proyectos
+                        </span>
                     </div>
                 </div>
+            </div>
 
-                <div class="author-actions">
-                    {% if request.user != project.owner %}
-                        <button class="btn-author-primary"><i class="fas fa-plus"></i> Seguir</button>
-                        <button class="btn-author-secondary"><i class="fas fa-comment-dots"></i> Mensaje</button>
-                    {% endif %}
-                </div>
+            <div class="hero-action-buttons" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px;">
+                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
+                    <i class="fas fa-heart" style="color: #ef4444;"></i> Me gusta (342)
+                </button>
+                
+                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
+                    <i class="fas fa-download"></i> Descargar
+                </button>
+                
+                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
+                    <i class="fas fa-share-alt"></i> Compartir
+                </button>
+
+                {% if request.user == project.owner %}
+                <button id="master-edit-btn" style="background: var(--orange-primary); border: none; color: white; padding: 10px 22px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); margin-left: 10px; transition: transform 0.2s;">
+                    <i class="fas fa-pen"></i> Editar Proyecto
+                </button>
+                {% endif %}
             </div>
         </div>
         
@@ -126,13 +147,13 @@
             <div class="hero-stats-card">
                 <h4>ESTADÍSTICAS</h4>
                 <ul>
-                    <li><span><i class="fas fa-heart"></i> Likes</span> <strong>--</strong></li>
+                    <li><span><i class="fas fa-heart"></i> Likes</span> <strong>342</strong></li>
                     <li><span><i class="fas fa-eye"></i> Vistas</span> <strong>--</strong></li>
                     <li><span><i class="fas fa-history"></i> Estado</span> <strong>Activo</strong></li>
                 </ul>
             </div>
         </div>
-    </div> 
+    </div>
 
     <div class="project-content-grid">
         <div class="project-main-col">
@@ -140,37 +161,60 @@
             <div class="detail-card">
                 <div class="card-header-icon" style="display: flex; justify-content: space-between;">
                     <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-orange"><i class="fas fa-file-alt"></i></div>
+                        <div class="icon-box icon-orange"><i class="fas fa-align-left"></i></div>
                         <div>
-                            <h3>Sobre este proyecto</h3>
-                            <span>Información detallada</span>
+                            <h3>Detalles del Proyecto</h3>
+                            <span>Información completa</span>
                         </div>
                     </div>
                     <button class="section-edit-btn"><i class="fas fa-pen"></i> Editar</button>
                 </div>
                 <div class="card-body">
-                    <div class="paragraph-box">
-                        {{ project.description|default:'Sin descripción.'|linebreaks }}
-                    </div>
+                    {% if project.paragraph_1 %}
+                        <div class="paragraph-box">
+                            <h4>Contexto y Problema</h4>
+                            <p>{{ project.paragraph_1|linebreaksbr }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    {% if project.paragraph_2 %}
+                        <div class="paragraph-box">
+                            <h4>Funcionalidades Clave</h4>
+                            <p>{{ project.paragraph_2|linebreaksbr }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if project.paragraph_3 %}
+                        <div class="paragraph-box">
+                            <h4>Arquitectura y Beneficios</h4>
+                            <p>{{ project.paragraph_3|linebreaksbr }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    {% if not project.paragraph_1 and not project.paragraph_2 and not project.paragraph_3 %}
+                        <p style="color: var(--gray-400); font-size: 0.9rem;">El creador aún no ha detallado esta información.</p>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="detail-card">
                 <div class="card-header-icon" style="display: flex; justify-content: space-between;">
                     <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-purple"><i class="fas fa-code"></i></div>
+                        <div class="icon-box icon-purple"><i class="fas fa-tags"></i></div>
                         <div>
-                            <h3>Tecnologías</h3>
-                            <span>Stack utilizado</span>
+                            <h3>Etiquetas</h3>
+                            <span>Temas secundarios</span>
                         </div>
                     </div>
-                    <button class="section-edit-btn"><i class="fas fa-plus"></i> Gestionar</button>
+                    <button class="section-edit-btn"><i class="fas fa-plus"></i> Añadir</button>
                 </div>
                 <div class="card-body">
                     <div class="tech-grid">
-                        {% if project.tech_stack %}
-                            <div class="tech-box"><i class="fas fa-laptop-code" style="color: #8b5cf6;"></i><span>{{ project.tech_stack }}</span></div>
-                        {% endif %}
+                        {% for tag in project.tags.all %}
+                            <div class="tech-box"><span>#{{ tag.name }}</span></div>
+                        {% empty %}
+                            <p style="color: var(--gray-400); font-size: 0.9rem;">Sin etiquetas adicionales.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -178,17 +222,24 @@
             <div class="detail-card">
                 <div class="card-header-icon" style="display: flex; justify-content: space-between;">
                     <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-blue"><i class="fas fa-image"></i></div>
+                        <div class="icon-box icon-blue"><i class="fas fa-images"></i></div>
                         <div>
-                            <h3>Capturas</h3>
+                            <h3>Galería de Capturas</h3>
                             <span>Visualiza el proyecto</span>
                         </div>
                     </div>
                     <button class="section-edit-btn"><i class="fas fa-camera"></i> Subir</button>
                 </div>
                 <div class="card-body">
-                    <div class="gallery-grid-layout">
-                        <div class="gallery-item large" style="background: #fff7ed; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image fa-3x" style="color: #ffedd5;"></i></div>
+                    <div class="gallery-grid">
+                        {% for item in project.gallery.all %}
+                            <div class="gallery-item" style="background-image: url('{{ item.image.url }}');"></div>
+                        {% empty %}
+                            <div class="gallery-item" style="grid-column: 1 / -1; background: #fff7ed; display: flex; align-items: center; justify-content: center; border: none;">
+                                <i class="fas fa-image fa-2x" style="color: #ffedd5;"></i>
+                                <span style="color: var(--gray-400); margin-left: 10px; font-weight: 500;">No hay capturas disponibles</span>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -227,15 +278,16 @@
         </div> 
 
         <div class="project-side-col">
+            
             <div class="detail-card">
                 <h3 class="sidebar-title-accent">
                     Información
                     <button class="side-edit-btn"><i class="fas fa-cog"></i></button>
                 </h3>
                 <ul class="side-info-list">
-                    <li><span>Versión</span> <strong style="color: var(--orange-primary);">v1.2.0</strong></li>
-                    <li><span>Tamaño</span> <strong style="color: var(--orange-primary);">3.4 MB</strong></li>
-                    <li><span>Actualizado</span> <strong style="color: var(--orange-primary);">Hace 2 días</strong></li>
+                    <li><span>Versión</span> <strong style="color: var(--orange-primary);">{{ project.version|default:"v1.0.0" }}</strong></li>
+                    <li><span>Tamaño</span> <strong style="color: var(--orange-primary);">{{ project.size|default:"-" }}</strong></li>
+                    <li><span>Actualizado</span> <strong style="color: var(--orange-primary);">Hace {{ project.updated_at|timesince }}</strong></li>
                 </ul>
             </div>
 
@@ -244,7 +296,13 @@
                     Dependencias
                     <button class="side-edit-btn"><i class="fas fa-plus"></i></button>
                 </h3>
-                <div class="dependency-box"><span>📦 Django</span><span style="color: var(--gray-400);">^4.2</span></div>
+                {% if project.dependencies %}
+                    <div class="dependency-box">
+                        <span>📦 {{ project.dependencies }}</span>
+                    </div>
+                {% else %}
+                    <p style="font-size: 0.85rem; color: var(--gray-400);">No especificadas.</p>
+                {% endif %}
             </div>
 
             <div class="detail-card" style="background: var(--orange-primary); color: white;">
@@ -264,9 +322,16 @@
                     <button class="side-edit-btn"><i class="fas fa-user-plus"></i></button>
                 </h3>
                 <div class="avatar-stack">
-                    <div class="avatar-stack-item">{{ project.owner.username|make_list|first|upper }}</div>
-                    <div class="avatar-stack-item">B</div>
-                    <div class="avatar-stack-item">+3</div>
+                    <div class="avatar-stack-item" title="Dueño: {{ project.owner.username }}">
+                        {{ project.owner.username|make_list|first|upper }}
+                    </div>
+                    {% for colaborador in project.collaborators.all %}
+                        <div class="avatar-stack-item" title="Colaborador: {{ colaborador.username }}">
+                            {{ colaborador.username|make_list|first|upper }}
+                        </div>
+                    {% empty %}
+                        <div class="avatar-stack-item" style="background: var(--gray-100); color: var(--gray-400); cursor: default;" title="Sin colaboradores adicionales">+0</div>
+                    {% endfor %}
                 </div>
             </div>
         </div> 

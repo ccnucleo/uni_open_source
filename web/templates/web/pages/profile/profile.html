@@ -18,30 +18,35 @@
                         <span>Cambiar</span>
                     </div>
                 </div>
-                <h2 class="full-name" id="profile-fullname">Nombre y<br>Apellidos</h2>
-                <p class="username">@username</p>
+                
+                <h2 class="full-name" id="profile-fullname">
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name }}<br>{{ request.user.last_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </h2>
+                <p class="username">@{{ request.user.username }}</p>
 
                 <div class="stats-row">
                     <div class="stat-item">
-                        <strong id="stat-proyectos">4</strong>
+                        <strong id="stat-proyectos">{{ request.user.projects.count }}</strong>
                         <span>Proyectos</span>
                     </div>
                     <div class="stat-divider"></div>
                     <div class="stat-item">
-                        <strong>100</strong>
+                        <strong>0</strong>
                         <span>Seguidores</span>
                     </div>
                     <div class="stat-divider"></div>
                     <div class="stat-item">
-                        <strong>1K</strong>
+                        <strong>0</strong>
                         <span>Vistas</span>
                     </div>
                 </div>
 
                 <div class="action-buttons">
                     <button class="btn-edit" id="btn-edit-profile"><i class="fas fa-pencil-alt"></i> Editar</button>
-                    <button class="btn-follow"><i class="fas fa-user-plus"></i> Seguir</button>
-                    <button class="btn-msg"><i class="fas fa-envelope"></i> Mensaje</button>
                 </div>
             </div>
 
@@ -61,128 +66,99 @@
                 <!-- ============================================ -->
                 <!-- VISTA: DESCRIPCIÓN GENERAL -->
                 <!-- ============================================ -->
+                <!-- SECCIÓN SOBRE MÍ -->
                 <div id="view-general">
                     <div class="card-info" id="card-descripcion">
 
-                        <!-- SECCIÓN SOBRE MÍ -->
                         <div class="info-section" id="section-sobre-mi">
                             <h3><span class="section-dot"></span>Sobre mí</h3>
                             <div class="sobre-mi-container">
                                 <div class="sobre-mi-display" id="display-sobre-mi">
-                                    <span class="placeholder-text">Aquí va tu descripción detallada</span>
+                                    <span class="user-text">
+                                        {{ request.user.profile.bio|default:"Aquí va tu descripción detallada" }}
+                                    </span>
                                 </div>
                                 <div class="sobre-mi-edit" id="edit-sobre-mi">
                                     <textarea id="textarea-sobre-mi" maxlength="200"
-                                        placeholder="Aquí va tu descripción detallada"></textarea>
+                                        placeholder="Aquí va tu descripción detallada">{{ request.user.profile.bio|default:"" }}</textarea>
                                     <span class="char-counter" id="counter-sobre-mi">0/200</span>
                                 </div>
                             </div>
                         </div>
-
                         <!-- SECCIÓN INTERESES -->
                         <div class="info-section" id="section-intereses">
                             <h3><span class="section-dot"></span>Intereses</h3>
                             <div class="tags-container" id="tags-intereses">
-                                <div class="tag" data-placeholder="IA" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">IA</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="IA">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Big Data" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Big Data</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Big Data">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Machine Learning" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Machine Learning</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Machine Learning">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Desarrollo Web" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Desarrollo Web</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Desarrollo Web">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
+                                {% if request.user.profile.intereses.all %}
+                                    {% for interes in request.user.profile.intereses.all %}
+                                    <div class="tag" data-placeholder="{{ interes.nombre }}" data-maxlength="25">
+                                        <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
+                                        <span class="tag-content">{{ interes.nombre }}</span>
+                                        <input type="text" class="tag-input" maxlength="25" value="{{ interes.nombre }}">
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="tag"><span class="tag-content placeholder">Inteligencia Artificial</span></div>
+                                    <div class="tag"><span class="tag-content placeholder">Japonés</span></div>
+                                    <div class="tag"><span class="tag-content placeholder">Fitness</span></div>
+                                {% endif %}
                                 <button class="btn-add-tag" id="btn-add-interes" title="Añadir interés">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- SECCIÓN TECNOLOGÍAS -->
                         <div class="info-section" id="section-tecnologias">
                             <h3><span class="section-dot"></span>Tecnologías Principales</h3>
                             <div class="tags-container" id="tags-tecnologias">
-                                <div class="tag" data-placeholder="Python" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Python</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="Python">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="Django" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Django</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="Django">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="JavaScript" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">JavaScript</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="JavaScript">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="React" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">React</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="React">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
+                                {% if request.user.profile.tecnologias.all %}
+                                    {% for tech in request.user.profile.tecnologias.all %}
+                                    <div class="tag" data-placeholder="{{ tech.nombre }}" data-maxlength="20">
+                                        <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
+                                        <span class="tag-content">{{ tech.nombre }}</span>
+                                        <input type="text" class="tag-input" maxlength="20" value="{{ tech.nombre }}">
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="tag"><span class="tag-content placeholder">Python</span></div>
+                                    <div class="tag"><span class="tag-content placeholder">Django</span></div>
+                                    <div class="tag"><span class="tag-content placeholder">React</span></div>
+                                {% endif %}
                                 <button class="btn-add-tag" id="btn-add-tecnologia" title="Añadir tecnología">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- SECCIÓN CONTACTO -->
                         <div class="info-section" id="section-contacto">
                             <h3><span class="section-dot"></span>Contacto</h3>
                             <div class="contact-list">
                                 <div class="contact-item" data-type="linkedin">
                                     <i class="fab fa-linkedin"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-linkedin">https://linkedin.com/in/tu-usuario</span>
+                                    <span class="contact-display" id="display-linkedin">
+                                        {{ request.user.profile.linkedin|default:"https://linkedin.com/in/tu-usuario" }}
+                                    </span>
                                     <input type="url" class="contact-input" id="input-linkedin"
-                                        placeholder="https://linkedin.com/in/tu-usuario">
+                                        value="{{ request.user.profile.linkedin|default:'' }}" placeholder="https://linkedin.com/in/tu-usuario">
                                 </div>
                                 <div class="contact-item" data-type="github">
                                     <i class="fab fa-github"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-github">https://github.com/tu-usuario</span>
+                                    <span class="contact-display" id="display-github">
+                                        {{ request.user.profile.github|default:"https://github.com/tu-usuario" }}
+                                    </span>
                                     <input type="url" class="contact-input" id="input-github"
-                                        placeholder="https://github.com/tu-usuario">
+                                        value="{{ request.user.profile.github|default:'' }}" placeholder="https://github.com/tu-usuario">
                                 </div>
                                 <div class="contact-item" data-type="email">
                                     <i class="fas fa-envelope"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-email">tucorreo@ejemplo.com</span>
+                                    <span class="contact-display" id="display-email">
+                                        {{ request.user.email|default:"tucorreo@ejemplo.com" }}
+                                    </span>
                                     <input type="email" class="contact-input" id="input-email"
-                                        placeholder="tucorreo@ejemplo.com">
+                                        value="{{ request.user.email|default:'' }}" placeholder="tucorreo@ejemplo.com">
                                 </div>
                             </div>
                         </div>
-
                         <!-- BOTONES EDITAR / GUARDAR / CANCELAR -->
                         <div class="card-actions">
                             <button class="btn-edit-card" id="btn-edit-card">
@@ -196,29 +172,28 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- PROYECTOS TOP -->
                     <section class="top-projects-section">
                         <h3 class="section-title">Proyectos Top <i class="fas fa-star" style="color:#f59e0b;"></i></h3>
                         <div class="project-grid">
-                            <div class="project-card">
-                                <div class="project-img-top"></div>
-                                <div class="project-info">
-                                    <h4>Proyecto Top 1</h4>
-                                    <p>Descripción del proyecto</p>
+                            {% for project in request.user.projects.all|slice:":2" %}
+                            <div class="project-card" style="position: relative;">
+                                <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
+                                {% if project.image %}
+                                    <div class="project-img-top" style="background-image: url('{{ project.image.url }}'); background-size: cover; background-position: center;"></div>
+                                {% else %}
+                                    <div class="project-img-top"></div>
+                                {% endif %}
+                                    <h4>{{ project.title }}</h4>
+                                    <p>{{ project.summary|default:"Sin descripción"|truncatechars:40 }}</p>
                                 </div>
                             </div>
-                            <div class="project-card">
-                                <div class="project-img-top"></div>
-                                <div class="project-info">
-                                    <h4>Proyecto Top 2</h4>
-                                    <p>Descripción del proyecto</p>
-                                </div>
-                            </div>
+                            {% empty %}
+                                <p style="color: var(--gray-400); font-size: 0.9rem;">Aún no tienes proyectos destacados.</p>
+                            {% endfor %}
                         </div>
                     </section>
                 </div>
-
                 <!-- ============================================ -->
                 <!-- VISTA: PROYECTOS -->
                 <!-- ============================================ -->
@@ -314,126 +289,48 @@
 
                     <div class="projects-grid" id="projects-grid">
                         
-                        <div class="project-card-full" data-name="Sistema de Reconocimiento Facial"
-                            data-date="2024-01-15" data-views="150" data-collaborators="3" data-theme="ia"
-                            data-tech="python,tensorflow">
-                            
-                            <a href="/projects/1/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
+                        {% for project in request.user.owned_projects.all %}
+                            <div class="project-card-full">
+                                
+                                <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
+                                
+                                <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
 
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">Sistema de Reconocimiento Facial</h4>
-                                <p class="project-card-desc">Aplicación de IA para reconocimiento facial en tiempo real
-                                    usando OpenCV y TensorFlow.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">Python</span>
-                                    <span class="tag-tech">TensorFlow</span>
-                                    <span class="tag-theme">IA</span>
+                                <div class="project-card-img">
+                                    {% if project.image %}
+                                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                                    {% else %}
+                                        <div class="project-card-img-placeholder"></div>
+                                    {% endif %}
                                 </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 150</span>
-                                    <span><i class="fas fa-users"></i> 3</span>
-                                    <span><i class="fas fa-calendar"></i> 15/01/2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="E-commerce React" data-date="2024-02-20"
-                            data-views="230" data-collaborators="5" data-theme="web" data-tech="javascript,react,node">
-                            
-                            <a href="/projects/2/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">E-commerce React</h4>
-                                <p class="project-card-desc">Tienda online completa con carrito de compras, pagos y
-                                    panel de administración.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">React</span>
-                                    <span class="tag-tech">Node.js</span>
-                                    <span class="tag-theme">Web</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 230</span>
-                                    <span><i class="fas fa-users"></i> 5</span>
-                                    <span><i class="fas fa-calendar"></i> 20/02/2024</span>
+                                
+                                <div class="project-card-body">
+                                    <h4 class="project-card-title">{{ project.title }}</h4>
+                                    <p class="project-card-desc">{{ project.summary|default:"Sin descripción breve."|truncatechars:80 }}</p>
+                                    
+                                    <div class="project-card-tags">
+                                        {% if project.tech_stack %}
+                                            <span class="tag-tech">{{ project.tech_stack }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="project-card-meta">
+                                        <span><i class="fas fa-eye"></i> 0</span>
+                                        <span><i class="fas fa-calendar"></i> {{ project.created_at|date:"d/m/Y" }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="API REST Django" data-date="2024-03-10"
-                            data-views="89" data-collaborators="2" data-theme="api" data-tech="python,django">
-                            
-                            <a href="/projects/3/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
+                        {% empty %}
+                            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                                <i class="fas fa-folder-open fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
+                                <h4 style="color: var(--gray-500);">Aún no has creado proyectos</h4>
+                                <p style="color: var(--gray-400);">¡Crea tu primer proyecto con el botón de arriba!</p>
                             </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">API REST Django</h4>
-                                <p class="project-card-desc">API RESTful completa con autenticación JWT, documentación
-                                    Swagger y tests automatizados.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">Python</span>
-                                    <span class="tag-tech">Django</span>
-                                    <span class="tag-theme">API</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 89</span>
-                                    <span><i class="fas fa-users"></i> 2</span>
-                                    <span><i class="fas fa-calendar"></i> 10/03/2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="App Móvil Fitness" data-date="2024-01-05"
-                            data-views="320" data-collaborators="4" data-theme="mobile" data-tech="javascript,react">
-                            
-                            <a href="/projects/4/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">App Móvil Fitness</h4>
-                                <p class="project-card-desc">Aplicación móvil para seguimiento de ejercicios, rutinas
-                                    personalizadas y estadísticas.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">React Native</span>
-                                    <span class="tag-theme">Móvil</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 320</span>
-                                    <span><i class="fas fa-users"></i> 4</span>
-                                    <span><i class="fas fa-calendar"></i> 05/01/2024</span>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
+                        
                     </div>
-
-                    <div class="no-results" id="no-results" style="display: none;">
-                        <i class="fas fa-search"></i>
-                        <h4>No se encontraron proyectos</h4>
-                        <p>No hay proyectos que coincidan con "<span id="search-term"></span>"</p>
-                        <p class="hint">Intenta con otros términos o limpia los filtros</p>
-                    </div>
-                </div>
 
             </section>
 
