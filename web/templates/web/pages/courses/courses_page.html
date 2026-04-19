@@ -4,56 +4,174 @@
 {% block title %}Cursos | UNI Open Source{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}">
+<link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
 <main class="domain-page">
     <section class="domain-header">
         <h1>Ruta de Aprendizaje</h1>
-        <p>Los mejores recursos gratuitos de la web seleccionados para nuestra comunidad.</p>
+        <p>Los mejores recursos gratuitos seleccionados para potenciar tu carrera en Ingeniería.</p>
     </section>
 
-    <section class="domain-grid">
-        {% for course in courses %}
-            <article class="domain-card">
-                
-                {% if course.image %}
-                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="course-card-img">
-                {% else %}
-                    <div class="course-card-img" style="display:flex; align-items:center; justify-content:center; background-color:#f1f5f9; color:#94a3b8; border-radius: 12px;">
-                        Sin imagen
+    <div class="catalog-container">
+        
+        <aside class="filters-sidebar">
+            <h3>Filtrar Recursos</h3>
+            
+            <div class="filter-group">
+                <label for="searchInput">Buscar por nombre del curso</label>
+                <input type="text" id="searchInput" placeholder="Ej. Python, React, SQL...">
+            </div>
+
+            <div class="filter-group">
+                <label for="categorySelect">Categoría Principal</label>
+                <select id="categorySelect">
+                    <option value="all">Todas las categorías</option>
+                    {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Nivel de Dificultad</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="Principiante" class="level-cb"> Principiante</label>
+                    <label><input type="checkbox" value="Intermedio" class="level-cb"> Intermedio</label>
+                    <label><input type="checkbox" value="Avanzado" class="level-cb"> Avanzado</label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Tecnologías (Tags)</label>
+                <div class="tag-container-box">
+                    {% for tag in tags %}
+                        <label style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" value="{{ tag.name|lower }}" class="tag-cb">
+                            <span style="margin-left: 8px;">{{ tag.name }}</span>
+                        </label>
+                    {% empty %}
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">No hay tags disponibles.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+        <section class="domain-grid" id="coursesGrid">
+            {% for course in courses %}
+                <article class="domain-card" 
+                         data-title="{{ course.title|lower }}" 
+                         data-category="{{ course.category.name|default:'General' }}" 
+                         data-level="{{ course.get_level_display }}"
+                         data-tags="{% for tag in course.tags.all %}{{ tag.name|lower }},{% endfor %}">
+                    
+                    {% if course.image %}
+                        <div class="course-img-wrapper">
+                            <img src="{{ course.image.url }}" alt="{{ course.title }}" class="course-card-img">
+                        </div>
+                    {% else %}
+                        <div class="course-img-wrapper empty-img">
+                            <span>&lt;/&gt;</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-content">
+                        
+                        {% if course.category %}
+                            <span class="category-label">{{ course.category.name }}</span>
+                        {% else %}
+                            <span class="category-label">General</span>
+                        {% endif %}
+
+                        <h2>{{ course.title }}</h2>
+                        
+                        <div class="course-badges">
+                            <span class="badge badge-level">{{ course.get_level_display }}</span>
+                            <span class="badge badge-type">{{ course.get_resource_type_display }}</span>
+                            {% if course.has_certification %}
+                                <span class="badge cert-badge">🏆 Certificado</span>
+                            {% endif %}
+                        </div>
+
+                        <p>{{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}</p>
+
+                        <div class="course-tags">
+                            {% for tag in course.tags.all %}
+                                <span class="tag-pill">#{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endif %}
 
-                <h2>{{ course.title }}</h2>
-                
-                <div class="course-badges">
-                    <span class="badge">{{ course.get_level_display }}</span>
-                    {% if course.has_certification %}
-                        <span class="badge cert-badge">🏆 Incluye Certificado</span>
-                    {% endif %}
+                    <div class="course-actions">
+                        {% if course.url %}
+                            <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange">Ir al recurso</a>
+                        {% endif %}
+                        <a href="{% url 'courses:detail' course.id %}" class="btn btn-dark">Detalles</a>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="domain-card-empty">
+                    <h2>No hay cursos registrados</h2>
+                    <p>El catálogo se actualizará pronto.</p>
                 </div>
-
-                <p>{{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}</p>
-
-                <div class="course-meta">
-                    <span><strong>Categoría:</strong> {{ course.category|default:'General' }}</span>
-                </div>
-
-                <div class="course-actions">
-                    {% if course.url %}
-                        <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange">Ir al curso oficial</a>
-                    {% endif %}
-                    <a href="{% url 'courses:detail' course.id %}" class="btn btn-dark">Ver detalles</a>
-                </div>
-            </article>
-        {% empty %}
-            <article class="domain-card domain-card-empty">
-                <h2>No hay cursos registrados</h2>
-                <p>El catálogo se actualizará pronto.</p>
-            </article>
-        {% endfor %}
-    </section>
+            {% endfor %}
+            
+            <div class="domain-card-empty" id="noResults" style="display: none; grid-column: 1 / -1;">
+                <h2>Sin coincidencias</h2>
+                <p>No encontramos cursos que coincidan con esos filtros. ¡Prueba otra combinación!</p>
+            </div>
+        </section>
+    </div>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('searchInput');
+        const categorySelect = document.getElementById('categorySelect');
+        const levelCheckboxes = document.querySelectorAll('.level-cb');
+        const tagCheckboxes = document.querySelectorAll('.tag-cb');
+        const courseCards = document.querySelectorAll('.domain-card');
+        const noResultsMsg = document.getElementById('noResults');
+
+        function filterCourses() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = categorySelect.value;
+            const selectedLevels = Array.from(levelCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            const selectedTags = Array.from(tagCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            
+            let visibleCount = 0;
+
+            courseCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                const category = card.getAttribute('data-category');
+                const level = card.getAttribute('data-level');
+                const cardTags = card.getAttribute('data-tags');
+
+                const matchesSearch = title.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+                const matchesLevel = selectedLevels.length === 0 || selectedLevels.some(l => level.includes(l));
+                const matchesTags = selectedTags.length === 0 || selectedTags.some(tag => cardTags.includes(tag));
+
+                if (matchesSearch && matchesCategory && matchesLevel && matchesTags) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0 && courseCards.length > 0) {
+                noResultsMsg.style.display = 'block';
+            } else {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
+        searchInput.addEventListener('input', filterCourses);
+        categorySelect.addEventListener('change', filterCourses);
+        levelCheckboxes.forEach(cb => cb.addEventListener('change', filterCourses));
+        tagCheckboxes.forEach(cb => cb.addEventListener('change', filterCourses));
+    });
+</script>
 {% endblock %}
