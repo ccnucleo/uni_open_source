@@ -92,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
             setTooltipState('checking', 'Comprobando...', '⏳');
 
             typingTimer = setTimeout(() => {
-                fetch(`/api/check-username/?username=${val}`)
+                // RUTA CORREGIDA AQUÍ
+                fetch(`/accounts/api/check-username/?username=${val}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.is_taken) {
@@ -161,7 +162,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch('/api/verify-code/', {
+            // RUTA CORREGIDA AQUÍ
+            fetch('/accounts/api/verify-code/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
                 body: JSON.stringify({ code: codigoIngresado })
@@ -231,9 +233,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 1000);
 
-            // Llamada real al backend
+            // RUTA CORREGIDA AQUÍ
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            fetch('/api/resend-code/', {
+            fetch('/accounts/api/resend-code/', {
                 method: 'POST',
                 headers: { 'X-CSRFToken': csrfToken }
             });
