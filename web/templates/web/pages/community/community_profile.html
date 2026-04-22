@@ -1,0 +1,173 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Perfil de {{ public_user.username }} - UNI Open Source{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'web/css/pages/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="profile-float-card">
+        <div class="profile-pic" id="profile-pic-container">
+            <img src="{% static 'web/img/avatar.jpg' %}" alt="{{ public_user.username }}" id="profile-avatar">
+        </div>
+        
+        <h2 class="full-name" id="profile-fullname">
+            {% if public_user.first_name %}
+                {{ public_user.first_name }}<br>{{ public_user.last_name }}
+            {% else %}
+                {{ public_user.username }}
+            {% endif %}
+        </h2>
+        <p class="username">@{{ public_user.username }}</p>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <strong id="stat-proyectos">{{ public_user.owned_projects.count|default:"0" }}</strong>
+                <span>Proyectos</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <strong>0</strong>
+                <span>Seguidores</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <strong>0</strong>
+                <span>Vistas</span>
+            </div>
+        </div>
+    </div>
+
+    <section class="content-panel">
+
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-desc">
+                <i class="fas fa-user"></i> Descripción
+            </button>
+            <button class="tab-btn" id="btn-proy">
+                <i class="fas fa-folder-open"></i> Proyectos
+            </button>
+        </div>
+
+        <div id="view-general">
+            <div class="card-info" id="card-descripcion">
+
+                <div class="info-section">
+                    <h3><span class="section-dot"></span>Sobre mí</h3>
+                    <div class="sobre-mi-container">
+                        <div class="sobre-mi-display">
+                            <span class="user-text">
+                                {{ public_user.profile.bio|default:"Este usuario aún no ha escrito una descripción." }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><span class="section-dot"></span>Intereses</h3>
+                    <div class="tags-container">
+                        {% if public_user.profile.intereses.all %}
+                            {% for interes in public_user.profile.intereses.all %}
+                                <div class="tag"><span class="tag-content">{{ interes.nombre }}</span></div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: var(--gray-400); font-size: 0.9rem;">Sin intereses definidos.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><span class="section-dot"></span>Tecnologías Principales</h3>
+                    <div class="tags-container">
+                        {% if public_user.profile.tecnologias.all %}
+                            {% for tech in public_user.profile.tecnologias.all %}
+                                <div class="tag"><span class="tag-content">{{ tech.nombre }}</span></div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: var(--gray-400); font-size: 0.9rem;">Sin tecnologías definidas.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><span class="section-dot"></span>Contacto</h3>
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <i class="fab fa-linkedin"></i>
+                            <span class="contact-display">
+                                {% if public_user.profile.linkedin %}
+                                    <a href="{{ public_user.profile.linkedin }}" target="_blank" style="color: inherit; text-decoration: none;">{{ public_user.profile.linkedin }}</a>
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-github"></i>
+                            <span class="contact-display">
+                                {% if public_user.profile.github %}
+                                    <a href="{{ public_user.profile.github }}" target="_blank" style="color: inherit; text-decoration: none;">{{ public_user.profile.github }}</a>
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span class="contact-display">
+                                <a href="mailto:{{ public_user.email }}" style="color: inherit; text-decoration: none;">{{ public_user.email }}</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-all-projects" style="display: none;">
+            <div class="projects-header">
+                <div class="projects-title-row">
+                    <div class="projects-title">
+                        <h3>Proyectos de {{ public_user.username }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="projects-grid">
+                {% for project in public_user.owned_projects.all %}
+                    <div class="project-card-full">
+                        <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
+                        
+                        <div class="project-card-img">
+                            {% if project.image %}
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                            {% else %}
+                                <div class="project-card-img-placeholder"></div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="project-card-body">
+                            <h4 class="project-card-title">{{ project.title }}</h4>
+                            <p class="project-card-desc">{{ project.summary|default:"Sin descripción breve."|truncatechars:80 }}</p>
+                            <div class="project-card-tags">
+                                {% if project.tech_stack %}
+                                    <span class="tag-tech">{{ project.tech_stack }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <i class="fas fa-folder-open fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
+                        <h4 style="color: var(--gray-500);">Este usuario aún no tiene proyectos públicos.</h4>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'web/js/community.js' %}"></script>
+{% endblock %}

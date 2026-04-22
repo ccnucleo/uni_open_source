@@ -11,9 +11,10 @@ urlpatterns = [
     path('', accounts_views.index_view, name='index'),
     
     # Conexiones limpias a las sub-aplicaciones
-    path('accounts/', include('accounts.urls')), # Django tomará el namespace directo del archivo
+    path('accounts/', include('accounts.urls')),
     path('projects/', include('projects.urls')),
     path('courses/', include('courses.urls')),
+    path('comunidad/', include('community.urls')),
 ]
 
 # ==============================================================================

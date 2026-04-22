@@ -1,0 +1,329 @@
+/* ============================================
+   LAYOUT PRINCIPAL
+============================================ */
+.community-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 20px 0;
+    width: 100%; /* CLAVE 1: Obliga al contenedor a usar toda la pantalla */
+}
+
+/* Sidebar de Filtros (Izquierda) */
+.community-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    position: sticky;
+    top: 20px;
+}
+
+.filter-title {
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.filter-group { margin-bottom: 24px; }
+
+.filter-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 12px;
+    color: #FF6B2B;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 12px 12px 12px 35px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+    background-color: #f8fafc;
+}
+
+.search-input-wrapper input:focus {
+    border-color: #FF6B2B;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 107, 43, 0.1);
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL (Derecha)
+============================================ */
+.community-main {
+    flex: 1;
+    min-width: 0;
+    width: 100%; /* CLAVE 2: Asegura que llene el espacio horizontal sobrante */
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+}
+
+/* Banner Superior */
+.community-header-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+    border-radius: 16px;
+    padding: 30px 40px;
+    margin-bottom: 20px;
+    border-left: 6px solid #FF6B2B;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    width: 100%;
+}
+
+.community-header-banner h1 { 
+    font-size: 28px; 
+    color: #0f172a;
+    font-weight: 800; 
+    margin-bottom: 8px; 
+    font-family: 'Syne', sans-serif;
+}
+
+.community-header-banner p { 
+    font-size: 15px; 
+    color: #64748b;
+}
+
+/* ============================================
+   GRID DE TARJETAS (Comportamiento E-commerce)
+============================================ */
+.community-grid {
+    display: grid;
+    /* CLAVE 3: auto-fill crea tantas columnas como quepan. minmax(240px) las hace flexibles */
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+    width: 100%;
+    flex: 1;
+    align-content: start; /* Empuja el grid hacia arriba */
+    align-items: start;   /* CLAVE 4: Evita que las tarjetas se estiren verticalmente */
+}
+
+.dev-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    position: relative;
+    width: 100%;
+}
+
+.dev-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(255, 107, 43, 0.15);
+    border-color: #FF6B2B;
+}
+
+.dev-card-header {
+    height: 70px;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+}
+
+.dev-card-body { 
+    padding: 0 20px 24px; 
+    position: relative;
+}
+
+.dev-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin-top: -40px;
+    margin-bottom: 12px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dev-card-body h3 { 
+    font-size: 17px; 
+    color: #1e293b; 
+    margin-bottom: 4px; 
+    font-weight: 700; 
+}
+
+.dev-username { 
+    color: #FF6B2B; 
+    font-size: 13px; 
+    font-weight: 600; 
+    margin-bottom: 16px; 
+}
+
+.dev-tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    min-height: 24px; 
+}
+
+.mini-tag {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+}
+
+.dev-stats {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.btn-view-dev {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #ffffff;
+    color: #FF6B2B;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 2px solid #FF6B2B;
+    transition: all 0.3s;
+}
+
+.btn-view-dev:hover {
+    background: #FF6B2B;
+    color: white;
+}
+
+.no-devs { 
+    text-align: center; 
+    grid-column: 1/-1; 
+    color: #94a3b8; 
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 2px dashed #e2e8f0;
+}
+
+.no-devs p {
+    margin-top: 8px;
+    color: #94a3b8;
+}
+
+/* ============================================
+   PAGINACIÓN Y CONTROLES SUPERIORES
+============================================ */
+.community-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 5px;
+    width: 100%;
+}
+
+.results-count {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.items-per-page select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    background: white;
+    cursor: pointer;
+}
+
+.items-per-page select:focus {
+    border-color: #FF6B2B;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    width: 100%;
+}
+
+.btn-page {
+    background: white;
+    border: 1px solid #cbd5e1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #FF6B2B;
+    color: #FF6B2B;
+}
+
+.btn-page:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f1f5f9;
+}
+
+.page-info {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .community-wrapper { flex-direction: column; }
+    .community-sidebar { width: 100%; position: relative; top: 0; }
+}

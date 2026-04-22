@@ -16,7 +16,10 @@
             <div class="sidebar-icon"><i class="fas fa-graduation-cap"></i></div>
             <span>Courses</span>
         </a>
-        <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-users"></i></div><span>Comunidad</span></a>
+        <a href="{% url 'community:list' %}" class="sidebar-link{% if active_section == 'community' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+            <span>Comunidad</span>
+        </a>
     </nav>
 
     <div class="sidebar-bottom">
