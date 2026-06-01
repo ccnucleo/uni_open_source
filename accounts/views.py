@@ -209,7 +209,9 @@ def reset_password_request_view(request):
             token = default_token_generator.make_token(user)
 
             dominio = request.get_host()
-            link = f"http://{dominio}/reset/{uid}/{token}/"
+            
+            # EL ERROR ESTABA AQUÍ: Se agregó /accounts/ a la ruta
+            link = f"http://{dominio}/accounts/reset/{uid}/{token}/"
 
             try:
                 send_mail(
