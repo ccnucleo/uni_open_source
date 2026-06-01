@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import re
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -14,8 +15,10 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
+from django.core.validators import URLValidator, validate_email
+from django.core.exceptions import ValidationError
 
-from .models import UnverifiedUser
+from .models import UnverifiedUser, Profile, Technology, Interest
 
 
 @never_cache
@@ -114,7 +117,7 @@ def register_view(request):
             {
                 "show_modal": True,
                 "email_digitado": email,
-                "username_digitado": username, # Guardamos el nombre para que no se borre
+                "username_digitado": username,
             },
         )
 
@@ -248,3 +251,99 @@ def reset_password_confirm_view(request, uidb64, token):
 
     messages.error(request, "El enlace de recuperación es inválido o ha expirado.")
     return redirect("accounts:login")
+
+
+def format_url(url):
+    if url and not url.startswith(('http://', 'https://')):
+        return 'https://' + url
+    return url
+
+@login_required
+def update_profile_api(request):
+    if request.method == 'POST':
+        try:
+            user = request.user
+            profile, _ = Profile.objects.get_or_create(user=user)
+            update_type = request.POST.get('update_type')
+            
+            if update_type == 'basic_info':
+                fname = request.POST.get('first_name', user.first_name)
+                user.first_name = fname.strip() if fname else ""
+                
+                lname = request.POST.get('last_name', user.last_name)
+                user.last_name = lname.strip() if lname else ""
+                
+                new_username = request.POST.get('username', '').strip()
+                if new_username and new_username != user.username:
+                    if User.objects.filter(username__iexact=new_username).exists():
+                        return JsonResponse({'success': False, 'error': 'El nombre de usuario ya está ocupado.'})
+                    user.username = new_username
+                
+                if 'avatar' in request.FILES:
+                    profile.avatar = request.FILES['avatar']
+                elif request.POST.get('remove_avatar') == 'true':
+                    if profile.avatar:
+                        profile.avatar.delete(save=False)
+                    profile.avatar = None
+                    
+                user.save()
+                profile.save()
+                return JsonResponse({'success': True, 'message': 'Información básica actualizada correctamente.'})
+                
+            elif update_type == 'detailed_info':
+                bio_val = request.POST.get('bio', profile.bio)
+                if bio_val:
+                    bio_val = bio_val.strip()
+                    # REGEX: Limita los abusos de Enter a máximo 2 saltos consecutivos
+                    bio_val = re.sub(r'\n{3,}', '\n\n', bio_val)
+                profile.bio = bio_val if bio_val else ""
+                
+                val_url = URLValidator()
+                
+                linkedin_val = request.POST.get('linkedin', '').strip()
+                linkedin = format_url(linkedin_val) if linkedin_val else ""
+                
+                github_val = request.POST.get('github', '').strip()
+                github = format_url(github_val) if github_val else ""
+                
+                contact_email = request.POST.get('contact_email', '').strip()
+                
+                try:
+                    if linkedin: val_url(linkedin)
+                    profile.linkedin = linkedin
+                except ValidationError:
+                    return JsonResponse({'success': False, 'error': 'La URL de LinkedIn no es válida.'})
+                    
+                try:
+                    if github: val_url(github)
+                    profile.github = github
+                except ValidationError:
+                    return JsonResponse({'success': False, 'error': 'La URL de GitHub no es válida.'})
+                    
+                try:
+                    if contact_email: validate_email(contact_email)
+                    profile.contact_email = contact_email
+                except ValidationError:
+                    return JsonResponse({'success': False, 'error': 'El correo de contacto no es válido.'})
+                
+                tech_str = request.POST.get('tecnologias', '')
+                profile.tecnologias.clear()
+                if tech_str:
+                    for name in [t.strip() for t in tech_str.split(',') if t.strip()]:
+                        obj, _ = Technology.objects.get_or_create(nombre=name)
+                        profile.tecnologias.add(obj)
+                        
+                int_str = request.POST.get('intereses', '')
+                profile.intereses.clear()
+                if int_str:
+                    for name in [i.strip() for i in int_str.split(',') if i.strip()]:
+                        obj, _ = Interest.objects.get_or_create(nombre=name)
+                        profile.intereses.add(obj)
+                        
+                profile.save()
+                return JsonResponse({'success': True, 'message': 'Perfil actualizado con éxito.'})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Error del servidor: {str(e)}'})
+            
+    return JsonResponse({'success': False, 'error': 'Método no admitido.'})

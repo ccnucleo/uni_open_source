@@ -19,4 +19,5 @@ urlpatterns = [
     path("api/check-username/", views.check_username_api, name="check_username_api"),
     path("api/verify-code/", views.verify_code_api, name="verify_code_api"),
     path("api/resend-code/", views.resend_code_api, name="resend_code_api"),
+    path("api/update-profile/", views.update_profile_api, name="update_profile_api"), # NUEVA RUTA AÑADIDA
 ]
