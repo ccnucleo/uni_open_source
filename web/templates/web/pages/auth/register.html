@@ -30,7 +30,7 @@
                 {% csrf_token %}
                 <div class="input-group" style="position: relative;">
                     <label for="username">Nombre</label>
-                    <input type="text" id="username" name="username" placeholder="lucy_uni" required autocomplete="off">
+                    <input type="text" id="username" name="username" placeholder="lucy_uni" required autocomplete="off" value="{{ username_digitado|default:'' }}">
                     
                     <div id="username-status" class="username-tooltip">
                         <span class="status-icon">✍️</span>
@@ -40,7 +40,7 @@
                 
                 <div class="input-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="correo@uni.edu.pe" required>
+                    <input type="email" id="email" name="email" placeholder="correo@uni.edu.pe" required value="{{ email_digitado|default:'' }}">
                 </div>
 
                 <div class="input-group input-group-password">
@@ -77,6 +77,8 @@
                     </div>
                     <h2>Verifica tu correo</h2>
                     <p>Hemos enviado un código de 6 dígitos a <br><strong>{{ email_digitado|default:"tu correo" }}</strong>.</p>
+                    
+                    <input type="hidden" id="hidden-verification-email" value="{{ email_digitado|default:'' }}">
                     
                     <div class="code-inputs" id="code-inputs-container">
                         <input type="text" maxlength="1" class="code-box" autocomplete="off">
