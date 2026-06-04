@@ -23,7 +23,7 @@
     </nav>
 
     <div class="sidebar-bottom">
-        <a href="#" class="sidebar-link sidebar-link-sm">
+        <a href="{% url 'ajustes' %}" class="sidebar-link sidebar-link-sm{% if active_section == 'settings' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-cog"></i></div><span>Ajustes</span>
         </a>
     </div>

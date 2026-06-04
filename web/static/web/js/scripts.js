@@ -221,9 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const btnOriginalText = btnSaveModal.innerHTML;
-            btnSaveModal.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-            btnSaveModal.disabled = true;
+            btnSaveModal.classList.add('btn-loading');
 
             const formData = new FormData();
             formData.append('update_type', 'basic_info');
@@ -275,8 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast('Error de conexión', 'error');
             })
             .finally(() => {
-                btnSaveModal.innerHTML = btnOriginalText;
-                btnSaveModal.disabled = false;
+                btnSaveModal.classList.remove('btn-loading');
             });
         });
     }
@@ -394,9 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // JS Regex: Limpiamos los excesos de Enters antes de mandar a Django
             sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n'); 
 
-            const btnOriginalText = btnSaveCard.innerHTML;
-            btnSaveCard.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-            btnSaveCard.disabled = true;
+            btnSaveCard.classList.add('btn-loading');
             
             const formData = new FormData();
             formData.append('update_type', 'detailed_info');
@@ -483,8 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast('Error interno del servidor. Intenta de nuevo.', 'error');
             })
             .finally(() => {
-                btnSaveCard.innerHTML = btnOriginalText;
-                btnSaveCard.disabled = false;
+                btnSaveCard.classList.remove('btn-loading');
             });
         });
     }

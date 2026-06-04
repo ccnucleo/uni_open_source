@@ -4,8 +4,9 @@ import random
 import re
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -349,3 +350,37 @@ def update_profile_api(request):
             return JsonResponse({'success': False, 'error': f'Error del servidor: {str(e)}'})
             
     return JsonResponse({'success': False, 'error': 'Método no admitido.'})
+
+
+@login_required(login_url="accounts:login")
+@never_cache
+def ajustes_view(request):
+    password_form = PasswordChangeForm(request.user)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "change_password":
+            password_form = PasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Tu contraseña ha sido actualizada con éxito.")
+                return redirect("ajustes")
+            else:
+                messages.error(request, "Por favor corrige los errores en el formulario de contraseña.")
+        elif action == "delete_account":
+            user = request.user
+            logout(request)
+            user.delete()
+            messages.success(request, "Tu cuenta y portafolio asociado han sido eliminados de forma permanente.")
+            return redirect("index")
+
+    return render(
+        request,
+        "web/pages/profile/ajustes.html",
+        {
+            "active_section": "settings",
+            "page_title": "Ajustes",
+            "password_form": password_form,
+        },
+    )

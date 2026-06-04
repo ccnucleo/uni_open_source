@@ -12,6 +12,35 @@
     <link rel="stylesheet" href="{% static 'web/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'web/css/themes.css' %}">
     <link rel="stylesheet" href="{% static 'web/css/layouts.css' %}">
+    
+    <!-- Prevención de FOUC e Inyección de Tema por Defecto -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme');
+            if (theme === null) {
+                localStorage.setItem('theme', 'light');
+                theme = 'light';
+            }
+            var themeClass = 'theme-' + theme;
+            
+            // MutationObserver para inyectar la clase del tema en el body de inmediato
+            var observer = new MutationObserver(function(mutations) {
+                if (document.body) {
+                    document.body.classList.add(themeClass);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+            
+            // Respaldo en DOMContentLoaded por si acaso
+            document.addEventListener('DOMContentLoaded', function() {
+                if (document.body && !document.body.classList.contains(themeClass)) {
+                    document.body.classList.add(themeClass);
+                }
+            });
+        })();
+    </script>
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -27,6 +56,7 @@
 
     <script src="{% static 'web/js/themes.js' %}"></script>
     <script src="{% static 'web/js/sidebar-collapse.js' %}"></script>
+    <script src="{% static 'web/js/loading.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

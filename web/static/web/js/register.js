@@ -151,9 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            this.textContent = 'Verificando...';
-            this.style.opacity = '0.7';
-            this.disabled = true;
+            btnVerifyCode.classList.add('btn-loading');
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             // USAMOS EL INPUT OCULTO SEGURO
@@ -170,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    btnVerifyCode.classList.remove('btn-loading');
                     stepVerification.style.display = 'none';
                     stepSuccess.style.display = 'block';
                 } else {
@@ -181,9 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function triggerCodeError(mensaje) {
-        btnVerifyCode.textContent = 'Verificar y Entrar';
-        btnVerifyCode.style.opacity = '1';
-        btnVerifyCode.disabled = false;
+        btnVerifyCode.classList.remove('btn-loading');
 
         codeErrorMsg.textContent = mensaje;
         codeErrorMsg.style.display = 'block';

@@ -10,6 +10,9 @@ urlpatterns = [
     # La página de inicio (raíz de la web)
     path('', accounts_views.index_view, name='index'),
     
+    # Centro de Control (Ajustes)
+    path('ajustes/', accounts_views.ajustes_view, name='ajustes'),
+    
     # Conexiones limpias a las sub-aplicaciones
     path('accounts/', include('accounts.urls')),
     path('projects/', include('projects.urls')),
