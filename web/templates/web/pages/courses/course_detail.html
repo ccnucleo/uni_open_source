@@ -8,41 +8,64 @@
 {% endblock %}
 
 {% block content %}
-<main class="domain-page">
-    
-    <div style="margin-bottom: 2rem;">
-        <a href="{% url 'courses:list' %}" style="color: #ea580c; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px;">
-            <span>←</span> Volver al catálogo de cursos
+<main class="domain-page" style="max-width: 850px;"> <div style="margin-bottom: 2rem;">
+        <a href="{% url 'courses:list' %}" style="color: var(--primary-orange); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">&larr;</span> Volver al catálogo
         </a>
     </div>
-    <section class="domain-header">
-        <h1>{{ course.title }}</h1>
-        <div class="course-badges" style="margin-top: 15px;">
-            <span class="badge">{{ course.get_level_display }}</span>
-            <span class="badge">{{ course.get_resource_type_display }}</span>
+
+    <section class="domain-header" style="text-align: left; margin-bottom: 2rem;">
+        <div class="course-tags" style="margin-bottom: 1rem;">
+            {% if course.category %}
+                <span class="tag-pill" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 20px;">{{ course.category.name }}</span>
+            {% endif %}
+        </div>
+        
+        <h1 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem;">{{ course.title }}</h1>
+        
+        <div class="course-badges" style="gap: 0.8rem;">
+            <span class="badge badge-level" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">{{ course.get_level_display }}</span>
+            <span class="badge badge-type" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">{{ course.get_resource_type_display }}</span>
             {% if course.has_certification %}
-                <span class="badge cert-badge">🏆 Certificado Disponible</span>
+                <span class="badge cert-badge" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">🏆 Certificado Disponible</span>
             {% endif %}
         </div>
     </section>
 
-    <section class="domain-content" style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-        <h3>Sobre este curso</h3>
-        <p style="margin-top: 15px; line-height: 1.6; color: #334155;">
-            {{ course.description|default:course.short_description }}
-        </p>
+    <section class="domain-content" style="background: var(--bg-card); padding: 2.5rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         
-        <p style="margin-top: 20px; font-weight: bold; color: #64748b;">
-            Categoría: {{ course.category }}
-        </p>
+        {% if course.image %}
+            <img src="{{ course.image.url }}" alt="{{ course.title }}" style="width: 100%; border-radius: 8px; margin-bottom: 2.5rem; object-fit: cover; max-height: 400px;">
+        {% endif %}
 
-        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+        <h3 style="font-size: 1.5rem; color: var(--dark-slate); margin-bottom: 1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;">Acerca de este recurso</h3>
+        
+        <div style="line-height: 1.8; color: var(--text-muted); font-size: 1.05rem; white-space: pre-line;">
+            {{ course.description|default:course.short_description }}
+        </div>
+
+        {% if course.tags.all %}
+        <div style="margin-top: 2rem;">
+            <h4 style="color: var(--dark-slate); margin-bottom: 0.8rem;">Tecnologías clave:</h4>
+            <div class="course-tags">
+                {% for tag in course.tags.all %}
+                    <span class="tag-pill" style="font-size: 0.9rem;">#{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 3rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <strong style="display: block; color: var(--dark-slate); font-size: 1.1rem;">¿Listo para empezar?</strong>
+                <span style="color: var(--text-muted); font-size: 0.95rem;">Accede al contenido oficial de forma gratuita.</span>
+            </div>
             {% if course.url %}
-                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn-orange" style="font-size: 1.1rem; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">
-                    ▶️ Iniciar Curso en la Plataforma Oficial
+                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                    Ir al recurso oficial &nearr;
                 </a>
             {% else %}
-                <p>El enlace a este curso no está disponible en este momento.</p>
+                <p style="color: #ef4444; font-weight: 500;">Enlace no disponible por el momento.</p>
             {% endif %}
         </div>
     </section>

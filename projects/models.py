@@ -1,25 +1,52 @@
 from django.conf import settings
 from django.db import models
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    def __str__(self):
+        return self.name
 
 class Project(models.Model):
-	title = models.CharField(max_length=120)
-	summary = models.CharField(max_length=255, blank=True)
-	description = models.TextField(blank=True)
-	tech_stack = models.CharField(max_length=120, blank=True)
-	repository_url = models.URLField(blank=True)
-	demo_url = models.URLField(blank=True)
-	owner = models.ForeignKey(
-		settings.AUTH_USER_MODEL,
-		on_delete=models.CASCADE,
-		related_name="owned_projects",
-	)
-	is_public = models.BooleanField(default=True)
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
+    THEME_CHOICES = [
+        ("web", "Desarrollo Web"),
+        ("mobile", "Apps Móviles"),
+        ("ia", "IA / Machine Learning"),
+        ("data", "Data Science"),
+        ("iot", "IoT"),
+        ("games", "Videojuegos"),
+        ("security", "Seguridad"),
+        ("api", "APIs / Backend"),
+        ("devops", "DevOps"),
+        ("research", "Investigación"),
+    ]
 
-	class Meta:
-		ordering = ["-created_at"]
+    title = models.CharField(max_length=120)
+    summary = models.CharField(max_length=255, verbose_name="Descripción Breve (Hero)")
+    
+    paragraph_1 = models.TextField(blank=True, verbose_name="Sección 1: Contexto/Problema")
+    paragraph_2 = models.TextField(blank=True, verbose_name="Sección 2: Funcionalidades")
+    paragraph_3 = models.TextField(blank=True, verbose_name="Sección 3: Detalles Técnicos")
 
-	def __str__(self):
-		return self.title
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default="web")
+    main_tech = models.CharField(max_length=50, verbose_name="Tecnología Principal")
+    tags = models.ManyToManyField(Tag, blank=True, related_name="projects")
+
+    image = models.ImageField(upload_to="projects/covers/", blank=True, null=True)
+    repository_url = models.URLField(blank=True)
+    version = models.CharField(max_length=20, default="v1.0.0")
+    size = models.CharField(max_length=20, blank=True)
+    dependencies = models.TextField(blank=True)
+    
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_projects")
+    collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="collaborated_projects", blank=True)
+    is_public = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+class ProjectImage(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="gallery")
+    image = models.ImageField(upload_to="projects/gallery/")

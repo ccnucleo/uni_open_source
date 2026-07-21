@@ -50,13 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         passwordInput.addEventListener('input', () => {
             const val = passwordInput.value;
-            // Longitud >= 8
             if (val.length >= 8) { reqLength.classList.add('valid'); reqLength.querySelector('span').innerText = '✔'; } 
             else { reqLength.classList.remove('valid'); reqLength.querySelector('span').innerText = '⬤'; }
-            // Número
+            
             if (/\d/.test(val)) { reqNumber.classList.add('valid'); reqNumber.querySelector('span').innerText = '✔'; } 
             else { reqNumber.classList.remove('valid'); reqNumber.querySelector('span').innerText = '⬤'; }
-            // Mayúscula
+            
             if (/[A-Z]/.test(val)) { reqUpper.classList.add('valid'); reqUpper.querySelector('span').innerText = '✔'; } 
             else { reqUpper.classList.remove('valid'); reqUpper.querySelector('span').innerText = '⬤'; }
         });
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTooltipState('checking', 'Comprobando...', '⏳');
 
             typingTimer = setTimeout(() => {
-                fetch(`/api/check-username/?username=${val}`)
+                fetch(`/accounts/api/check-username/?username=${val}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.is_taken) {
@@ -122,11 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const codeInputsContainer = document.getElementById('code-inputs-container');
     const codeErrorMsg = document.getElementById('code-error-msg');
 
-    // Lógica de salto entre casillas
     if (codeBoxes.length > 0) {
         codeBoxes.forEach((box, index) => {
             box.addEventListener('input', function() {
-                // Quitar estilos de error al escribir de nuevo
                 codeErrorMsg.style.display = 'none';
                 codeBoxes.forEach(b => b.classList.remove('error'));
 
@@ -144,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Enviar el código al backend
     if (btnVerifyCode && stepVerification && stepSuccess) {
         btnVerifyCode.addEventListener('click', function() {
             let codigoIngresado = '';
@@ -155,35 +151,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            this.textContent = 'Verificando...';
-            this.style.opacity = '0.7';
-            this.disabled = true;
+            btnVerifyCode.classList.add('btn-loading');
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            // USAMOS EL INPUT OCULTO SEGURO
+            const emailValue = document.getElementById('hidden-verification-email').value;
 
-            fetch('/api/verify-code/', {
+            fetch('/accounts/api/verify-code/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                body: JSON.stringify({ code: codigoIngresado })
+                body: JSON.stringify({ 
+                    code: codigoIngresado,
+                    email: emailValue
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    btnVerifyCode.classList.remove('btn-loading');
                     stepVerification.style.display = 'none';
                     stepSuccess.style.display = 'block';
                 } else {
-                    triggerCodeError('Código incorrecto, ingrese el código de nuevo');
+                    triggerCodeError(data.error || 'Código incorrecto, ingrese el código de nuevo');
                 }
             })
             .catch(() => triggerCodeError('Error de conexión con el servidor'));
         });
     }
 
-    // Función para activar el error visual interactivo
     function triggerCodeError(mensaje) {
-        btnVerifyCode.textContent = 'Verificar y Entrar';
-        btnVerifyCode.style.opacity = '1';
-        btnVerifyCode.disabled = false;
+        btnVerifyCode.classList.remove('btn-loading');
 
         codeErrorMsg.textContent = mensaje;
         codeErrorMsg.style.display = 'block';
@@ -213,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             if (isCooldown) return;
 
-            // Cooldown visual
             isCooldown = true;
             resendLink.style.display = 'none';
             resendTimer.style.display = 'inline';
@@ -231,11 +227,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 1000);
 
-            // Llamada real al backend
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            fetch('/api/resend-code/', {
+            // USAMOS EL INPUT OCULTO SEGURO
+            const emailValue = document.getElementById('hidden-verification-email').value;
+
+            fetch('/accounts/api/resend-code/', {
                 method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken }
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({ email: emailValue })
             });
         });
     }

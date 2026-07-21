@@ -2,20 +2,23 @@ import json
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
-from .models import Course
+from .models import Course, Category, Tag
 
+
+from django.shortcuts import render
+from .models import Course, Category  # <-- Asegúrate de importar Category
 
 def courses_page(request):
-	courses = Course.objects.select_related("owner").all()[:24]
-	return render(
-		request,
-		"web/pages/courses/courses_page.html",
-		{
-			"courses": courses,
-			"active_section": "courses",
-			"page_title": "Academy",
-		},
-	)
+    courses = Course.objects.all()
+    categories = Category.objects.all().order_by('name')
+    tags = Tag.objects.all().order_by('name') # <-- Traemos todas las etiquetas ordenadas
+    
+    context = {
+        'courses': courses,
+        'categories': categories,
+        'tags': tags,  # <-- Las enviamos al HTML
+    }
+    return render(request, 'web/pages/courses/courses_page.html', context)
 
 
 def course_detail_page(request, course_id):

@@ -1,6 +1,25 @@
 from django.conf import settings
 from django.db import models
 
+class Category(models.Model):
+    name = models.CharField(max_length=80, verbose_name="Nombre de la Categoría")
+    
+    class Meta:
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías"
+
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Etiqueta (Tecnología)")
+
+    class Meta:
+        verbose_name = "Etiqueta"
+        verbose_name_plural = "Etiquetas"
+
+    def __str__(self):
+        return self.name
 
 class Course(models.Model):
     BEGINNER = "beginner"
@@ -15,13 +34,12 @@ class Course(models.Model):
         ("all", "Todos los niveles"),
     ]
 
-    # Nuevas opciones para saber de qué tipo de recurso se trata
     YOUTUBE = "youtube"
     PLATFORM = "platform"
     DOCS = "docs"
     RESOURCE_CHOICES = [
         (YOUTUBE, "Lista de YouTube"),
-        (PLATFORM, "Plataforma Web (Coursera, Udemy, etc)"),
+        (PLATFORM, "Plataforma Web"),
         (DOCS, "Documentación / Lectura"),
     ]
 
@@ -29,19 +47,22 @@ class Course(models.Model):
     short_description = models.CharField(max_length=255, blank=True, verbose_name="Descripción Corta")
     description = models.TextField(blank=True, verbose_name="Descripción Detallada")
     
-    # Podrías crear un modelo Category separado después, pero por ahora lo dejamos como texto 
-    # para que sea más fácil empezar (Ej: "Python", "Bases de Datos", "Git")
-    category = models.CharField(max_length=80, blank=True, verbose_name="Categoría Temática")
+    # RELACIONES MEJORADAS PARA FILTROS
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        verbose_name="Categoría Temática"
+    )
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name="Tecnologías")
     
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default=BEGINNER, verbose_name="Nivel")
-    
-    
     url = models.URLField(max_length=500, blank=True, verbose_name="Enlace al curso gratuito")
     image = models.ImageField(upload_to="courses/thumbnails/", blank=True, null=True, verbose_name="Imagen del curso")
     resource_type = models.CharField(max_length=20, choices=RESOURCE_CHOICES, default=YOUTUBE, verbose_name="Tipo de Recurso")
     has_certification = models.BooleanField(default=False, verbose_name="¿Incluye Certificado?")
     
-
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -57,4 +78,7 @@ class Course(models.Model):
         verbose_name_plural = "Cursos"
 
     def __str__(self):
-        return f"{self.title} ({self.category})"
+        # Forma más segura de manejar las categorías vacías
+        if self.category:
+            return f"{self.title} ({self.category.name})"
+        return f"{self.title} (Sin categoría)"

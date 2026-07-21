@@ -8,438 +8,311 @@
 {% endblock %}
 
 {% block content %}
+    <form style="display:none;">{% csrf_token %}</form>
 
-            <!-- TARJETA PERFIL (flotante sobre el contenido) -->
-            <div class="profile-float-card">
-                <div class="profile-pic" id="profile-pic-container">
-                    <img src="{% static 'web/img/avatar.jpg' %}" alt="Usuario" id="profile-avatar">
-                    <div class="photo-overlay">
-                        <i class="fas fa-camera"></i>
-                        <span>Cambiar</span>
+    <div class="profile-float-card">
+        <div class="profile-pic" id="profile-pic-container">
+            <img src="{% if request.user.profile.avatar %}{{ request.user.profile.avatar.url }}{% else %}{% static 'web/img/avatar.jpg' %}{% endif %}" alt="Usuario" id="profile-avatar">
+            <div class="photo-overlay">
+                <i class="fas fa-camera"></i>
+                <span>Cambiar</span>
+            </div>
+        </div>
+        
+        <h2 class="full-name" id="profile-fullname" data-nombre="{{ request.user.first_name|default:'' }}" data-apellido="{{ request.user.last_name|default:'' }}">
+            {% if request.user.first_name %}
+                {{ request.user.first_name }}<br>{{ request.user.last_name }}
+            {% else %}
+                {{ request.user.username }}
+            {% endif %}
+        </h2>
+        <p class="username">@{{ request.user.username }}</p>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <strong id="stat-proyectos">{{ request.user.owned_projects.count|default:"0" }}</strong>
+                <span>Proyectos</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <strong>0</strong>
+                <span>Seguidores</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <strong>0</strong>
+                <span>Vistas</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-edit" id="btn-edit-profile"><i class="fas fa-pencil-alt"></i> Editar</button>
+        </div>
+    </div>
+
+    <section class="content-panel">
+
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-desc">
+                <i class="fas fa-user"></i> Descripción
+            </button>
+            <button class="tab-btn" id="btn-proy">
+                <i class="fas fa-folder-open"></i> Proyectos
+            </button>
+        </div>
+
+        <div id="view-general">
+            <div class="card-info" id="card-descripcion">
+
+                <div class="info-section" id="section-sobre-mi">
+                    <h3><span class="section-dot"></span>Sobre mí</h3>
+                    <div class="sobre-mi-container">
+                        <div class="sobre-mi-display" id="display-sobre-mi">
+                            {% if request.user.profile.bio %}
+                                <!-- CORRECCIÓN: max-height, overflow hidden y transición lista para el Leer Más -->
+                                <div class="user-text" style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">{{ request.user.profile.bio }}</div>
+                            {% else %}
+                                <div class="placeholder-text">Aquí va tu descripción detallada</div>
+                            {% endif %}
+                        </div>
+                        <div class="sobre-mi-edit" id="edit-sobre-mi">
+                            <!-- CORRECCIÓN: Tope máximo del textarea -->
+                            <textarea id="textarea-sobre-mi" maxlength="200" placeholder="Aquí va tu descripción detallada" style="width: 100%; min-height: 80px; max-height: 180px; overflow-y: auto; resize: none; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; line-height: 1.5; font-family: inherit;">{{ request.user.profile.bio|default:"" }}</textarea>
+                            <span class="char-counter" id="counter-sobre-mi">0/200</span>
+                        </div>
                     </div>
                 </div>
-                <h2 class="full-name" id="profile-fullname">Nombre y<br>Apellidos</h2>
-                <p class="username">@username</p>
 
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <strong id="stat-proyectos">4</strong>
-                        <span>Proyectos</span>
-                    </div>
-                    <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <strong>100</strong>
-                        <span>Seguidores</span>
-                    </div>
-                    <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <strong>1K</strong>
-                        <span>Vistas</span>
+                <div class="info-section" id="section-intereses">
+                    <h3><span class="section-dot"></span>Intereses</h3>
+                    <div class="tags-container" id="tags-intereses">
+                        {% if request.user.profile.intereses.all %}
+                            {% for interes in request.user.profile.intereses.all %}
+                            <div class="tag" data-placeholder="{{ interes.nombre }}" data-maxlength="25">
+                                <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
+                                <span class="tag-content">{{ interes.nombre }}</span>
+                                <input type="text" class="tag-input" maxlength="25" value="{{ interes.nombre }}">
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="empty-msg" style="color: var(--gray-400); font-size: 0.9rem; width: 100%; font-style: italic;">Sin intereses definidos.</p>
+                        {% endif %}
+                        <button class="btn-add-tag" id="btn-add-interes" title="Añadir interés">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="action-buttons">
-                    <button class="btn-edit" id="btn-edit-profile"><i class="fas fa-pencil-alt"></i> Editar</button>
-                    <button class="btn-follow"><i class="fas fa-user-plus"></i> Seguir</button>
-                    <button class="btn-msg"><i class="fas fa-envelope"></i> Mensaje</button>
+                <div class="info-section" id="section-tecnologias">
+                    <h3><span class="section-dot"></span>Tecnologías Principales</h3>
+                    <div class="tags-container" id="tags-tecnologias">
+                        {% if request.user.profile.tecnologias.all %}
+                            {% for tech in request.user.profile.tecnologias.all %}
+                            <div class="tag" data-placeholder="{{ tech.nombre }}" data-maxlength="20">
+                                <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
+                                <span class="tag-content">{{ tech.nombre }}</span>
+                                <input type="text" class="tag-input" maxlength="20" value="{{ tech.nombre }}">
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="empty-msg" style="color: var(--gray-400); font-size: 0.9rem; width: 100%; font-style: italic;">Sin tecnologías definidas.</p>
+                        {% endif %}
+                        <button class="btn-add-tag" id="btn-add-tecnologia" title="Añadir tecnología">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-section" id="section-contacto">
+                    <h3><span class="section-dot"></span>Contacto</h3>
+                    <div class="contact-list">
+                        <div class="contact-item" data-type="linkedin">
+                            <i class="fab fa-linkedin"></i>
+                            <span class="contact-display" id="display-linkedin">
+                                {{ request.user.profile.linkedin|default:"https://linkedin.com/in/tu-usuario" }}
+                            </span>
+                            <input type="url" class="contact-input" id="input-linkedin" value="{{ request.user.profile.linkedin|default:'' }}" placeholder="https://linkedin.com/in/tu-usuario">
+                        </div>
+                        <div class="contact-item" data-type="github">
+                            <i class="fab fa-github"></i>
+                            <span class="contact-display" id="display-github">
+                                {{ request.user.profile.github|default:"https://github.com/tu-usuario" }}
+                            </span>
+                            <input type="url" class="contact-input" id="input-github" value="{{ request.user.profile.github|default:'' }}" placeholder="https://github.com/tu-usuario">
+                        </div>
+                        <div class="contact-item" data-type="email">
+                            <i class="fas fa-envelope"></i>
+                            <span class="contact-display" id="display-email">
+                                {{ request.user.profile.contact_email|default:"tucorreo@ejemplo.com" }}
+                            </span>
+                            <input type="email" class="contact-input" id="input-email" value="{{ request.user.profile.contact_email|default:'' }}" placeholder="tucorreo@ejemplo.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-edit-card" id="btn-edit-card">
+                        <i class="fas fa-pencil-alt"></i> Editar Perfil
+                    </button>
+                    <div class="edit-buttons" id="edit-buttons">
+                        <button class="btn-cancel-card" id="btn-cancel-card">Cancelar</button>
+                        <button class="btn-save-card" id="btn-save-card">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- PANEL DERECHO -->
-            <section class="content-panel">
-
-                <!-- TABS -->
-                <div class="tabs">
-                    <button class="tab-btn active" id="btn-desc">
-                        <i class="fas fa-user"></i> Descripción
-                    </button>
-                    <button class="tab-btn" id="btn-proy">
-                        <i class="fas fa-folder-open"></i> Proyectos
-                    </button>
+            <section class="top-projects-section">
+                <h3 class="section-title">Proyectos Top <i class="fas fa-star" style="color:#f59e0b;"></i></h3>
+                <div class="project-grid">
+                    {% for project in request.user.owned_projects.all|slice:":2" %}
+                    <div class="project-card" style="position: relative;">
+                        <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
+                        {% if project.image %}
+                            <div class="project-img-top" style="background-image: url('{{ project.image.url }}'); background-size: cover; background-position: center;"></div>
+                        {% else %}
+                            <div class="project-img-top"></div>
+                        {% endif %}
+                        <div class="project-info">
+                            <h4>{{ project.title }}</h4>
+                            <p>{{ project.summary|default:"Sin descripción"|truncatechars:40 }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <p style="color: var(--gray-400); font-size: 0.9rem; font-style: italic;">Aún no tienes proyectos destacados.</p>
+                    {% endfor %}
                 </div>
-
-                <!-- ============================================ -->
-                <!-- VISTA: DESCRIPCIÓN GENERAL -->
-                <!-- ============================================ -->
-                <div id="view-general">
-                    <div class="card-info" id="card-descripcion">
-
-                        <!-- SECCIÓN SOBRE MÍ -->
-                        <div class="info-section" id="section-sobre-mi">
-                            <h3><span class="section-dot"></span>Sobre mí</h3>
-                            <div class="sobre-mi-container">
-                                <div class="sobre-mi-display" id="display-sobre-mi">
-                                    <span class="placeholder-text">Aquí va tu descripción detallada</span>
-                                </div>
-                                <div class="sobre-mi-edit" id="edit-sobre-mi">
-                                    <textarea id="textarea-sobre-mi" maxlength="200"
-                                        placeholder="Aquí va tu descripción detallada"></textarea>
-                                    <span class="char-counter" id="counter-sobre-mi">0/200</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECCIÓN INTERESES -->
-                        <div class="info-section" id="section-intereses">
-                            <h3><span class="section-dot"></span>Intereses</h3>
-                            <div class="tags-container" id="tags-intereses">
-                                <div class="tag" data-placeholder="IA" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">IA</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="IA">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Big Data" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Big Data</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Big Data">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Machine Learning" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Machine Learning</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Machine Learning">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <div class="tag" data-placeholder="Desarrollo Web" data-maxlength="25">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Desarrollo Web</span>
-                                    <input type="text" class="tag-input" maxlength="25" placeholder="Desarrollo Web">
-                                    <span class="tag-counter">0/25</span>
-                                </div>
-                                <button class="btn-add-tag" id="btn-add-interes" title="Añadir interés">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- SECCIÓN TECNOLOGÍAS -->
-                        <div class="info-section" id="section-tecnologias">
-                            <h3><span class="section-dot"></span>Tecnologías Principales</h3>
-                            <div class="tags-container" id="tags-tecnologias">
-                                <div class="tag" data-placeholder="Python" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Python</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="Python">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="Django" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">Django</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="Django">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="JavaScript" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">JavaScript</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="JavaScript">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <div class="tag" data-placeholder="React" data-maxlength="20">
-                                    <button class="btn-delete-tag" title="Eliminar"><i
-                                            class="fas fa-times"></i></button>
-                                    <span class="tag-content placeholder">React</span>
-                                    <input type="text" class="tag-input" maxlength="20" placeholder="React">
-                                    <span class="tag-counter">0/20</span>
-                                </div>
-                                <button class="btn-add-tag" id="btn-add-tecnologia" title="Añadir tecnología">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- SECCIÓN CONTACTO -->
-                        <div class="info-section" id="section-contacto">
-                            <h3><span class="section-dot"></span>Contacto</h3>
-                            <div class="contact-list">
-                                <div class="contact-item" data-type="linkedin">
-                                    <i class="fab fa-linkedin"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-linkedin">https://linkedin.com/in/tu-usuario</span>
-                                    <input type="url" class="contact-input" id="input-linkedin"
-                                        placeholder="https://linkedin.com/in/tu-usuario">
-                                </div>
-                                <div class="contact-item" data-type="github">
-                                    <i class="fab fa-github"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-github">https://github.com/tu-usuario</span>
-                                    <input type="url" class="contact-input" id="input-github"
-                                        placeholder="https://github.com/tu-usuario">
-                                </div>
-                                <div class="contact-item" data-type="email">
-                                    <i class="fas fa-envelope"></i>
-                                    <span class="contact-display placeholder"
-                                        id="display-email">tucorreo@ejemplo.com</span>
-                                    <input type="email" class="contact-input" id="input-email"
-                                        placeholder="tucorreo@ejemplo.com">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- BOTONES EDITAR / GUARDAR / CANCELAR -->
-                        <div class="card-actions">
-                            <button class="btn-edit-card" id="btn-edit-card">
-                                <i class="fas fa-pencil-alt"></i> Editar
-                            </button>
-                            <div class="edit-buttons" id="edit-buttons">
-                                <button class="btn-cancel-card" id="btn-cancel-card">Cancelar</button>
-                                <button class="btn-save-card" id="btn-save-card">
-                                    <i class="fas fa-save"></i> Guardar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PROYECTOS TOP -->
-                    <section class="top-projects-section">
-                        <h3 class="section-title">Proyectos Top <i class="fas fa-star" style="color:#f59e0b;"></i></h3>
-                        <div class="project-grid">
-                            <div class="project-card">
-                                <div class="project-img-top"></div>
-                                <div class="project-info">
-                                    <h4>Proyecto Top 1</h4>
-                                    <p>Descripción del proyecto</p>
-                                </div>
-                            </div>
-                            <div class="project-card">
-                                <div class="project-img-top"></div>
-                                <div class="project-info">
-                                    <h4>Proyecto Top 2</h4>
-                                    <p>Descripción del proyecto</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- VISTA: PROYECTOS -->
-                <!-- ============================================ -->
-                <div id="view-all-projects" style="display: none;">
-
-                    <div class="projects-header">
-                        <div class="projects-title-row">
-                            <div class="projects-title">
-                                <h3>Todos los Proyectos <span class="project-count" id="project-count">(4)</span></h3>
-                                <div class="view-toggle">
-                                    <button class="view-btn active" id="btn-view-grid" title="Vista cuadrícula">
-                                        <i class="fas fa-th-large"></i>
-                                    </button>
-                                    <button class="view-btn" id="btn-view-list" title="Vista lista">
-                                        <i class="fas fa-list"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="projects-actions">
-                                <div class="dropdown" id="dropdown-ordenar">
-                                    <button class="dropdown-btn">
-                                        <i class="fas fa-sort-amount-down"></i> Ordenar
-                                        <i class="fas fa-chevron-down"></i>
-                                    </button>
-                                    <div class="dropdown-content">
-                                        <a href="#" data-sort="recent" class="active"><i class="fas fa-clock"></i> Más
-                                            recientes</a>
-                                        <a href="#" data-sort="oldest"><i class="fas fa-history"></i> Más antiguos</a>
-                                        <a href="#" data-sort="az"><i class="fas fa-sort-alpha-down"></i> A-Z</a>
-                                        <a href="#" data-sort="za"><i class="fas fa-sort-alpha-up"></i> Z-A</a>
-                                        <a href="#" data-sort="views"><i class="fas fa-eye"></i> Más vistos</a>
-                                        <a href="#" data-sort="collaborators"><i class="fas fa-users"></i> Más
-                                            colaboradores</a>
-                                    </div>
-                                </div>
-                                <button class="btn-new-project" id="btn-new-project">
-                                    <i class="fas fa-plus"></i> Nuevo Proyecto
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="search-container">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="search-input" id="search-project"
-                                placeholder="Buscar proyecto...">
-                            <button class="search-clear" id="search-clear" title="Limpiar">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-
-                        <div class="filters-row">
-                            <div class="dropdown" id="dropdown-temas">
-                                <button class="dropdown-btn filter-btn">
-                                    <i class="fas fa-folder"></i> Temas <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="dropdown-content">
-                                    <a href="#" data-theme="all" class="active">Todos</a>
-                                    <a href="#" data-theme="web"><i class="fas fa-globe"></i> Desarrollo Web</a>
-                                    <a href="#" data-theme="mobile"><i class="fas fa-mobile-alt"></i> Apps Móviles</a>
-                                    <a href="#" data-theme="ia"><i class="fas fa-robot"></i> IA / ML</a>
-                                    <a href="#" data-theme="data"><i class="fas fa-chart-bar"></i> Data Science</a>
-                                    <a href="#" data-theme="iot"><i class="fas fa-microchip"></i> IoT</a>
-                                    <a href="#" data-theme="games"><i class="fas fa-gamepad"></i> Videojuegos</a>
-                                    <a href="#" data-theme="security"><i class="fas fa-shield-alt"></i> Seguridad</a>
-                                    <a href="#" data-theme="api"><i class="fas fa-plug"></i> APIs / Backend</a>
-                                    <a href="#" data-theme="devops"><i class="fas fa-server"></i> DevOps</a>
-                                    <a href="#" data-theme="research"><i class="fas fa-flask"></i> Investigación</a>
-                                </div>
-                            </div>
-                            <div class="dropdown" id="dropdown-tecnologias">
-                                <button class="dropdown-btn filter-btn">
-                                    <i class="fas fa-code"></i> Tecnologías <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="dropdown-content">
-                                    <a href="#" data-tech="all" class="active">Todas</a>
-                                    <a href="#" data-tech="python"><i class="fab fa-python"></i> Python</a>
-                                    <a href="#" data-tech="javascript"><i class="fab fa-js-square"></i> JavaScript</a>
-                                    <a href="#" data-tech="java"><i class="fab fa-java"></i> Java</a>
-                                    <a href="#" data-tech="react"><i class="fab fa-react"></i> React</a>
-                                    <a href="#" data-tech="angular"><i class="fab fa-angular"></i> Angular</a>
-                                    <a href="#" data-tech="vue"><i class="fab fa-vuejs"></i> Vue.js</a>
-                                    <a href="#" data-tech="node"><i class="fab fa-node-js"></i> Node.js</a>
-                                    <a href="#" data-tech="django">Django</a>
-                                    <a href="#" data-tech="tensorflow">TensorFlow</a>
-                                    <a href="#" data-tech="docker"><i class="fab fa-docker"></i> Docker</a>
-                                </div>
-                            </div>
-                            <button class="btn-clear-filters" id="btn-clear-filters">
-                                <i class="fas fa-times"></i> Limpiar filtros
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="projects-grid" id="projects-grid">
-                        
-                        <div class="project-card-full" data-name="Sistema de Reconocimiento Facial"
-                            data-date="2024-01-15" data-views="150" data-collaborators="3" data-theme="ia"
-                            data-tech="python,tensorflow">
-                            
-                            <a href="/projects/1/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">Sistema de Reconocimiento Facial</h4>
-                                <p class="project-card-desc">Aplicación de IA para reconocimiento facial en tiempo real
-                                    usando OpenCV y TensorFlow.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">Python</span>
-                                    <span class="tag-tech">TensorFlow</span>
-                                    <span class="tag-theme">IA</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 150</span>
-                                    <span><i class="fas fa-users"></i> 3</span>
-                                    <span><i class="fas fa-calendar"></i> 15/01/2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="E-commerce React" data-date="2024-02-20"
-                            data-views="230" data-collaborators="5" data-theme="web" data-tech="javascript,react,node">
-                            
-                            <a href="/projects/2/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">E-commerce React</h4>
-                                <p class="project-card-desc">Tienda online completa con carrito de compras, pagos y
-                                    panel de administración.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">React</span>
-                                    <span class="tag-tech">Node.js</span>
-                                    <span class="tag-theme">Web</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 230</span>
-                                    <span><i class="fas fa-users"></i> 5</span>
-                                    <span><i class="fas fa-calendar"></i> 20/02/2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="API REST Django" data-date="2024-03-10"
-                            data-views="89" data-collaborators="2" data-theme="api" data-tech="python,django">
-                            
-                            <a href="/projects/3/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">API REST Django</h4>
-                                <p class="project-card-desc">API RESTful completa con autenticación JWT, documentación
-                                    Swagger y tests automatizados.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">Python</span>
-                                    <span class="tag-tech">Django</span>
-                                    <span class="tag-theme">API</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 89</span>
-                                    <span><i class="fas fa-users"></i> 2</span>
-                                    <span><i class="fas fa-calendar"></i> 10/03/2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="project-card-full" data-name="App Móvil Fitness" data-date="2024-01-05"
-                            data-views="320" data-collaborators="4" data-theme="mobile" data-tech="javascript,react">
-                            
-                            <a href="/projects/4/" class="stretched-link"></a>
-                            <button class="btn-edit-card-icon" title="Editar Proyecto" onclick="abrirModalEdicion()">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-
-                            <div class="project-card-img">
-                                <div class="project-card-img-placeholder"></div>
-                            </div>
-                            <div class="project-card-body">
-                                <h4 class="project-card-title">App Móvil Fitness</h4>
-                                <p class="project-card-desc">Aplicación móvil para seguimiento de ejercicios, rutinas
-                                    personalizadas y estadísticas.</p>
-                                <div class="project-card-tags">
-                                    <span class="tag-tech">React Native</span>
-                                    <span class="tag-theme">Móvil</span>
-                                </div>
-                                <div class="project-card-meta">
-                                    <span><i class="fas fa-eye"></i> 320</span>
-                                    <span><i class="fas fa-users"></i> 4</span>
-                                    <span><i class="fas fa-calendar"></i> 05/01/2024</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="no-results" id="no-results" style="display: none;">
-                        <i class="fas fa-search"></i>
-                        <h4>No se encontraron proyectos</h4>
-                        <p>No hay proyectos que coincidan con "<span id="search-term"></span>"</p>
-                        <p class="hint">Intenta con otros términos o limpia los filtros</p>
-                    </div>
-                </div>
-
             </section>
+        </div>
 
-    <!-- ============================================ -->
-    <!-- MODAL: EDITAR PERFIL -->
-    <!-- ============================================ -->
+        <div id="view-all-projects" style="display: none;">
+            <div class="projects-header">
+                <div class="projects-title-row">
+                    <div class="projects-title">
+                        <h3>Todos los Proyectos <span class="project-count" id="project-count">(0)</span></h3>
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="btn-view-grid" title="Vista cuadrícula">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-btn" id="btn-view-list" title="Vista lista">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="projects-actions">
+                        <div class="dropdown" id="dropdown-ordenar">
+                            <button class="dropdown-btn">
+                                <i class="fas fa-sort-amount-down"></i> Ordenar <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="#" data-sort="recent" class="active"><i class="fas fa-clock"></i> Más recientes</a>
+                                <a href="#" data-sort="oldest"><i class="fas fa-history"></i> Más antiguos</a>
+                                <a href="#" data-sort="az"><i class="fas fa-sort-alpha-down"></i> A-Z</a>
+                                <a href="#" data-sort="za"><i class="fas fa-sort-alpha-up"></i> Z-A</a>
+                                <a href="#" data-sort="views"><i class="fas fa-eye"></i> Más vistos</a>
+                                <a href="#" data-sort="collaborators"><i class="fas fa-users"></i> Más colaboradores</a>
+                            </div>
+                        </div>
+                        <button class="btn-new-project" id="btn-new-project">
+                            <i class="fas fa-plus"></i> Nuevo Proyecto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-project" placeholder="Buscar proyecto...">
+                    <button class="search-clear" id="search-clear" title="Limpiar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="filters-row">
+                    <div class="dropdown" id="dropdown-temas">
+                        <button class="dropdown-btn filter-btn">
+                            <i class="fas fa-folder"></i> Temas <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="#" data-theme="all" class="active">Todos</a>
+                            <a href="#" data-theme="web"><i class="fas fa-globe"></i> Desarrollo Web</a>
+                            <a href="#" data-theme="mobile"><i class="fas fa-mobile-alt"></i> Apps Móviles</a>
+                            <a href="#" data-theme="ia"><i class="fas fa-robot"></i> IA / ML</a>
+                            <a href="#" data-theme="data"><i class="fas fa-chart-bar"></i> Data Science</a>
+                            <a href="#" data-theme="iot"><i class="fas fa-microchip"></i> IoT</a>
+                            <a href="#" data-theme="games"><i class="fas fa-gamepad"></i> Videojuegos</a>
+                            <a href="#" data-theme="security"><i class="fas fa-shield-alt"></i> Seguridad</a>
+                            <a href="#" data-theme="api"><i class="fas fa-plug"></i> APIs / Backend</a>
+                            <a href="#" data-theme="devops"><i class="fas fa-server"></i> DevOps</a>
+                            <a href="#" data-theme="research"><i class="fas fa-flask"></i> Investigación</a>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="dropdown-tecnologias">
+                        <button class="dropdown-btn filter-btn">
+                            <i class="fas fa-code"></i> Tecnologías <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="#" data-tech="all" class="active">Todas</a>
+                            <a href="#" data-tech="python"><i class="fab fa-python"></i> Python</a>
+                            <a href="#" data-tech="javascript"><i class="fab fa-js-square"></i> JavaScript</a>
+                            <a href="#" data-tech="java"><i class="fab fa-java"></i> Java</a>
+                            <a href="#" data-tech="react"><i class="fab fa-react"></i> React</a>
+                            <a href="#" data-tech="angular"><i class="fab fa-angular"></i> Angular</a>
+                            <a href="#" data-tech="vue"><i class="fab fa-vuejs"></i> Vue.js</a>
+                            <a href="#" data-tech="node"><i class="fab fa-node-js"></i> Node.js</a>
+                            <a href="#" data-tech="django">Django</a>
+                            <a href="#" data-tech="tensorflow">TensorFlow</a>
+                            <a href="#" data-tech="docker"><i class="fab fa-docker"></i> Docker</a>
+                        </div>
+                    </div>
+                    <button class="btn-clear-filters" id="btn-clear-filters">
+                        <i class="fas fa-times"></i> Limpiar filtros
+                    </button>
+                </div>
+            </div>
+
+            <div class="projects-grid" id="projects-grid">
+                {% for project in request.user.owned_projects.all %}
+                    <div class="project-card-full">
+                        <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
+                        <button class="btn-edit-card-icon" title="Editar Proyecto">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+
+                        <div class="project-card-img">
+                            {% if project.image %}
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                            {% else %}
+                                <div class="project-card-img-placeholder"></div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="project-card-body">
+                            <h4 class="project-card-title">{{ project.title }}</h4>
+                            <p class="project-card-desc">{{ project.summary|default:"Sin descripción breve."|truncatechars:80 }}</p>
+                            <div class="project-card-tags">
+                                {% if project.tech_stack %}
+                                    <span class="tag-tech">{{ project.tech_stack }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="project-card-meta">
+                                <span><i class="fas fa-eye"></i> 0</span>
+                                <span><i class="fas fa-calendar"></i> {{ project.created_at|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <i class="fas fa-folder-open fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
+                        <h4 style="color: var(--gray-500);">Aún no has creado proyectos</h4>
+                        <p style="color: var(--gray-400);">¡Crea tu primer proyecto con el botón de arriba!</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL EDICIÓN BÁSICA -->
     <div class="modal-overlay" id="modal-edit-profile">
         <div class="modal-content">
             <div class="modal-header">
@@ -451,18 +324,18 @@
                     <h4><i class="fas fa-camera"></i> Foto de Perfil</h4>
                     <div class="photo-upload-container">
                         <div class="photo-preview">
-                            <img src="{% static 'web/img/avatar.jpg' %}" alt="Preview" id="photo-preview-img"
-                                data-default="{% static 'web/img/avatar.jpg' %}">
+                            <img src="{% if request.user.profile.avatar %}{{ request.user.profile.avatar.url }}{% else %}{% static 'web/img/avatar.jpg' %}{% endif %}" alt="Preview" id="photo-preview-img" data-default="{% static 'web/img/avatar.jpg' %}">
                         </div>
                         <div class="photo-upload-actions">
                             <label for="input-photo" class="btn-upload-photo">
                                 <i class="fas fa-upload"></i> Subir imagen
                             </label>
                             <input type="file" id="input-photo" accept="image/*" capture="user" hidden>
-                            <button type="button" id="btn-remove-photo"
-                                style="display:none; margin-top:8px; padding:7px 14px; background:#fee2e2; color:#ef4444; border:1.5px solid #fecaca; border-radius:8px; font-weight:600; cursor:pointer; align-items:center; gap:6px;">
+                            
+                            <button type="button" id="btn-remove-photo" style="{% if request.user.profile.avatar %}display:inline-flex;{% else %}display:none;{% endif %} margin-top:8px; padding:7px 14px; background:#fee2e2; color:#ef4444; border:1.5px solid #fecaca; border-radius:8px; font-weight:600; cursor:pointer; align-items:center; gap:6px;">
                                 <i class="fas fa-times"></i> Quitar foto
                             </button>
+                            
                             <p class="photo-hint">JPG, PNG, GIF. Máx: 5MB</p>
                         </div>
                     </div>
@@ -496,242 +369,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ============================================ -->
-    <!-- MODAL: NUEVO PROYECTO -->
-    <!-- ============================================ -->
-<div class="modal-overlay" id="modal-new-project">
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h3><i class="fas fa-plus-circle"></i> Nuevo Proyecto</h3>
-                <button class="modal-close" id="btn-close-new-project">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="edit-section">
-                    <h4><i class="fas fa-image"></i> Imagen de Portada</h4>
-                    <div class="project-image-upload">
-                        <div class="project-image-preview" id="new-project-image-preview">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Haz clic o arrastra una imagen</span>
-                        </div>
-                        <input type="file" id="input-project-image" accept="image/*" hidden>
-                    </div>
-                </div>
-                <div class="edit-section">
-                    <h4><i class="fas fa-info-circle"></i> Información del Proyecto</h4>
-                    <div class="form-group">
-                        <label for="input-project-name">Nombre del proyecto *</label>
-                        <input type="text" id="input-project-name" placeholder="Ej: Sistema de Gestión Académica"
-                            maxlength="60">
-                        <small class="char-hint"><span id="count-project-name">0</span>/60</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="input-project-desc">Descripción breve *</label>
-                        <textarea id="input-project-desc" placeholder="Describe tu proyecto en pocas palabras..."
-                            maxlength="150"></textarea>
-                        <small class="char-hint"><span id="count-project-desc">0</span>/150</small>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="select-project-theme">Tema</label>
-                            <select id="select-project-theme">
-                                <option value="">Seleccionar tema</option>
-                                <option value="web">🌐 Desarrollo Web</option>
-                                <option value="mobile">📱 Apps Móviles</option>
-                                <option value="ia">🤖 IA / Machine Learning</option>
-                                <option value="data">📊 Data Science</option>
-                                <option value="iot">🔌 IoT</option>
-                                <option value="games">🎮 Videojuegos</option>
-                                <option value="security">🔒 Seguridad</option>
-                                <option value="automation">⚙️ Automatización</option>
-                                <option value="api">🔗 APIs / Backend</option>
-                                <option value="devops">🛠️ DevOps</option>
-                                <option value="research">🧪 Investigación</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="select-project-tech">Tecnología principal</label>
-                            <select id="select-project-tech">
-                                <option value="">Seleccionar tecnología</option>
-                                <option value="python">Python</option>
-                                <option value="javascript">JavaScript</option>
-                                <option value="java">Java</option>
-                                <option value="react">React</option>
-                                <option value="django">Django</option>
-                                <option value="flask">Flask</option>
-                                <option value="tensorflow">TensorFlow</option>
-                                <option value="docker">Docker</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input-project-repo">URL del repositorio (opcional)</label>
-                        <input type="url" id="input-project-repo" placeholder="https://github.com/usuario/proyecto">
-                    </div>
-                    <div class="form-group">
-                        <label>Tags</label>
-                        <div class="tags-input-wrapper">
-                            <div class="tags-list" id="new-project-tags-list"></div>
-                            <input type="text" id="input-project-tags" placeholder="Agregar tag y presionar Enter...">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="edit-section">
-                    <h4><i class="fas fa-align-left"></i> Contenido Detallado</h4>
-                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Descripción Completa</label>
-                    <div class="form-group">
-                        <textarea id="input-project-p1" placeholder="Párrafo 1: Descripción detallada del proyecto. Explicación del problema que resuelve, contexto y motivación..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="input-project-p2" placeholder="Párrafo 2: Funcionalidades principales y características destacadas..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="input-project-p3" placeholder="Párrafo 3: Detalles técnicos, arquitectura y beneficios..."></textarea>
-                    </div>
-                </div>
-
-                <div class="edit-section">
-                    <h4><i class="fas fa-images"></i> Galería de Imágenes</h4>
-                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Subir Imágenes</label>
-                    
-                    <div class="gallery-upload-area" id="gallery-upload-area">
-                        <i class="fas fa-image" style="font-size: 2rem; color: var(--orange-tag); margin-bottom: 8px;"></i>
-                        <span>Arrastra imágenes aquí o haz clic para seleccionar</span>
-                        <small>PNG, JPG, WebP</small>
-                    </div>
-                    <input type="file" id="input-gallery-images" accept="image/png, image/jpeg, image/webp" multiple hidden>
-                    <div class="gallery-preview-grid" id="gallery-preview-grid"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="btn-cancel-new-project">Cancelar</button>
-                <button type="button" class="btn-save" id="btn-save-new-project">
-                    <i class="fas fa-save"></i> Crear Proyecto
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- MODAL: EDITAR PROYECTO -->
-    <!-- ============================================ -->
-<div class="modal-overlay" id="modal-edit-project">
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Editar Proyecto</h3>
-                <button class="modal-close" id="btn-close-edit-project">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="edit-section">
-                    <h4><i class="fas fa-image"></i> Imagen de Portada</h4>
-                    <div class="project-image-upload">
-                        <div class="project-image-preview" id="edit-project-image-preview">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Haz clic o arrastra una imagen</span>
-                        </div>
-                        <input type="file" id="input-edit-project-image" accept="image/*" hidden>
-                    </div>
-                </div>
-                <div class="edit-section">
-                    <h4><i class="fas fa-info-circle"></i> Información del Proyecto</h4>
-                    <div class="form-group">
-                        <label for="edit-project-name">Nombre del proyecto</label>
-                        <input type="text" id="edit-project-name" maxlength="60" placeholder="Nombre del proyecto">
-                        <small class="char-hint"><span id="count-edit-project-name">0</span>/60</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-project-desc">Descripción breve</label>
-                        <textarea id="edit-project-desc" maxlength="150"
-                            placeholder="Descripción del proyecto"></textarea>
-                        <small class="char-hint"><span id="count-edit-project-desc">0</span>/150</small>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edit-project-theme">Tema</label>
-                            <select id="edit-project-theme">
-                                <option value="">Seleccionar tema</option>
-                                <option value="web">🌐 Desarrollo Web</option>
-                                <option value="mobile">📱 Apps Móviles</option>
-                                <option value="ia">🤖 IA / Machine Learning</option>
-                                <option value="data">📊 Data Science</option>
-                                <option value="iot">🔌 IoT</option>
-                                <option value="games">🎮 Videojuegos</option>
-                                <option value="security">🔒 Seguridad</option>
-                                <option value="api">🔗 APIs / Backend</option>
-                                <option value="devops">🛠️ DevOps</option>
-                                <option value="research">🧪 Investigación</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-project-tech">Tecnología principal</label>
-                            <select id="edit-project-tech">
-                                <option value="">Seleccionar tecnología</option>
-                                <option value="python">Python</option>
-                                <option value="javascript">JavaScript</option>
-                                <option value="java">Java</option>
-                                <option value="react">React</option>
-                                <option value="django">Django</option>
-                                <option value="flask">Flask</option>
-                                <option value="tensorflow">TensorFlow</option>
-                                <option value="docker">Docker</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-project-repo">URL del repositorio (opcional)</label>
-                        <input type="url" id="edit-project-repo" placeholder="https://github.com/usuario/proyecto">
-                    </div>
-                    <div class="form-group">
-                        <label>Tags</label>
-                        <div class="tags-input-wrapper">
-                            <div class="tags-list" id="edit-project-tags-list"></div>
-                            <input type="text" id="input-edit-project-tags" placeholder="Agregar tag y presionar Enter...">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="edit-section">
-                    <h4><i class="fas fa-align-left"></i> Contenido Detallado</h4>
-                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Descripción Completa</label>
-                    <div class="form-group">
-                        <textarea id="edit-project-p1" placeholder="Párrafo 1: Descripción detallada del proyecto. Explicación del problema que resuelve, contexto y motivación..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="edit-project-p2" placeholder="Párrafo 2: Funcionalidades principales y características destacadas..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="edit-project-p3" placeholder="Párrafo 3: Detalles técnicos, arquitectura y beneficios..."></textarea>
-                    </div>
-                </div>
-
-                <div class="edit-section">
-                    <h4><i class="fas fa-images"></i> Galería de Imágenes</h4>
-                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--gray-700); font-size: 0.85rem;">Subir Imágenes</label>
-                    
-                    <div class="gallery-upload-area" id="edit-gallery-upload-area">
-                        <i class="fas fa-image" style="font-size: 2rem; color: var(--orange-tag); margin-bottom: 8px;"></i>
-                        <span>Arrastra imágenes aquí o haz clic para seleccionar</span>
-                        <small>PNG, JPG, WebP</small>
-                    </div>
-                    <input type="file" id="input-edit-gallery-images" accept="image/png, image/jpeg, image/webp" multiple hidden>
-                    <div class="gallery-preview-grid" id="edit-gallery-preview-grid"></div>
-                </div>
-            </div>
-            <div class="modal-footer modal-footer-between">
-                <button type="button" class="btn-delete" id="btn-delete-project">
-                    <i class="fas fa-trash"></i> Eliminar
-                </button>
-                <div class="modal-footer-right">
-                    <button type="button" class="btn-cancel" id="btn-cancel-edit-project">Cancelar</button>
-                    <button type="button" class="btn-save" id="btn-save-edit-project">
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 {% endblock %}
 
 {% block extra_js %}

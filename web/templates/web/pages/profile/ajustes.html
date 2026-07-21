@@ -1,0 +1,888 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Ajustes - UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ==========================================================================
+       PÁGINA DE AJUSTES (DISEÑO PREMIUM Y RESPONSIVO)
+       ========================================================================== */
+    .settings-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+        .settings-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    .settings-column {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .settings-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .settings-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        border-bottom: 1.5px solid var(--border-color);
+        padding-bottom: 14px;
+    }
+
+    .card-title-group h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .card-title-icon {
+        width: 38px;
+        height: 38px;
+        background: var(--orange-light);
+        color: var(--orange-primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* Modificar color de íconos según sección */
+    .card-security .card-title-icon {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    /* MÓDULO 1: PREFERENCIAS VISUALES */
+    .theme-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .settings-theme-option {
+        border: 2px solid var(--border-color);
+        background: var(--bg-secondary);
+        border-radius: var(--radius-md);
+        padding: 20px 16px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .settings-theme-option:hover {
+        border-color: var(--orange-primary);
+        transform: translateY(-2px);
+        background: var(--bg-card);
+    }
+
+    .settings-theme-option.active {
+        border-color: var(--orange-primary);
+        background: var(--bg-card);
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+    }
+
+    .settings-theme-option.active::after {
+        content: '✓';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--orange-primary);
+        color: white;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .theme-option-emoji {
+        font-size: 2.2rem;
+        line-height: 1;
+        transition: transform 0.25s ease;
+    }
+
+    .settings-theme-option:hover .theme-option-emoji {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    .theme-option-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        font-family: 'Syne', sans-serif;
+    }
+
+    .theme-color-previews {
+        display: flex;
+        gap: 6px;
+    }
+
+    .theme-color-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* MÓDULO 2: FORMULARIO DE CONTRASEÑA */
+    .settings-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .settings-form .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .settings-form .form-label {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text-primary);
+    }
+
+    .settings-form .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .settings-form input {
+        width: 100%;
+        padding: 11px 44px 11px 16px;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .settings-form input:focus {
+        border-color: var(--orange-primary);
+        outline: none;
+        background: var(--bg-card);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+    }
+
+    .toggle-password-btn {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 6px;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.18s;
+    }
+
+    .toggle-password-btn:hover {
+        color: var(--orange-primary);
+    }
+
+    .form-help-text {
+        font-size: 0.76rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+        margin-top: 2px;
+    }
+
+    .field-errors {
+        margin-top: 4px;
+    }
+
+    .error-msg {
+        color: var(--error-red);
+        font-size: 0.78rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+    }
+
+    .btn-submit-action {
+        align-self: flex-start;
+        padding: 12px 24px;
+        background: var(--orange-primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.22s;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, .25);
+    }
+
+    .btn-submit-action:hover {
+        background: var(--orange-dark);
+        box-shadow: var(--shadow-orange);
+        transform: translateY(-1px);
+    }
+
+    /* MÓDULO 3: ZONA DE PELIGRO */
+    .danger-card {
+        border: 1px solid rgba(239, 68, 68, 0.28);
+        background: rgba(239, 68, 68, 0.03);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .danger-title {
+        color: #ef4444;
+        font-family: 'Syne', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+        padding-bottom: 10px;
+    }
+
+    .danger-desc {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: 22px;
+    }
+
+    .btn-danger-trigger {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+        border: 1.5px solid rgba(239, 68, 68, 0.25);
+        padding: 11px 22px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-danger-trigger:hover {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    /* MODAL ESTRICTO DE CONFIRMACIÓN */
+    .settings-modal {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .settings-modal.open {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .settings-modal-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 15, 26, 0.7);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+
+    .settings-modal-card {
+        position: relative;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        width: 90%;
+        max-width: 500px;
+        padding: 32px;
+        z-index: 1102;
+        transform: scale(0.93);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .settings-modal.open .settings-modal-card {
+        transform: scale(1);
+    }
+
+    .settings-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1.5px solid var(--border-color);
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+    }
+
+    .settings-modal-header h3 {
+        color: #ef4444;
+        font-size: 1.15rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .close-modal-btn {
+        background: none;
+        border: none;
+        font-size: 1.6rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.15s;
+    }
+
+    .close-modal-btn:hover {
+        color: var(--text-primary);
+    }
+
+    .settings-modal-body {
+        font-size: 0.92rem;
+        color: var(--text-primary);
+        line-height: 1.6;
+        margin-bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .settings-modal-body ul {
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .settings-modal-confirm-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+        background: var(--bg-secondary);
+        padding: 16px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+    }
+
+    .settings-modal-confirm-input-group label {
+        font-weight: 600;
+        font-size: 0.84rem;
+        color: var(--text-primary);
+    }
+
+    .settings-modal-confirm-input-group input {
+        padding: 10px 14px;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: var(--bg-card);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.9rem;
+        width: 100%;
+        transition: border-color 0.2s;
+    }
+
+    .settings-modal-confirm-input-group input:focus {
+        border-color: #ef4444;
+        outline: none;
+    }
+
+    .settings-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1.5px solid var(--border-color);
+        padding-top: 18px;
+    }
+
+    .btn-modal-cancel {
+        padding: 10px 20px;
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.18s;
+    }
+
+    .btn-modal-cancel:hover {
+        background: var(--gray-200);
+        color: var(--text-primary);
+    }
+
+    .btn-modal-danger {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 11px 22px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-modal-danger:hover:not(:disabled) {
+        background: #dc2626;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+
+    .btn-modal-danger:disabled,
+    .btn-modal-danger.disabled {
+        background: var(--gray-300);
+        color: var(--gray-500);
+        cursor: not-allowed;
+        box-shadow: none !important;
+        opacity: 0.6;
+    }
+
+    /* MENSAJES ALERTAS GLOBALES */
+    .settings-messages {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto 10px auto;
+    }
+
+    .settings-alert {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 500;
+        position: relative;
+        animation: slideDown 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .settings-alert.alert-success {
+        background: rgba(34, 197, 94, 0.08);
+        border-color: rgba(34, 197, 94, 0.25);
+        color: #166534;
+    }
+
+    .settings-alert.alert-error,
+    .settings-alert.alert-danger {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.25);
+        color: #991b1b;
+    }
+
+    /* Sobreescribir alertas para modo oscuro */
+    body.theme-dark .settings-alert.alert-success,
+    body.theme-ocean .settings-alert.alert-success,
+    body.theme-forest .settings-alert.alert-success {
+        color: #4ade80;
+    }
+
+    body.theme-dark .settings-alert.alert-error,
+    body.theme-ocean .settings-alert.alert-error,
+    body.theme-forest .settings-alert.alert-error {
+        color: #fca5a5;
+    }
+
+    .alert-icon {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .alert-text {
+        flex: 1;
+    }
+
+    .alert-close {
+        background: none;
+        border: none;
+        font-size: 1.3rem;
+        color: inherit;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+    }
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    
+    <!-- Contenedor de Mensajes / Notificaciones -->
+    {% if messages %}
+        <div class="settings-messages">
+            {% for message in messages %}
+                <div class="settings-alert {% if message.tags == 'error' %}alert-error{% else %}alert-{{ message.tags }}{% endif %}">
+                    <span class="alert-icon">
+                        {% if message.tags == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% else %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% endif %}
+                    </span>
+                    <span class="alert-text">{{ message }}</span>
+                    <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- COLUMNA IZQUIERDA: TEMAS Y SEGURIDAD -->
+    <div class="settings-column">
+        <!-- MÓDULO 1: PREFERENCIAS VISUALES -->
+        <section class="settings-card card-visuals">
+            <div class="card-title-group">
+                <span class="card-title-icon"><i class="fas fa-palette"></i></span>
+                <h2>Preferencias Visuales</h2>
+            </div>
+            <p class="danger-desc" style="margin-top:-10px; margin-bottom: 20px;">
+                Personaliza la apariencia visual de la plataforma. El tema elegido se aplicará inmediatamente y se guardará en tu navegador.
+            </p>
+            
+            <div class="theme-cards-grid">
+                <!-- Opción Light -->
+                <div class="settings-theme-option" data-theme="light">
+                    <span class="theme-option-emoji">☀️</span>
+                    <span class="theme-option-title">Light</span>
+                    <div class="theme-color-previews">
+                        <span class="theme-color-dot" style="background: #f9fafb;"></span>
+                        <span class="theme-color-dot" style="background: #f97316;"></span>
+                        <span class="theme-color-dot" style="background: #111827;"></span>
+                    </div>
+                </div>
+                
+                <!-- Opción Dark -->
+                <div class="settings-theme-option" data-theme="dark">
+                    <span class="theme-option-emoji">🌙</span>
+                    <span class="theme-option-title">Dark</span>
+                    <div class="theme-color-previews">
+                        <span class="theme-color-dot" style="background: #0f0f1a;"></span>
+                        <span class="theme-color-dot" style="background: #ff9c3f;"></span>
+                        <span class="theme-color-dot" style="background: #eeeef8;"></span>
+                    </div>
+                </div>
+                
+                <!-- Opción Ocean -->
+                <div class="settings-theme-option" data-theme="ocean">
+                    <span class="theme-option-emoji">🌊</span>
+                    <span class="theme-option-title">Ocean</span>
+                    <div class="theme-color-previews">
+                        <span class="theme-color-dot" style="background: #060e1c;"></span>
+                        <span class="theme-color-dot" style="background: #06b6d4;"></span>
+                        <span class="theme-color-dot" style="background: #e0f0f8;"></span>
+                    </div>
+                </div>
+                
+                <!-- Opción Forest -->
+                <div class="settings-theme-option" data-theme="forest">
+                    <span class="theme-option-emoji">🌿</span>
+                    <span class="theme-option-title">Forest</span>
+                    <div class="theme-color-previews">
+                        <span class="theme-color-dot" style="background: #060e06;"></span>
+                        <span class="theme-color-dot" style="background: #84cc16;"></span>
+                        <span class="theme-color-dot" style="background: #e0f0e0;"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÓDULO 3: ZONA DE PELIGRO -->
+        <section class="danger-card">
+            <div class="danger-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Zona de Peligro
+            </div>
+            <p class="danger-desc">
+                Una vez que elimines tu cuenta, no hay marcha atrás. Se borrará permanentemente todo tu perfil de usuario y tu portafolio de proyectos asociados en cascada de nuestra base de datos.
+            </p>
+            <button type="button" class="btn-danger-trigger" id="open-delete-modal-btn">
+                <i class="fas fa-user-slash"></i> Eliminar mi cuenta permanentemente
+            </button>
+        </section>
+    </div>
+
+    <!-- COLUMNA DERECHA: SEGURIDAD (CAMBIO DE CONTRASEÑA) -->
+    <div class="settings-column">
+        <section class="settings-card card-security">
+            <div class="card-title-group">
+                <span class="card-title-icon"><i class="fas fa-shield-alt"></i></span>
+                <h2>Seguridad de Acceso</h2>
+            </div>
+            
+            <form method="post" action="{% url 'ajustes' %}" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+                
+                {% if password_form.non_field_errors %}
+                    <div class="field-errors" style="margin-bottom: 12px;">
+                        {% for error in password_form.non_field_errors %}
+                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% for field in password_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                            {% if field.field.required %}<span style="color:#ef4444;">*</span>{% endif %}
+                        </label>
+                        <div class="input-wrapper">
+                            <!-- Inyección dinámica de widgets de Django -->
+                            {{ field }}
+                            <button type="button" class="toggle-password-btn" aria-label="Mostrar/Ocultar contraseña">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if field.help_text %}
+                            <div class="form-help-text">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="field-errors">
+                                {% for error in field.errors %}
+                                    <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn-submit-action" style="margin-top: 10px;">
+                    <i class="fas fa-key"></i> Actualizar contraseña
+                </button>
+            </form>
+        </section>
+    </div>
+
+</div>
+
+<!-- MODAL ESTRICTO DE ELIMINACIÓN DE CUENTA -->
+<div class="settings-modal" id="delete-account-modal">
+    <div class="settings-modal-overlay" id="close-modal-overlay"></div>
+    <div class="settings-modal-card">
+        <div class="settings-modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> ¿Confirmar baja del sistema?</h3>
+            <button class="close-modal-btn" id="close-modal-btn">&times;</button>
+        </div>
+        <div class="settings-modal-body">
+            <p><strong>Atención:</strong> Esta acción es irreversible y ejecutará las siguientes acciones físicas en cascada:</p>
+            <ul>
+                <li>Se eliminará tu cuenta <strong>{{ user.username }}</strong>.</li>
+                <li>Se eliminarán tus datos personales de perfil y contacto.</li>
+                <li>Se eliminarán todos tus proyectos y portafolios de forma definitiva.</li>
+            </ul>
+            <p>Si estás seguro de proceder, escribe tu nombre de usuario exacto a continuación:</p>
+            <div class="settings-modal-confirm-input-group">
+                <label for="delete-confirm-username">Nombre de usuario: <strong style="color:var(--orange-primary)">{{ user.username }}</strong></label>
+                <input type="text" id="delete-confirm-username" placeholder="{{ user.username }}" autocomplete="off">
+            </div>
+        </div>
+        <div class="settings-modal-footer">
+            <button type="button" class="btn-modal-cancel" id="cancel-delete-btn">Cancelar</button>
+            <form method="post" action="{% url 'ajustes' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_account">
+                <button type="submit" class="btn-modal-danger disabled" id="delete-account-submit-btn" disabled>
+                    <i class="fas fa-trash-alt"></i> Eliminar mi cuenta permanentemente
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ==========================================
+        // MÓDULO 1: SELECTOR DE TEMAS EN AJUSTES
+        // ==========================================
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const activeCard = document.querySelector(`.settings-theme-option[data-theme="${currentTheme}"]`);
+        if (activeCard) {
+            activeCard.classList.add('active');
+        }
+
+        document.querySelectorAll('.settings-theme-option').forEach(card => {
+            card.addEventListener('click', function() {
+                const selectedTheme = this.dataset.theme;
+                
+                // 1. Guardar en localStorage
+                localStorage.setItem('theme', selectedTheme);
+                
+                // 2. Aplicar clases al body
+                document.body.classList.remove('theme-light', 'theme-dark', 'theme-ocean', 'theme-forest');
+                document.body.classList.add('theme-' + selectedTheme);
+                
+                // 3. Actualizar selección visual activa en la página de ajustes
+                document.querySelectorAll('.settings-theme-option').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 4. Sincronizar con el selector del topbar si existe
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === selectedTheme);
+                });
+                const themeBtn = document.getElementById('theme-toggle-btn');
+                if (themeBtn) {
+                    const icons = { light: '☀️', dark: '🌙', ocean: '🌊', forest: '🌿' };
+                    themeBtn.innerHTML = icons[selectedTheme] || '☀️';
+                }
+            });
+        });
+
+        // ==========================================
+        // MÓDULO 2: MOSTRAR/OCULTAR CONTRASEÑA
+        // ==========================================
+        document.querySelectorAll('.toggle-password-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Convertir tipos de input de django forms a password por seguridad si no lo están
+        document.querySelectorAll('.settings-form input').forEach(input => {
+            if (input.name.includes('password') || input.name.includes('contraseña')) {
+                input.type = 'password';
+            }
+        });
+
+        // ==========================================
+        // MÓDULO 3: ZONA DE PELIGRO - MODAL ESTRICTO
+        // ==========================================
+        const modal = document.getElementById('delete-account-modal');
+        const openModalBtn = document.getElementById('open-delete-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelModalBtn = document.getElementById('cancel-delete-btn');
+        const overlay = document.getElementById('close-modal-overlay');
+
+        const confirmInput = document.getElementById('delete-confirm-username');
+        const submitBtn = document.getElementById('delete-account-submit-btn');
+        const targetUsername = "{{ user.username }}";
+
+        function openModal() {
+            modal.classList.add('open');
+            confirmInput.value = '';
+            submitBtn.setAttribute('disabled', 'true');
+            submitBtn.classList.add('disabled');
+            confirmInput.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+
+        if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+        if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
+        if (overlay) overlay.addEventListener('click', closeModal);
+
+        // Escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('open')) {
+                closeModal();
+            }
+        });
+
+        // Validación estricta en el input
+        if (confirmInput && submitBtn) {
+            confirmInput.addEventListener('input', function() {
+                if (this.value.trim() === targetUsername) {
+                    submitBtn.removeAttribute('disabled');
+                    submitBtn.classList.remove('disabled');
+                } else {
+                    submitBtn.setAttribute('disabled', 'true');
+                    submitBtn.classList.add('disabled');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

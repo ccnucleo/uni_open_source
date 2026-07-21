@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'accounts',
     'projects',
     'courses',
+    'community',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,7 +136,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
 
 # Clave de 16 letras que te dio Google
-EMAIL_HOST_PASSWORD = 'xzfg mecm mwzj fmpp'
+EMAIL_HOST_PASSWORD = 'zxkr rcvi chqo ixgv'
 
 # Cuando sea definitivo, guardar en .env para no revelar contraseña:
 #EMAIL_HOST_USER = os.getenv('EMAIL_USER') 

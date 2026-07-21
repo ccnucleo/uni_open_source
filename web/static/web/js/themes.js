@@ -13,13 +13,11 @@
     // Aplicar tema al body
     function applyTheme(themeId) {
         // Quitar todas las clases de tema
-        document.body.classList.remove('theme-dark', 'theme-ocean', 'theme-forest');
-        // Aplicar la nueva (light no necesita clase, es el default)
-        if (themeId !== 'light') {
-            document.body.classList.add('theme-' + themeId);
-        }
+        document.body.classList.remove('theme-light', 'theme-dark', 'theme-ocean', 'theme-forest');
+        // Aplicar la nueva clase de tema
+        document.body.classList.add('theme-' + themeId);
         // Guardar en localStorage
-        localStorage.setItem('uos-theme', themeId);
+        localStorage.setItem('theme', themeId);
         // Actualizar estado activo en el dropdown
         document.querySelectorAll('.theme-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === themeId);
@@ -32,7 +30,7 @@
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function () {
-        const saved = localStorage.getItem('uos-theme') || 'light';
+        const saved = localStorage.getItem('theme') || 'light';
         applyTheme(saved);
 
         const dropdown = document.getElementById('theme-dropdown');
@@ -69,8 +67,8 @@
 
     // Aplicar tema inmediatamente (antes del DOMContentLoaded)
     // para evitar el flash de tema incorrecto
-    const savedEarly = localStorage.getItem('uos-theme');
-    if (savedEarly && savedEarly !== 'light') {
+    const savedEarly = localStorage.getItem('theme');
+    if (savedEarly) {
         document.documentElement.classList.add('theme-' + savedEarly + '-early');
         document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('theme-' + savedEarly + '-early');

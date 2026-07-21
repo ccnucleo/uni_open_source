@@ -16,12 +16,14 @@
             <div class="sidebar-icon"><i class="fas fa-graduation-cap"></i></div>
             <span>Courses</span>
         </a>
-        <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-users"></i></div><span>Comunidad</span></a>
-        <a href="#" class="sidebar-link"><div class="sidebar-icon"><i class="fas fa-star"></i></div><span>Destacados</span></a>
+        <a href="{% url 'community:list' %}" class="sidebar-link{% if active_section == 'community' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+            <span>Comunidad</span>
+        </a>
     </nav>
 
     <div class="sidebar-bottom">
-        <a href="#" class="sidebar-link sidebar-link-sm">
+        <a href="{% url 'ajustes' %}" class="sidebar-link sidebar-link-sm{% if active_section == 'settings' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-cog"></i></div><span>Ajustes</span>
         </a>
     </div>

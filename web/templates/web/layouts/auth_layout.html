@@ -5,18 +5,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}UNI Open Source{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="{% static 'web/css/layouts.css' %}">
     {% block extra_css %}{% endblock %}
+
+    <style>
+        /* ESTRUCTURA MAESTRA LIMPIA */
+        body.auth-shell {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-image: url("{% static 'web/img/fondo_registro.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column; /* Apila cabecera y contenido verticalmente */
+            position: relative;
+        }
+        
+        .auth-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 0;
+        }
+
+        /* CABECERA (Toma su espacio natural arriba) */
+        .auth-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 5%;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .auth-back-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+        .auth-back-link:hover { opacity: 0.8; }
+
+        .auth-nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .btn-login-header {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+        .btn-login-header:hover { color: #cccccc; }
+        
+        .btn-register-header {
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background-color 0.3s;
+        }
+        .btn-register-header:hover { background-color: #e5e5e5; }
+
+        /* CONTENEDOR CENTRAL (Ocupa el resto de la pantalla y centra la tarjeta) */
+        .auth-content-wrapper {
+            flex: 1; /* Toma todo el alto disponible debajo de la cabecera */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body class="auth-shell">
-    <div class="auth-back-row">
+    <div class="auth-overlay"></div>
+
+    <header class="auth-header">
         <a href="javascript:history.back()" class="auth-back-link" aria-label="Volver a la vista anterior">
             <i class="fas fa-arrow-left"></i> Volver
         </a>
-    </div>
+        <div class="auth-nav-buttons">
+            <a href="{% url 'accounts:login' %}" class="btn-login-header">Iniciar Sesión</a>
+            <a href="{% url 'accounts:register' %}" class="btn-register-header">Registrarse</a>
+        </div>
+    </header>
 
-    {% block content %}{% endblock %}
+    <div class="auth-content-wrapper">
+        {% block content %}{% endblock %}
+    </div>
 
     {% if messages %}
         <div id="django-messages" style="display: none;">
@@ -26,6 +123,7 @@
         </div>
     {% endif %}
 
+    <script src="{% static 'web/js/loading.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

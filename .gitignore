@@ -3,6 +3,7 @@ __pycache__/
 .vscode/
 .venv/
 venv/
+media/profile_pics/
 
 # Python tooling caches
 .pytest_cache/
