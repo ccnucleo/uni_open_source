@@ -4,6 +4,24 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+def populate_categories(apps, schema_editor):
+    Course = apps.get_model("courses", "Course")
+    Category = apps.get_model("courses", "Category")
+    for course in Course.objects.all():
+        val = course.category
+        if val is not None:
+            val_str = str(val).strip()
+            if val_str:
+                if val_str.isdigit() and Category.objects.filter(id=int(val_str)).exists():
+                    continue
+                cat_obj, _ = Category.objects.get_or_create(name=val_str)
+                course.category = str(cat_obj.id)
+                course.save()
+            else:
+                course.category = None
+                course.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -11,6 +29,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(populate_categories, reverse_code=migrations.RunPython.noop),
         migrations.AddField(
             model_name="course",
             name="tags",
@@ -30,3 +49,4 @@ class Migration(migrations.Migration):
             ),
         ),
     ]
+

@@ -6,12 +6,13 @@
     const THEMES = [
         { id: 'light',  label: 'Light',  icon: '☀️',  dot: 'theme-dot-light'  },
         { id: 'dark',   label: 'Dark',   icon: '🌙',  dot: 'theme-dot-dark'   },
-        { id: 'ocean',  label: 'Ocean',  icon: '🌊',  dot: 'theme-dot-ocean'  },
-        { id: 'forest', label: 'Forest', icon: '🌿',  dot: 'theme-dot-forest' },
     ];
 
     // Aplicar tema al body
     function applyTheme(themeId) {
+        if (themeId !== 'light' && themeId !== 'dark') {
+            themeId = 'light';
+        }
         // Quitar todas las clases de tema
         document.body.classList.remove('theme-light', 'theme-dark', 'theme-ocean', 'theme-forest');
         // Aplicar la nueva clase de tema
@@ -30,8 +31,10 @@
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function () {
-        const saved = localStorage.getItem('theme') || 'light';
+        let saved = localStorage.getItem('theme') || 'light';
+        if (saved !== 'light' && saved !== 'dark') saved = 'light';
         applyTheme(saved);
+
 
         const dropdown = document.getElementById('theme-dropdown');
         const themeBtn = document.getElementById('theme-toggle-btn');

@@ -273,7 +273,7 @@
 
             <div class="projects-grid" id="projects-grid">
                 {% for project in request.user.owned_projects.all %}
-                    <div class="project-card-full">
+                    <div class="project-card-full" data-id="{{ project.id }}" data-name="{{ project.title }}" data-theme="{{ project.theme }}" data-tech="{{ project.main_tech }}" data-date="{{ project.created_at|date:'Y-m-d' }}">
                         <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
                         <button class="btn-edit-card-icon" title="Editar Proyecto">
                             <i class="fas fa-pencil-alt"></i>
@@ -369,6 +369,9 @@
             </div>
         </div>
     </div>
+
+    {% include 'web/components/project_modals.html' %}
+
 {% endblock %}
 
 {% block extra_js %}
