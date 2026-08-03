@@ -1,37 +1,192 @@
 {% extends 'web/layouts/app_layout.html' %}
 {% load static %}
 
-{% block title %}Proyectos | UNI Open Source{% endblock %}
+{% block title %}Explorar Proyectos | UNI Open Source{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/profile.css' %}">
 <link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
 {% endblock %}
 
 {% block content %}
-<main class="domain-page">
-    <section class="domain-header">
-        <h1>Proyectos</h1>
-        <p>Explora proyectos de la comunidad y administra tu portafolio desde una capa dedicada.</p>
-        <a class="api-link" href="/projects/api/projects/" target="_blank" rel="noopener">Ver API JSON</a>
+<form style="display:none;">{% csrf_token %}</form>
+
+<main class="domain-page" style="max-width: 1200px; margin: 0 auto; padding: 20px 24px;">
+    <!-- ENCABEZADO DE SECCIÓN CON ACCIONES Y BOTÓN DE CREAR -->
+    <section class="domain-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 120px;">
+        <div>
+            <h1
+                style="font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gray-900); margin: 0 0 6px 0;">
+                Explorar Proyectos</h1>
+            <p style="color: var(--gray-600); font-size: 1rem; margin: 0;">Descubre, filtra y contribuye a los proyectos
+                desarrollados por la comunidad UNI Open Source.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            {% if request.user.is_authenticated %}
+            <button class="btn-new-project" id="btn-new-project">
+                <i class="fas fa-plus"></i> Nuevo Proyecto
+            </button>
+            {% endif %}
+        </div>
     </section>
 
-    <section class="domain-grid">
-        {% for project in projects %}
-            <article class="domain-card">
-                <h2>{{ project.title }}</h2>
-                <p>{{ project.summary|default:'Sin resumen por ahora.' }}</p>
-                <div class="domain-meta">
-                    <span><strong>Owner:</strong> {{ project.owner.username }}</span>
-                    <span><strong>Stack:</strong> {{ project.tech_stack|default:'No definido' }}</span>
+    <!-- PANEL DE BÚSQUEDA AVANZADA Y FILTROS -->
+    <section class="projects-header">
+        <div class="projects-title-row">
+            <div class="projects-title">
+                <h3>Proyectos Disponibles <span class="project-count" id="project-count">({{ projects|length }})</span>
+                </h3>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="btn-view-grid" title="Vista cuadrícula">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" id="btn-view-list" title="Vista lista">
+                        <i class="fas fa-list"></i>
+                    </button>
                 </div>
-                <a href="{% url 'projects:detail' project.id %}" class="detail-link">Ver detalle</a>
-            </article>
+            </div>
+
+            <div class="projects-actions">
+                <div class="dropdown" id="dropdown-ordenar">
+                    <button class="dropdown-btn">
+                        <i class="fas fa-sort-amount-down"></i> Ordenar por <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#" data-sort="recent" class="active"><i class="fas fa-clock"></i> Más recientes</a>
+                        <a href="#" data-sort="oldest"><i class="fas fa-history"></i> Más antiguos</a>
+                        <a href="#" data-sort="az"><i class="fas fa-sort-alpha-down"></i> A - Z</a>
+                        <a href="#" data-sort="za"><i class="fas fa-sort-alpha-up"></i> Z - A</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="search-project"
+                placeholder="Buscar proyecto por nombre, tecnología o palabra clave...">
+            <button class="search-clear" id="search-clear" title="Limpiar búsqueda">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="filters-row">
+            <div class="dropdown" id="dropdown-temas">
+                <button class="dropdown-btn filter-btn">
+                    <i class="fas fa-folder"></i> Tema / Área <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" data-theme="all" class="active">Todos los temas</a>
+                    <a href="#" data-theme="web"><i class="fas fa-globe"></i> Desarrollo Web</a>
+                    <a href="#" data-theme="mobile"><i class="fas fa-mobile-alt"></i> Apps Móviles</a>
+                    <a href="#" data-theme="ia"><i class="fas fa-robot"></i> IA / ML</a>
+                    <a href="#" data-theme="data"><i class="fas fa-chart-bar"></i> Data Science</a>
+                    <a href="#" data-theme="iot"><i class="fas fa-microchip"></i> IoT</a>
+                    <a href="#" data-theme="games"><i class="fas fa-gamepad"></i> Videojuegos</a>
+                    <a href="#" data-theme="security"><i class="fas fa-shield-alt"></i> Seguridad</a>
+                    <a href="#" data-theme="api"><i class="fas fa-plug"></i> APIs / Backend</a>
+                    <a href="#" data-theme="devops"><i class="fas fa-server"></i> DevOps</a>
+                    <a href="#" data-theme="research"><i class="fas fa-flask"></i> Investigación</a>
+                </div>
+            </div>
+
+            <div class="dropdown" id="dropdown-tecnologias">
+                <button class="dropdown-btn filter-btn">
+                    <i class="fas fa-code"></i> Tecnología <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" data-tech="all" class="active">Todas las tecnologías</a>
+                    <a href="#" data-tech="python"><i class="fab fa-python"></i> Python</a>
+                    <a href="#" data-tech="javascript"><i class="fab fa-js-square"></i> JavaScript</a>
+                    <a href="#" data-tech="java"><i class="fab fa-java"></i> Java</a>
+                    <a href="#" data-tech="react"><i class="fab fa-react"></i> React</a>
+                    <a href="#" data-tech="angular"><i class="fab fa-angular"></i> Angular</a>
+                    <a href="#" data-tech="vue"><i class="fab fa-vuejs"></i> Vue.js</a>
+                    <a href="#" data-tech="node"><i class="fab fa-node-js"></i> Node.js</a>
+                    <a href="#" data-tech="django">Django</a>
+                    <a href="#" data-tech="tensorflow">TensorFlow</a>
+                    <a href="#" data-tech="docker"><i class="fab fa-docker"></i> Docker</a>
+                </div>
+            </div>
+
+            <button class="btn-clear-filters" id="btn-clear-filters">
+                <i class="fas fa-times"></i> Limpiar filtros
+            </button>
+        </div>
+    </section>
+
+    <!-- MENSAJE DE SIN RESULTADOS -->
+    <div id="no-results"
+        style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 1.5px dashed var(--gray-300); margin-bottom: 24px;">
+        <i class="fas fa-search fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
+        <h3 style="color: var(--gray-800); margin-bottom: 6px;">No se encontraron proyectos</h3>
+        <p style="color: var(--gray-500); margin: 0;">No encontramos ningún resultado para "<span
+                id="search-term"></span>". Prueba con otros términos o limpia los filtros.</p>
+    </div>
+
+    <!-- GRILLA DE PROYECTOS -->
+    <section class="projects-grid" id="projects-grid">
+        {% for project in projects %}
+        <article class="project-card-full" data-id="{{ project.id }}" data-name="{{ project.title }}"
+            data-theme="{{ project.theme }}" data-tech="{{ project.main_tech }}"
+            data-date="{{ project.created_at|date:'Y-m-d' }}">
+            {% if request.user == project.owner %}
+            <button class="btn-edit-card-icon" title="Editar Proyecto">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+            {% endif %}
+
+            <div class="project-card-img">
+                {% if project.image %}
+                <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                {% else %}
+                <div class="project-card-img-placeholder">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="project-card-body">
+                <div class="project-card-tags">
+                    <span class="tag-theme"><i class="fas fa-folder"></i> {{ project.get_theme_display }}</span>
+                    {% if project.main_tech %}
+                    <span class="tag-tech"><i class="fas fa-code"></i> {{ project.main_tech }}</span>
+                    {% endif %}
+                    {% for tag in project.tags.all %}
+                    <span class="tag-tech" style="background: #f1f5f9; color: #475569;">#{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <h4 class="project-card-title">
+                    <a href="{% url 'projects:detail' project.id %}">{{ project.title }}</a>
+                </h4>
+
+                <p class="project-card-desc">{{ project.summary|default:'Sin descripción breve
+                    registrada.'|truncatechars:95 }}</p>
+
+                <div class="project-card-meta">
+                    <span><i class="fas fa-user"></i> @{{ project.owner.username }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ project.created_at|date:"d/m/Y" }}</span>
+                    <a href="{% url 'projects:detail' project.id %}" class="btn-detail-sm">Ver detalle <i
+                            class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </article>
         {% empty %}
-            <article class="domain-card domain-card-empty">
-                <h2>No hay proyectos registrados</h2>
-                <p>Puedes crear uno con un POST autenticado a <code>/projects/api/projects/</code>.</p>
-            </article>
+        <article
+            style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 1.5px dashed var(--gray-300);">
+            <i class="fas fa-folder-open fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
+            <h3 style="color: var(--gray-800); margin-bottom: 6px;">No hay proyectos registrados</h3>
+            <p style="color: var(--gray-500);">Sé el primero en crear uno usando el botón de arriba.</p>
+        </article>
         {% endfor %}
     </section>
 </main>
+
+{% include 'web/components/project_modals.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'web/js/scripts.js' %}"></script>
 {% endblock %}

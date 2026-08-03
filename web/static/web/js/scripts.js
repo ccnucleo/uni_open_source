@@ -910,31 +910,66 @@ document.addEventListener('DOMContentLoaded', function () {
                 reader.readAsDataURL(this.files[0]);
             }
         });
-    }
-
-    const btnSaveNewProject = document.getElementById('btn-save-new-project');
+    }    const btnSaveNewProject = document.getElementById('btn-save-new-project');
     if (btnSaveNewProject) {
         btnSaveNewProject.addEventListener('click', function () {
-            const name = document.getElementById('input-project-name').value.trim();
-            const desc = document.getElementById('input-project-desc').value.trim();
-            const theme = document.getElementById('select-project-theme').value;
-            const tech = document.getElementById('select-project-tech').value;
+            const nameEl = document.getElementById('input-project-name');
+            const descEl = document.getElementById('input-project-desc');
+            const themeEl = document.getElementById('select-project-theme');
+            const techEl = document.getElementById('select-project-tech');
+            const repoEl = document.getElementById('input-project-repo');
+            const p1El = document.getElementById('input-project-p1');
+            const p2El = document.getElementById('input-project-p2');
+            const p3El = document.getElementById('input-project-p3');
+            const imgInput = document.getElementById('input-project-image');
+
+            const name = nameEl ? nameEl.value.trim() : '';
+            const desc = descEl ? descEl.value.trim() : '';
+            const theme = themeEl ? themeEl.value : 'web';
+            const tech = techEl ? techEl.value.trim() : '';
 
             if (!name) { showToast('Por favor, ingresa un nombre para el proyecto', 'error'); return; }
             if (!desc) { showToast('Por favor, ingresa una descripción', 'error'); return; }
 
-            const previewImg = newProjectImagePreview.querySelector('img');
-            const imageSrc = previewImg ? previewImg.src : null;
+            btnSaveNewProject.classList.add('btn-loading');
 
-            const newCard = createProjectCard({
-                name, desc, theme, tech,
-                date: new Date().toISOString().split('T')[0],
-                views: 0, collaborators: 1, imageSrc: imageSrc
+            const formData = new FormData();
+            formData.append('title', name);
+            formData.append('summary', desc);
+            formData.append('description', desc);
+            formData.append('theme', theme);
+            formData.append('main_tech', tech);
+            if (repoEl && repoEl.value.trim()) formData.append('repository_url', repoEl.value.trim());
+            if (p1El && p1El.value.trim()) formData.append('paragraph_1', p1El.value.trim());
+            if (p2El && p2El.value.trim()) formData.append('paragraph_2', p2El.value.trim());
+            if (p3El && p3El.value.trim()) formData.append('paragraph_3', p3El.value.trim());
+            if (imgInput && imgInput.files && imgInput.files[0]) {
+                formData.append('image', imgInput.files[0]);
+            }
+
+            fetch('/projects/api/projects/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Proyecto creado exitosamente', 'success');
+                    if (modalNewProject) modalNewProject.classList.remove('active');
+                    resetNewProjectForm();
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    showToast(data.message || 'Error al crear proyecto', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Error de conexión con la API de proyectos', 'error');
+            })
+            .finally(() => {
+                btnSaveNewProject.classList.remove('btn-loading');
             });
-            if(projectsGrid) projectsGrid.appendChild(newCard);
-            if(modalNewProject) modalNewProject.classList.remove('active');
-            resetNewProjectForm();
-            updateProjectCount();
         });
     }
 
@@ -989,7 +1024,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                const card = editBtn.closest('.project-card-full');
+                const card = editBtn.closest('.project-card-full') || editBtn.closest('.domain-card');
                 if (card) {
                     currentEditingProject = card;
                     openEditProjectModal(card);
@@ -999,11 +1034,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function openEditProjectModal(card) {
-        const titleEl = card.querySelector('.project-card-title');
-        const descEl = card.querySelector('.project-card-desc');
+        const titleEl = card.querySelector('.project-card-title') || card.querySelector('h2');
+        const descEl = card.querySelector('.project-card-desc') || card.querySelector('p');
 
-        const name = titleEl && titleEl.classList.contains('placeholder') ? '' : card.dataset.name;
-        const desc = descEl && descEl.classList.contains('placeholder') ? '' : descEl.textContent;
+        const name = titleEl && titleEl.classList.contains('placeholder') ? '' : (card.dataset.name || (titleEl ? titleEl.textContent.trim() : ''));
+        const desc = descEl && descEl.classList.contains('placeholder') ? '' : (descEl ? descEl.textContent.trim() : '');
 
         const editNameInp = document.getElementById('edit-project-name');
         if(editNameInp) editNameInp.value = name;
@@ -1012,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(editDescInp) editDescInp.value = desc;
         
         const editTheme = document.getElementById('edit-project-theme');
-        if(editTheme) editTheme.value = card.dataset.theme || '';
+        if(editTheme) editTheme.value = card.dataset.theme || 'web';
         
         const editTech = document.getElementById('edit-project-tech');
         if(editTech) editTech.value = card.dataset.tech ? card.dataset.tech.split(',')[0] : '';
@@ -1023,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const countDesc = document.getElementById('count-edit-project-desc');
         if(countDesc) countDesc.textContent = desc ? desc.length : 0;
 
-        const cardImg = card.querySelector('.project-card-img img');
+        const cardImg = card.querySelector('.project-card-img img') || card.querySelector('img');
         if (editProjectImagePreview) {
             if (cardImg) {
                 editProjectImagePreview.innerHTML = `<img src="${cardImg.src}" alt="Preview">`;
@@ -1183,52 +1218,62 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnSaveEditProject) {
         btnSaveEditProject.addEventListener('click', function () {
             if (!currentEditingProject) return;
+            const projectId = currentEditingProject.dataset.id;
+            if (!projectId) {
+                showToast('No se encontró el ID del proyecto', 'error');
+                return;
+            }
 
             const name = document.getElementById('edit-project-name').value.trim();
             const desc = document.getElementById('edit-project-desc').value.trim();
             const theme = document.getElementById('edit-project-theme').value;
-            const tech = document.getElementById('edit-project-tech').value;
+            const tech = document.getElementById('edit-project-tech').value.trim();
+            const p1El = document.getElementById('edit-project-p1');
+            const p2El = document.getElementById('edit-project-p2');
+            const p3El = document.getElementById('edit-project-p3');
+            const imgInput = document.getElementById('input-edit-project-image');
 
-            const themeNames = { 'web': 'Web', 'mobile': 'Móvil', 'ia': 'IA', 'data': 'Data', 'iot': 'IoT', 'games': 'Juegos', 'security': 'Seguridad', 'automation': 'Automatización', 'api': 'API', 'devops': 'DevOps', 'research': 'Investigación' };
-            const techNames = { 'python': 'Python', 'javascript': 'JavaScript', 'java': 'Java', 'react': 'React', 'angular': 'Angular', 'vue': 'Vue.js', 'node': 'Node.js', 'django': 'Django', 'flask': 'Flask', 'tensorflow': 'TensorFlow', 'docker': 'Docker', 'aws': 'AWS' };
+            if (!name) { showToast('El nombre es obligatorio', 'error'); return; }
 
-            const titleEl = currentEditingProject.querySelector('.project-card-title');
-            const descEl = currentEditingProject.querySelector('.project-card-desc');
+            btnSaveEditProject.classList.add('btn-loading');
 
-            if (name) {
-                currentEditingProject.dataset.name = name;
-                if(titleEl) { titleEl.textContent = name; titleEl.classList.remove('placeholder'); }
-            } else {
-                currentEditingProject.dataset.name = 'Nuevo Proyecto';
-                if(titleEl) { titleEl.textContent = 'Nuevo Proyecto'; titleEl.classList.add('placeholder'); }
+            const formData = new FormData();
+            formData.append('title', name);
+            formData.append('summary', desc);
+            formData.append('description', desc);
+            formData.append('theme', theme);
+            formData.append('main_tech', tech);
+            if (p1El && p1El.value.trim()) formData.append('paragraph_1', p1El.value.trim());
+            if (p2El && p2El.value.trim()) formData.append('paragraph_2', p2El.value.trim());
+            if (p3El && p3El.value.trim()) formData.append('paragraph_3', p3El.value.trim());
+            if (imgInput && imgInput.files && imgInput.files[0]) {
+                formData.append('image', imgInput.files[0]);
             }
 
-            if (desc) {
-                if(descEl) { descEl.textContent = desc; descEl.classList.remove('placeholder'); }
-            } else {
-                if(descEl) { descEl.textContent = 'Descripción del proyecto'; descEl.classList.add('placeholder'); }
-            }
-
-            currentEditingProject.dataset.theme = theme;
-            currentEditingProject.dataset.tech = tech;
-
-            const tagsContainer = currentEditingProject.querySelector('.project-card-tags');
-            if(tagsContainer) {
-                tagsContainer.innerHTML = '';
-                if (tech) tagsContainer.innerHTML += `<span class="tag-tech">${techNames[tech] || tech}</span>`;
-                if (theme) tagsContainer.innerHTML += `<span class="tag-theme">${themeNames[theme] || theme}</span>`;
-            }
-
-            if (inputEditProjectImage && inputEditProjectImage.files && inputEditProjectImage.files[0]) {
-                const previewImg = editProjectImagePreview ? editProjectImagePreview.querySelector('img') : null;
-                if (previewImg) {
-                    const cardImgContainer = currentEditingProject.querySelector('.project-card-img');
-                    if(cardImgContainer) cardImgContainer.innerHTML = `<img src="${previewImg.src}" alt="Imagen del proyecto">`;
+            fetch(`/projects/api/projects/${projectId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Proyecto actualizado exitosamente', 'success');
+                    if (modalEditProject) modalEditProject.classList.remove('active');
+                    currentEditingProject = null;
+                    resetEditProjectForm();
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    showToast(data.message || 'Error al actualizar proyecto', 'error');
                 }
-            }
-
-            if(modalEditProject) modalEditProject.classList.remove('active');
-            currentEditingProject = null;
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Error de conexión', 'error');
+            })
+            .finally(() => {
+                btnSaveEditProject.classList.remove('btn-loading');
+            });
         });
     }
 
@@ -1236,22 +1281,33 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnDeleteProject) {
         btnDeleteProject.addEventListener('click', function () {
             if (!currentEditingProject) return;
+            const projectId = currentEditingProject.dataset.id;
+            if (!projectId) return;
+
             if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
-                const cardToRemove = currentEditingProject;
-                cardToRemove.classList.add('removing');
-
-                if(modalEditProject) modalEditProject.classList.remove('active');
-                currentEditingProject = null;
-
-                setTimeout(() => {
-                    cardToRemove.remove();
-                    updateProjectCount();
-                    if(projectsGrid) {
-                        projectsGrid.style.display = 'none';
-                        projectsGrid.offsetHeight;
-                        projectsGrid.style.display = 'grid';
+                btnDeleteProject.classList.add('btn-loading');
+                fetch(`/projects/api/projects/${projectId}/`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRFToken': getCSRFToken() }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Proyecto eliminado', 'success');
+                        if (modalEditProject) modalEditProject.classList.remove('active');
+                        currentEditingProject = null;
+                        setTimeout(() => window.location.reload(), 600);
+                    } else {
+                        showToast(data.message || 'Error al eliminar', 'error');
                     }
-                }, 300);
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Error de conexión', 'error');
+                })
+                .finally(() => {
+                    btnDeleteProject.classList.remove('btn-loading');
+                });
             }
         });
     }

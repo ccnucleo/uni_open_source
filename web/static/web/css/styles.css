@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
     UNI OPEN SOURCE - ESTILOS GLOBALES
     Paleta: Naranja UNI + Blanco + Gris suave
     Tipografia: Syne (titulos) + DM Sans (texto)
@@ -12,7 +12,7 @@
     --orange-soft: #fed7aa;
     --orange-tag: #fbbf24;
 
-    --sidebar-width: 230px;
+    --sidebar-width: 200px;
 
     --white: #ffffff;
     --gray-50: #f9fafb;
@@ -39,6 +39,20 @@
     --shadow-lg: 0 10px 30px rgba(0, 0, 0, .12);
     --shadow-xl: 0 20px 50px rgba(0, 0, 0, .18);
     --shadow-orange: 0 8px 24px rgba(249, 115, 22, .35);
+
+    /* Micro-Interacciones & Animaciones */
+    --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --transition-fast: 0.15s var(--ease-out-cubic);
+    --transition-base: 0.25s var(--ease-out-cubic);
+    --transition-smooth: 0.35s var(--ease-out-cubic);
+    --transition-spring: 0.4s var(--ease-spring);
+
+    --lift-sm: translateY(-2px);
+    --lift-md: translateY(-5px);
+    --lift-lg: translateY(-8px);
 }
 
 /* ============================================
@@ -72,6 +86,137 @@ h4,
 h5 {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
+}
+
+/* ============================================
+   SISTEMA GLOBAL DE MICRO-INTERACCIONES
+============================================ */
+/* Transición fluida para todos los enlaces e interactivos */
+a {
+    transition: color var(--transition-fast),
+        background-color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        opacity var(--transition-fast);
+}
+
+/* Transiciones y micro-feedback para botones */
+button,
+.btn,
+input[type="submit"],
+input[type="button"],
+.btn-primary,
+.btn-secondary,
+.btn-login-top,
+.btn-reg-top {
+    transition: color var(--transition-base),
+        background-color var(--transition-base),
+        border-color var(--transition-base),
+        transform var(--transition-base),
+        box-shadow var(--transition-base),
+        filter var(--transition-base),
+        opacity var(--transition-base);
+    will-change: transform;
+}
+
+button:active,
+.btn:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-login-top:active,
+.btn-reg-top:active {
+    transform: scale(0.97) translateY(0) !important;
+    transition-duration: 0.08s !important;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--orange-primary);
+    outline-offset: 3px;
+}
+
+/* Transiciones para inputs y formularios */
+input,
+select,
+textarea {
+    transition: border-color var(--transition-base),
+        box-shadow var(--transition-base),
+        background-color var(--transition-base);
+}
+
+/* Sistema unificado de elevación fluida para Tarjetas */
+.card,
+.project-card,
+.project-card-full,
+.course-card,
+.feature-card,
+.domain-card,
+.community-card,
+.profile-card,
+.stat-card,
+.interactive-card {
+    transition: transform var(--transition-smooth),
+        box-shadow var(--transition-smooth),
+        border-color var(--transition-smooth),
+        background-color var(--transition-smooth);
+    will-change: transform, box-shadow;
+}
+
+.card:hover,
+.project-card:hover,
+.project-card-full:hover,
+.course-card:hover,
+.feature-card:hover,
+.domain-card:hover,
+.community-card:hover,
+.profile-card:hover,
+.stat-card:hover,
+.interactive-card:hover {
+    transform: var(--lift-md);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Zoom suave para imágenes dentro de tarjetas */
+.card img,
+.project-card img,
+.course-card img,
+.feature-card img,
+.domain-card img,
+.community-card img {
+    transition: transform 0.45s var(--ease-out-cubic);
+}
+
+.card:hover img,
+.project-card:hover img,
+.course-card:hover img,
+.feature-card:hover img,
+.domain-card:hover img,
+.community-card:hover img {
+    transform: scale(1.04);
+}
+
+/* Modales y Overlays */
+.modal,
+.modal-overlay,
+.modal-backdrop {
+    transition: opacity var(--transition-smooth),
+        visibility var(--transition-smooth),
+        backdrop-filter var(--transition-smooth);
+}
+
+.modal-content,
+.modal-box,
+.modal-dialog {
+    transition: transform var(--transition-smooth),
+        opacity var(--transition-smooth),
+        box-shadow var(--transition-smooth);
 }
 
 /* ============================================
@@ -139,7 +284,7 @@ h5 {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 24px 16px;
+    padding: 24px 12px;
     gap: 6px;
 }
 

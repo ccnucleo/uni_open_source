@@ -1,0 +1,169 @@
+<!-- MODAL CREACIÓN DE PROYECTO -->
+<div class="modal-overlay" id="modal-new-project">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-folder-plus"></i> Nuevo Proyecto</h3>
+            <button type="button" class="modal-close" id="btn-close-new-project">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="edit-section">
+                <h4><i class="fas fa-heading"></i> Información Principal</h4>
+                <div class="form-group">
+                    <label for="input-project-name">Nombre del Proyecto *</label>
+                    <input type="text" id="input-project-name" maxlength="120" placeholder="Ej. Sistema de Control ERP" required>
+                    <span class="char-counter"><span id="count-project-name">0</span>/120</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-project-desc">Descripción Breve (Hero) *</label>
+                    <textarea id="input-project-desc" maxlength="255" rows="2" placeholder="Resumen conciso de tu proyecto..." required></textarea>
+                    <span class="char-counter"><span id="count-project-desc">0</span>/255</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="select-project-theme">Tema / Área</label>
+                        <select id="select-project-theme">
+                            <option value="web">Desarrollo Web</option>
+                            <option value="mobile">Apps Móviles</option>
+                            <option value="ia">IA / Machine Learning</option>
+                            <option value="data">Data Science</option>
+                            <option value="iot">IoT</option>
+                            <option value="games">Videojuegos</option>
+                            <option value="security">Seguridad</option>
+                            <option value="api">APIs / Backend</option>
+                            <option value="devops">DevOps</option>
+                            <option value="research">Investigación</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select-project-tech">Tecnología Principal</label>
+                        <input type="text" id="select-project-tech" placeholder="Ej. Python, React, Node.js">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-project-repo">URL del Repositorio (GitHub / GitLab)</label>
+                    <input type="url" id="input-project-repo" placeholder="https://github.com/usuario/proyecto">
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <h4><i class="fas fa-image"></i> Imagen de Portada</h4>
+                <div class="project-image-preview" id="new-project-image-preview">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Haz clic o arrastra una imagen</span>
+                </div>
+                <input type="file" id="input-project-image" accept="image/*" hidden>
+            </div>
+
+            <div class="edit-section">
+                <h4><i class="fas fa-file-alt"></i> Detalles Ampliados</h4>
+                <div class="form-group">
+                    <label for="input-project-p1">Sección 1: Contexto y Problema</label>
+                    <textarea id="input-project-p1" rows="3" placeholder="¿Qué problema resuelve este proyecto?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="input-project-p2">Sección 2: Funcionalidades Clave</label>
+                    <textarea id="input-project-p2" rows="3" placeholder="Describe las características principales..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="input-project-p3">Sección 3: Arquitectura y Detalles Técnicos</label>
+                    <textarea id="input-project-p3" rows="3" placeholder="Detalles de arquitectura, librerías, despliegue..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="btn-cancel-new-project">Cancelar</button>
+            <button type="button" class="btn-save" id="btn-save-new-project">
+                <i class="fas fa-save"></i> Crear Proyecto
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDICIÓN DE PROYECTO -->
+<div class="modal-overlay" id="modal-edit-project">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Editar Proyecto</h3>
+            <button type="button" class="modal-close" id="btn-close-edit-project">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="edit-section">
+                <h4><i class="fas fa-heading"></i> Información Principal</h4>
+                <div class="form-group">
+                    <label for="edit-project-name">Nombre del Proyecto *</label>
+                    <input type="text" id="edit-project-name" maxlength="120" placeholder="Nombre del proyecto" required>
+                    <span class="char-counter"><span id="count-edit-project-name">0</span>/120</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-project-desc">Descripción Breve (Hero) *</label>
+                    <textarea id="edit-project-desc" maxlength="255" rows="2" placeholder="Resumen del proyecto..." required></textarea>
+                    <span class="char-counter"><span id="count-edit-project-desc">0</span>/255</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-project-theme">Tema / Área</label>
+                        <select id="edit-project-theme">
+                            <option value="web">Desarrollo Web</option>
+                            <option value="mobile">Apps Móviles</option>
+                            <option value="ia">IA / Machine Learning</option>
+                            <option value="data">Data Science</option>
+                            <option value="iot">IoT</option>
+                            <option value="games">Videojuegos</option>
+                            <option value="security">Seguridad</option>
+                            <option value="api">APIs / Backend</option>
+                            <option value="devops">DevOps</option>
+                            <option value="research">Investigación</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-project-tech">Tecnología Principal</label>
+                        <input type="text" id="edit-project-tech" placeholder="Ej. Python, React, Node.js">
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <h4><i class="fas fa-image"></i> Imagen de Portada</h4>
+                <div class="project-image-preview" id="edit-project-image-preview">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Haz clic o arrastra una imagen</span>
+                </div>
+                <input type="file" id="input-edit-project-image" accept="image/*" hidden>
+            </div>
+
+            <div class="edit-section">
+                <h4><i class="fas fa-file-alt"></i> Detalles Ampliados</h4>
+                <div class="form-group">
+                    <label for="edit-project-p1">Sección 1: Contexto y Problema</label>
+                    <textarea id="edit-project-p1" rows="3" placeholder="Contexto..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-project-p2">Sección 2: Funcionalidades Clave</label>
+                    <textarea id="edit-project-p2" rows="3" placeholder="Funcionalidades..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-project-p3">Sección 3: Detalles Técnicos</label>
+                    <textarea id="edit-project-p3" rows="3" placeholder="Detalles técnicos..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between;">
+            <button type="button" class="btn-delete" id="btn-delete-project" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">
+                <i class="fas fa-trash-alt"></i> Eliminar Proyecto
+            </button>
+            <div style="display:flex; gap:10px;">
+                <button type="button" class="btn-cancel" id="btn-cancel-edit-project">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-edit-project">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
