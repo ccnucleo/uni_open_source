@@ -206,10 +206,21 @@
   color: var(--gray-500);
 }
 
-.index-container .c-orange { color: var(--orange-primary); }
-.index-container .c-blue { color: #3b82f6; }
-.index-container .c-pink { color: #ec4899; }
-.index-container .c-green { color: #10b981; }
+.index-container .c-orange {
+  color: var(--orange-primary);
+}
+
+.index-container .c-blue {
+  color: #3b82f6;
+}
+
+.index-container .c-pink {
+  color: #ec4899;
+}
+
+.index-container .c-green {
+  color: #10b981;
+}
 
 .index-container .feature-card {
   flex: 1;
@@ -289,6 +300,7 @@
   display: flex;
   overflow-x: auto;
   gap: 1.5rem;
+  padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   scroll-snap-type: x mandatory;
   scrollbar-width: thin;

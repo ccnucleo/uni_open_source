@@ -31,11 +31,15 @@ def project_detail_page(request, project_id):
 	)
 
 
-def _parse_json_body(request):
-	try:
-		return json.loads(request.body.decode("utf-8"))
-	except (json.JSONDecodeError, UnicodeDecodeError):
-		return None
+def _parse_payload(request):
+	if request.content_type == "application/json" or (request.body and not request.POST):
+		try:
+			return json.loads(request.body.decode("utf-8"))
+		except (json.JSONDecodeError, UnicodeDecodeError):
+			return None
+	if request.POST:
+		return dict(request.POST.items())
+	return {}
 
 
 def _serialize_project(project):
@@ -44,13 +48,18 @@ def _serialize_project(project):
 		"title": project.title,
 		"summary": project.summary,
 		"description": project.description,
+		"theme": project.theme,
+		"theme_display": project.get_theme_display(),
 		"tech_stack": project.tech_stack,
+		"main_tech": project.main_tech,
+		"image_url": project.image_url,
 		"repository_url": project.repository_url,
 		"demo_url": project.demo_url,
 		"owner": project.owner.username,
+		"owner_id": project.owner_id,
 		"is_public": project.is_public,
-		"created_at": project.created_at.isoformat(),
-		"updated_at": project.updated_at.isoformat(),
+		"created_at": project.created_at.isoformat() if project.created_at else None,
+		"updated_at": project.updated_at.isoformat() if project.updated_at else None,
 	}
 
 
@@ -66,34 +75,55 @@ def projects_collection_api(request):
 			status=401,
 		)
 
-	payload = _parse_json_body(request)
+	payload = _parse_payload(request)
 	if payload is None:
 		return JsonResponse(
 			{"success": False, "message": "JSON invalido."},
 			status=400,
 		)
 
-	title = (payload.get("title") or "").strip()
+	title = (payload.get("title") or payload.get("name") or "").strip()
 	if not title:
 		return JsonResponse(
 			{"success": False, "message": "El titulo es obligatorio."},
 			status=400,
 		)
 
-	project = Project.objects.create(
+	summary = (payload.get("summary") or payload.get("desc") or "").strip()
+	description = (payload.get("description") or payload.get("desc") or "").strip()
+	main_tech = (payload.get("main_tech") or payload.get("tech_stack") or payload.get("tech") or "").strip()
+	theme = (payload.get("theme") or "web").strip()
+	repository_url = (payload.get("repository_url") or payload.get("repo_url") or "").strip()
+	p1 = (payload.get("paragraph_1") or payload.get("p1") or description).strip()
+	p2 = (payload.get("paragraph_2") or payload.get("p2") or "").strip()
+	p3 = (payload.get("paragraph_3") or payload.get("p3") or "").strip()
+
+	if not summary and description:
+		summary = description[:255]
+
+	project = Project(
 		title=title,
-		summary=(payload.get("summary") or "").strip(),
-		description=(payload.get("description") or "").strip(),
-		tech_stack=(payload.get("tech_stack") or "").strip(),
-		repository_url=(payload.get("repository_url") or "").strip(),
-		demo_url=(payload.get("demo_url") or "").strip(),
+		summary=summary,
+		paragraph_1=p1,
+		paragraph_2=p2,
+		paragraph_3=p3,
+		theme=theme,
+		main_tech=main_tech,
+		repository_url=repository_url,
 		owner=request.user,
 		is_public=bool(payload.get("is_public", True)),
 	)
+
+	image_file = request.FILES.get("image") or request.FILES.get("cover_image")
+	if image_file:
+		project.image = image_file
+
+	project.save()
+
 	return JsonResponse({"success": True, "data": _serialize_project(project)}, status=201)
 
 
-@require_http_methods(["GET", "PUT", "PATCH", "DELETE"])
+@require_http_methods(["GET", "PUT", "PATCH", "POST", "DELETE"])
 def projects_item_api(request, project_id):
 	try:
 		project = Project.objects.select_related("owner").get(pk=project_id)
@@ -119,20 +149,41 @@ def projects_item_api(request, project_id):
 		project.delete()
 		return JsonResponse({"success": True, "message": "Proyecto eliminado."})
 
-	payload = _parse_json_body(request)
+	payload = _parse_payload(request)
 	if payload is None:
 		return JsonResponse(
-			{"success": False, "message": "JSON invalido."},
+			{"success": False, "message": "Payload invalido."},
 			status=400,
 		)
 
-	for field in ["title", "summary", "description", "tech_stack", "repository_url", "demo_url"]:
-		if field in payload:
-			value = payload.get(field)
-			setattr(project, field, (value or "").strip() if isinstance(value, str) else value)
-
+	if "title" in payload or "name" in payload:
+		title_val = (payload.get("title") or payload.get("name") or "").strip()
+		if title_val:
+			project.title = title_val
+	if "summary" in payload:
+		project.summary = (payload.get("summary") or "").strip()
+	if "description" in payload or "desc" in payload:
+		project.paragraph_1 = (payload.get("description") or payload.get("desc") or "").strip()
+		if not project.summary:
+			project.summary = project.paragraph_1[:255]
+	if "tech_stack" in payload or "main_tech" in payload or "tech" in payload:
+		project.main_tech = (payload.get("tech_stack") or payload.get("main_tech") or payload.get("tech") or "").strip()
+	if "theme" in payload:
+		project.theme = payload.get("theme") or "web"
+	if "repository_url" in payload or "repo_url" in payload:
+		project.repository_url = (payload.get("repository_url") or payload.get("repo_url") or "").strip()
+	if "paragraph_1" in payload or "p1" in payload:
+		project.paragraph_1 = (payload.get("paragraph_1") or payload.get("p1") or "").strip()
+	if "paragraph_2" in payload or "p2" in payload:
+		project.paragraph_2 = (payload.get("paragraph_2") or payload.get("p2") or "").strip()
+	if "paragraph_3" in payload or "p3" in payload:
+		project.paragraph_3 = (payload.get("paragraph_3") or payload.get("p3") or "").strip()
 	if "is_public" in payload:
 		project.is_public = bool(payload.get("is_public"))
+
+	image_file = request.FILES.get("image") or request.FILES.get("cover_image")
+	if image_file:
+		project.image = image_file
 
 	if not project.title:
 		return JsonResponse(
@@ -142,3 +193,4 @@ def projects_item_api(request, project_id):
 
 	project.save()
 	return JsonResponse({"success": True, "data": _serialize_project(project)})
+

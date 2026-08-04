@@ -46,6 +46,38 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def tech_stack(self):
+        return self.main_tech
+
+    @tech_stack.setter
+    def tech_stack(self, value):
+        self.main_tech = value or ""
+
+    @property
+    def description(self):
+        return self.paragraph_1 or self.summary
+
+    @description.setter
+    def description(self, value):
+        val = value or ""
+        self.paragraph_1 = val
+        if not self.summary:
+            self.summary = val[:255]
+
+    @property
+    def demo_url(self):
+        return ""
+
+    @demo_url.setter
+    def demo_url(self, value):
+        pass
+
+    @property
+    def image_url(self):
+        return self.image.url if self.image else None
+
+
 
 class ProjectImage(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="gallery")

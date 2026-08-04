@@ -639,28 +639,6 @@
                         <span class="theme-color-dot" style="background: #eeeef8;"></span>
                     </div>
                 </div>
-                
-                <!-- Opción Ocean -->
-                <div class="settings-theme-option" data-theme="ocean">
-                    <span class="theme-option-emoji">🌊</span>
-                    <span class="theme-option-title">Ocean</span>
-                    <div class="theme-color-previews">
-                        <span class="theme-color-dot" style="background: #060e1c;"></span>
-                        <span class="theme-color-dot" style="background: #06b6d4;"></span>
-                        <span class="theme-color-dot" style="background: #e0f0f8;"></span>
-                    </div>
-                </div>
-                
-                <!-- Opción Forest -->
-                <div class="settings-theme-option" data-theme="forest">
-                    <span class="theme-option-emoji">🌿</span>
-                    <span class="theme-option-title">Forest</span>
-                    <div class="theme-color-previews">
-                        <span class="theme-color-dot" style="background: #060e06;"></span>
-                        <span class="theme-color-dot" style="background: #84cc16;"></span>
-                        <span class="theme-color-dot" style="background: #e0f0e0;"></span>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -775,7 +753,8 @@
         // ==========================================
         // MÓDULO 1: SELECTOR DE TEMAS EN AJUSTES
         // ==========================================
-        const currentTheme = localStorage.getItem('theme') || 'light';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme !== 'light' && currentTheme !== 'dark') currentTheme = 'light';
         const activeCard = document.querySelector(`.settings-theme-option[data-theme="${currentTheme}"]`);
         if (activeCard) {
             activeCard.classList.add('active');
@@ -802,7 +781,7 @@
                 });
                 const themeBtn = document.getElementById('theme-toggle-btn');
                 if (themeBtn) {
-                    const icons = { light: '☀️', dark: '🌙', ocean: '🌊', forest: '🌿' };
+                    const icons = { light: '☀️', dark: '🌙' };
                     themeBtn.innerHTML = icons[selectedTheme] || '☀️';
                 }
             });

@@ -3,12 +3,20 @@ from django.db import migrations, models
 
 
 def populate_categories(apps, schema_editor):
-    Category = apps.get_model("courses", "Category")
     Course = apps.get_model("courses", "Course")
+    Category = apps.get_model("courses", "Category")
     for course in Course.objects.all():
-        if course.category:
-            category, _ = Category.objects.get_or_create(name=course.category)
-            course.category = str(category.id)
+        val = course.category
+        if val is not None:
+            val_str = str(val).strip()
+            if val_str:
+                if val_str.isdigit() and Category.objects.filter(id=int(val_str)).exists():
+                    continue
+                cat_obj, _ = Category.objects.get_or_create(name=val_str)
+                course.category = str(cat_obj.id)
+                course.save()
+        else:
+            course.category = None
             course.save()
 
 
