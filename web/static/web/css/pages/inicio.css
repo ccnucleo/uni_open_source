@@ -6,9 +6,8 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 0;
+  margin: 0;
   width: 100%;
 }
 
@@ -16,6 +15,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding: 0 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .index-container .section-header {
@@ -67,9 +70,12 @@
 
 .index-container .hero-banner {
   position: relative;
-  border-radius: 20px;
+  border-radius: 0;
   overflow: hidden;
-  min-height: 450px;
+  margin-top: calc(-1.15 * var(--topbar-height, 68px));
+  width: 100%;
+  height: 100vh;
+  min-height: clamp(480px, 65vh, 600px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,23 +93,22 @@
   z-index: 1;
 }
 
-.index-container .hero-banner .hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9));
-  z-index: 2;
-}
-
 .index-container .hero-banner .hero-content {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   z-index: 3;
   color: #ffffff;
-  padding: clamp(1rem, 3vw, 2rem);
-  width: min(100%, 820px);
-  margin: 0 auto;
+  padding: calc(var(--topbar-height, 68px) + clamp(1.5rem, 3vw, 2.5rem)) clamp(1rem, 3vw, 2rem) clamp(2rem, 4vw, 3.5rem);
+  width: min(60%, 760px);
+  margin-right: auto;
+  margin-left: 30px;
 }
 
 .index-container .hero-banner h1 {
+  text-align: left;
   font-size: clamp(1.9rem, 5vw, 3.5rem);
   font-weight: 800;
   margin: 0 0 0.5rem 0;
@@ -112,14 +117,19 @@
   max-width: 100%;
 }
 
+.index-container .hero-banner .hero-content .highlight {
+  color: var(--orange-primary)
+}
+
 .index-container .hero-banner h2 {
+  text-align: left;
   font-family: 'DM Sans', sans-serif;
   font-size: clamp(1rem, 2.1vw, 1.5rem);
   font-weight: 400;
   color: #cbd5e1;
   margin: 0 0 2rem 0;
   width: auto;
-  max-width: 100%;
+  max-width: 90%;
 }
 
 .index-container .hero-buttons {
@@ -464,12 +474,17 @@
 
 @media (max-width: 1024px) {
   .index-container {
-    padding: 1.5rem;
+    padding: 0;
     gap: 2.5rem;
   }
 
+  .index-container .section-block {
+    padding: 0 1.5rem;
+  }
+
   .index-container .hero-banner {
-    min-height: 350px;
+    min-height: 400px;
+    border-radius: 0;
   }
 
   .index-container .hero-banner h1 {
@@ -495,13 +510,17 @@
 
 @media (max-width: 768px) {
   .index-container {
-    padding: 1rem;
+    padding: 0;
     gap: 2rem;
   }
 
+  .index-container .section-block {
+    padding: 0 1rem;
+  }
+
   .index-container .hero-banner {
-    min-height: 300px;
-    border-radius: 12px;
+    min-height: 360px;
+    border-radius: 0;
   }
 
   .index-container .hero-banner h1 {
