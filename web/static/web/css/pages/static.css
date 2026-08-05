@@ -1,0 +1,88 @@
+/* ==========================================================================
+   PÁGINAS ESTÁTICAS (Quiénes Somos, Términos de Uso, Política de Privacidad)
+   ========================================================================== */
+
+.static-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+}
+
+.static-page .static-header {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.static-page .static-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.static-page .static-header p.subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.static-page .static-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: var(--shadow-sm);
+}
+
+.static-page .static-content h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin: 24px 0 10px;
+}
+
+.static-page .static-content h2:first-child {
+    margin-top: 0;
+}
+
+.static-page .static-content p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+.static-page .static-content ol,
+.static-page .static-content ul {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 14px 20px;
+}
+
+.static-page .static-content li {
+    margin-bottom: 8px;
+}
+
+.static-page .static-content strong {
+    color: var(--text-primary);
+}
+
+.static-page .contact-block {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.static-page .contact-block i {
+    color: var(--gray-400);
+    margin-right: 6px;
+}
+
+@media (max-width: 600px) {
+    .static-page .static-content {
+        padding: 24px 20px;
+    }
+}

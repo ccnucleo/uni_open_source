@@ -33,6 +33,34 @@ def index_view(request):
         },
     )
 
+def quienes_somos_view(request):
+    return render(
+        request,
+        "web/pages/static/quienes_somos.html",
+        {
+            "page_title": "¿Quiénes Somos?",
+        },
+    )
+
+
+def terminos_view(request):
+    return render(
+        request,
+        "web/pages/static/terminos.html",
+        {
+            "page_title": "Términos de Uso",
+        },
+    )
+
+
+def privacidad_view(request):
+    return render(
+        request,
+        "web/pages/static/privacidad.html",
+        {
+            "page_title": "Política de Privacidad",
+        },
+    )
 
 @never_cache
 def login_view(request):

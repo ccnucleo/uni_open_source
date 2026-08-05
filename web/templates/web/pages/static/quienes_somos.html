@@ -1,0 +1,34 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}¿Quiénes Somos? - UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/static.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <div class="static-header">
+        <h1>¿Quiénes Somos?</h1>
+        <p class="subtitle">Centro Cultural Núcleo — FIIS, UNI</p>
+    </div>
+
+    <div class="static-content">
+        <p>El <strong>Centro Cultural Núcleo</strong> es la organización estudiantil de la Facultad de Ingeniería
+            Industrial y de Sistemas (FIIS) de la Universidad Nacional de Ingeniería (UNI). Nuestra misión es
+            complementar el desarrollo personal y profesional de los estudiantes mediante actividades diversas,
+            fomentando el desarrollo y gestión de proyectos.</p>
+
+        <p><strong>Uni Open Source</strong> es nuestra plataforma: un espacio donde los estudiantes comparten proyectos,
+            colaboran, siguen cursos y construyen comunidad en torno al software libre.</p>
+
+        <div class="contact-block">
+            <span><i class="fas fa-location-arrow"></i>UNI &ndash; Facultad de Ingeniería Industrial y de
+                Sistemas</span>
+            <span><i class="fas fa-phone"></i>927 723 495</span>
+            <span><i class="fas fa-envelope"></i>ccnucleo.fiis@uni.edu.pe</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

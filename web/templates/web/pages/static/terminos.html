@@ -1,0 +1,46 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Términos de Uso - UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/static.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <div class="static-header">
+        <h1>Términos de Uso</h1>
+        <p class="subtitle">Uni Open Source — Centro Cultural Núcleo</p>
+    </div>
+
+    <div class="static-content">
+        <p>Al registrarte y utilizar Uni Open Source, aceptas los siguientes términos:</p>
+
+        <h2>1. Uso de la plataforma</h2>
+        <p>Uni Open Source es un espacio educativo y colaborativo del Centro Cultural Núcleo (FIIS - UNI), destinado
+            exclusivamente a fines académicos y de aprendizaje. No está permitido su uso para fines comerciales sin
+            autorización.</p>
+
+        <h2>2. Cuentas de usuario</h2>
+        <p>Eres responsable de mantener la confidencialidad de tu contraseña y de toda actividad realizada desde tu
+            cuenta.</p>
+
+        <h2>3. Contenido y proyectos</h2>
+        <p>Los proyectos, códigos y materiales que subas siguen siendo de tu autoría. Al publicarlos en la plataforma,
+            autorizas su visualización por parte de la comunidad de usuarios registrados.</p>
+
+        <h2>4. Conducta</h2>
+        <p>Se espera un trato respetuoso entre usuarios. No se permite contenido ofensivo, plagio, ni suplantación de
+            identidad.</p>
+
+        <h2>5. Modificaciones</h2>
+        <p>El Centro Cultural Núcleo puede actualizar estos términos; los cambios relevantes se comunicarán a los
+            usuarios.</p>
+
+        <div class="contact-block">
+            <span><i class="fas fa-envelope"></i>ccnucleo.fiis@uni.edu.pe</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
