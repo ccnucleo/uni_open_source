@@ -2,12 +2,14 @@ import json
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from .models import Course, Category, Tag
 
 
 from django.shortcuts import render
 from .models import Course, Category  # <-- Asegúrate de importar Category
 
+@login_required(login_url="accounts:login")
 def courses_page(request):
     courses = Course.objects.all()
     categories = Category.objects.all().order_by('name')
@@ -21,6 +23,7 @@ def courses_page(request):
     return render(request, 'web/pages/courses/courses_page.html', context)
 
 
+@login_required(login_url="accounts:login")
 def course_detail_page(request, course_id):
 	course = get_object_or_404(Course.objects.select_related("owner"), pk=course_id)
 	return render(
@@ -56,6 +59,7 @@ def _serialize_course(course):
 	}
 
 
+@login_required(login_url="accounts:login")
 @require_http_methods(["GET", "POST"])
 def courses_collection_api(request):
 	if request.method == "GET":
@@ -94,6 +98,7 @@ def courses_collection_api(request):
 	return JsonResponse({"success": True, "data": _serialize_course(course)}, status=201)
 
 
+@login_required(login_url="accounts:login")
 @require_http_methods(["GET", "PUT", "PATCH", "DELETE"])
 def courses_item_api(request, course_id):
 	try:
