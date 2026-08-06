@@ -315,37 +315,32 @@ document.addEventListener('DOMContentLoaded', function () {
                                 const firstLetter = username.charAt(0).toUpperCase();
 
                                 if (isAvatarRemoved) {
-                                    // Remover foto -> mostrar auto-avatar con iniciales
-                                    if (container) {
-                                        const oldEl = document.getElementById('profile-avatar');
-                                        if (oldEl) oldEl.remove();
-                                        const div = document.createElement('div');
-                                        div.className = 'auto-avatar';
-                                        div.id = 'profile-avatar';
-                                        div.setAttribute('data-name', username);
-                                        div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:white;';
-                                        div.textContent = firstLetter;
-                                        // Colorear
-                                        const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
-                                        let hash = 0; for (let i = 0; i < username.length; i++) hash = username.charCodeAt(i) + ((hash << 5) - hash);
-                                        div.style.backgroundColor = avatarColors[Math.abs(hash) % avatarColors.length];
-                                        container.insertBefore(div, container.querySelector('.photo-overlay'));
+                                    // Remover foto -> mostrar la imagen por defecto avatar.jpg
+                                    const defaultAvatarUrl = '/static/web/img/avatar.jpg';
+                                    const oldEl = document.getElementById('profile-avatar');
+                                    if (oldEl) {
+                                        if (oldEl.tagName === 'IMG') {
+                                            oldEl.src = defaultAvatarUrl;
+                                        } else {
+                                            const img = document.createElement('img');
+                                            img.src = defaultAvatarUrl;
+                                            img.alt = 'Usuario';
+                                            img.id = 'profile-avatar';
+                                            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                                            oldEl.replaceWith(img);
+                                        }
                                     }
-                                    // Topbar: reemplazar img con div de iniciales
                                     const topbarAv = document.querySelector('.topbar-avatar');
                                     if (topbarAv) {
-                                        const oldImg = topbarAv.querySelector('img');
-                                        if (oldImg) {
-                                            const span = document.createElement('div');
-                                            span.className = 'auto-avatar';
-                                            span.setAttribute('data-name', username);
-                                            span.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;color:white;';
-                                            span.textContent = firstLetter;
-                                            const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
-                                            let hash2 = 0; for (let i = 0; i < username.length; i++) hash2 = username.charCodeAt(i) + ((hash2 << 5) - hash2);
-                                            span.style.backgroundColor = avatarColors[Math.abs(hash2) % avatarColors.length];
-                                            oldImg.replaceWith(span);
+                                        let topbarImg = topbarAv.querySelector('img');
+                                        if (!topbarImg) {
+                                            topbarImg = document.createElement('img');
+                                            topbarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                                            topbarImg.alt = 'Avatar de perfil';
+                                            topbarAv.innerHTML = '';
+                                            topbarAv.appendChild(topbarImg);
                                         }
+                                        topbarImg.src = defaultAvatarUrl;
                                     }
                                 } else if (croppedAvatarBlob) {
                                     // Subir foto nueva -> mostrar img

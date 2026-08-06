@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+{% static 'web/img/avatar.jpg' as default_avatar %}
 <div class="community-wrapper">
 
     <aside class="community-sidebar">
@@ -60,9 +61,9 @@
 
                 <div class="dev-card-body">
                     {% if dev.profile.avatar %}
-                    <img src="{{ dev.profile.avatar.url }}" alt="{{ dev.username }}" class="dev-avatar">
+                    <img src="{{ dev.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_avatar }}';" alt="{{ dev.username }}" class="dev-avatar">
                     {% else %}
-                    <img src="{% static 'web/img/avatar.jpg' %}" alt="Avatar" class="dev-avatar">
+                    <img src="{{ default_avatar }}" alt="Avatar" class="dev-avatar">
                     {% endif %}
 
                     <h3 class="dev-name">{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{

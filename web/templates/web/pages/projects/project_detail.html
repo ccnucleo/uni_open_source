@@ -16,7 +16,7 @@
     <div class="project-content-grid">
         <div class="project-main-col">
             <!-- NUEVA PORTADA Y DETALLES -->
-            <div class="hero-main-card {% if project.image %}has-image{% else %}no-image{% endif %}" data-title="{{ project.title }}" style="{% if project.image %}background-image: url('{{ project.image.url }}');{% endif %}">
+            <div class="hero-main-card {% if project.image %}has-image{% else %}no-image{% endif %}" data-title="{{ project.title }}" {% if project.image %}style="background-image: url('{{ project.image.url }}');"{% endif %}>
                 {% if request.user == project.owner %}
                 <button class="btn-edit-banner-float" onclick="openModal('modal-edit-banner')"><i class="fas fa-camera"></i> Cambiar Portada</button>
                 {% endif %}
@@ -359,7 +359,7 @@
                     {% for img in project.gallery.all %}
                         <div class="img-box" id="existing-img-{{ img.id }}" data-id="{{ img.id }}" style="cursor: grab;">
                             <img src="{{ img.image.url }}">
-                            <span class="delete-btn" onclick="markDeleteGallery({{ img.id }})">&times;</span>
+                            <span class="delete-btn" onclick="markDeleteGallery('{{ img.id }}')">&times;</span>
                         </div>
                     {% endfor %}
                 </div>

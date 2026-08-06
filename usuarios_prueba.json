@@ -94,7 +94,7 @@
   "pk": 6,
   "fields": {
     "password": "pbkdf2_sha256$1200000$z5JuEABPHRhcIPhAbjraZ4$ag+p3g3f8TVs1dwGcSTnLcTX9CbJz6jgY9wPlatt4AY=",
-    "last_login": "2026-08-02T22:32:09.055Z",
+    "last_login": "2026-08-06T17:11:58.322Z",
     "is_superuser": false,
     "username": "Jose Rojas",
     "first_name": "",
@@ -130,11 +130,11 @@
   "pk": 8,
   "fields": {
     "password": "pbkdf2_sha256$1200000$tbrOquDLvvIfkxEa71N8Jn$8oiCTCO+FKnernpQNAKwTFxXi/sG7TuCFJ8N4uq6x0w=",
-    "last_login": "2026-08-02T23:22:50.344Z",
+    "last_login": "2026-08-04T13:29:28.742Z",
     "is_superuser": true,
-    "username": "nucleo",
-    "first_name": "",
-    "last_name": "",
+    "username": "Harry HM",
+    "first_name": "Harry",
+    "last_name": "HM",
     "email": "",
     "is_staff": true,
     "is_active": true,
@@ -147,16 +147,16 @@
   "model": "auth.user",
   "pk": 9,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$SWSWGCanSOS13okqXrUAh1$/HiWngM4r4Hw35jURp6HWS+3xsGFYg46mRi12BOOB4E=",
-    "last_login": null,
-    "is_superuser": false,
-    "username": "maria_garcia",
-    "first_name": "María",
-    "last_name": "García",
-    "email": "maria_garcia@uni.edu.pe",
-    "is_staff": false,
+    "password": "pbkdf2_sha256$1200000$AoytOuaFW8iZYqTLCJlAiM$f3VF8b8Aoqu5aLUJW4ym7pQWqVQXknuZBLRPbr+IKTY=",
+    "last_login": "2026-08-06T05:18:40.026Z",
+    "is_superuser": true,
+    "username": "anjel",
+    "first_name": "",
+    "last_name": "",
+    "email": "gato123@yopmail.com",
+    "is_staff": true,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:17.369Z",
+    "date_joined": "2026-08-06T05:18:12.182Z",
     "groups": [],
     "user_permissions": []
   }
@@ -165,16 +165,16 @@
   "model": "auth.user",
   "pk": 10,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$ixEoY8ofFxxX8Hy4U6fUE8$t+0w4tm0ACGYFnslwRS2Q8Kc66/clxo5IXaXB0QkCAU=",
+    "password": "pbkdf2_sha256$1200000$vgIHvYkrqnkZpxHqZNKDnD$O2e5GatZgOqz+pVUo56z8h4b1czuq7QFZ8yZTs572CQ=",
     "last_login": null,
     "is_superuser": false,
-    "username": "carlos_mendoza",
-    "first_name": "Carlos",
-    "last_name": "Mendoza",
-    "email": "carlos_mendoza@uni.edu.pe",
+    "username": "angel_dev",
+    "first_name": "Ángel",
+    "last_name": "Gómez",
+    "email": "angel_dev@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:18.925Z",
+    "date_joined": "2026-08-06T17:17:17.713Z",
     "groups": [],
     "user_permissions": []
   }
@@ -183,16 +183,16 @@
   "model": "auth.user",
   "pk": 11,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$Sge0htgckkZzMe0fk97csp$TZSYp638jxrlmUn2rC2KYv6X/m7GDSogENAqAN89V5M=",
+    "password": "pbkdf2_sha256$1200000$aVIRZE491l9bsWeQ7HTITj$IVdAaWeq42GyyjW/VJAuBPl0zjklrksyeonhnWjIpuQ=",
     "last_login": null,
     "is_superuser": false,
-    "username": "lucia_torres",
+    "username": "lucy_code",
     "first_name": "Lucía",
     "last_name": "Torres",
-    "email": "lucia_torres@uni.edu.pe",
+    "email": "lucy_code@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:20.451Z",
+    "date_joined": "2026-08-06T17:17:19.117Z",
     "groups": [],
     "user_permissions": []
   }
@@ -201,16 +201,16 @@
   "model": "auth.user",
   "pk": 12,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$c6Fl0Zoz9tFylebESlxxgr$1ICDP8uGDS28KvV/3K5pw5vTQzgT1FPQjM6EQv3nq9g=",
+    "password": "pbkdf2_sha256$1200000$QhkSnKCHQL5xqkkKkyVPWL$vu2cnP3zPfdSCT7LAPb0nxV3Qy+ZZA0KTD4Oq4IZ650=",
     "last_login": null,
     "is_superuser": false,
-    "username": "diego_rodriguez",
-    "first_name": "Diego",
-    "last_name": "Rodríguez",
-    "email": "diego_rodriguez@uni.edu.pe",
+    "username": "carlos_backend",
+    "first_name": "Carlos",
+    "last_name": "Mendoza",
+    "email": "carlos_backend@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:21.954Z",
+    "date_joined": "2026-08-06T17:17:20.743Z",
     "groups": [],
     "user_permissions": []
   }
@@ -219,16 +219,16 @@
   "model": "auth.user",
   "pk": 13,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$7wjj0JdjajtmzNNqjsmTff$4gIdzqyEQeqTcCtYtmnF1yEmkNmSe8PGByDADUnWj28=",
+    "password": "pbkdf2_sha256$1200000$fXdYpG9epgqUsqqYWvhMNO$tJcfW6Qrj48IGGEL4MjpuZ4hfY9GZzqpfMHaXNBXDSk=",
     "last_login": null,
     "is_superuser": false,
-    "username": "ana_martinez",
-    "first_name": "Ana",
-    "last_name": "Martínez",
-    "email": "ana_martinez@uni.edu.pe",
+    "username": "maria_ml",
+    "first_name": "María",
+    "last_name": "Rojas",
+    "email": "maria_ml@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:23.456Z",
+    "date_joined": "2026-08-06T17:17:22.285Z",
     "groups": [],
     "user_permissions": []
   }
@@ -237,16 +237,16 @@
   "model": "auth.user",
   "pk": 14,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$dwnhIztTAbG13Ubh0uR5cO$j9F05hOoPbOChFEgFR7BLITxfhp+bT1F8WXNpa5+Yxg=",
+    "password": "pbkdf2_sha256$1200000$SLcFZhB8859enxMLoqt0ca$cmDVTXCJXkWHWgpFnfkWIhogDSxCl+apP/2p0HKuXl4=",
     "last_login": null,
     "is_superuser": false,
-    "username": "mateo_silva",
-    "first_name": "Mateo",
-    "last_name": "Silva",
-    "email": "mateo_silva@uni.edu.pe",
+    "username": "diego_flutter",
+    "first_name": "Diego",
+    "last_name": "Vargas",
+    "email": "diego_flutter@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:24.943Z",
+    "date_joined": "2026-08-06T17:17:23.694Z",
     "groups": [],
     "user_permissions": []
   }
@@ -255,16 +255,16 @@
   "model": "auth.user",
   "pk": 15,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$qbg7xDmpuuutzOnt8usj8f$+zAEyfXNqh8kRjamEDZueU/9ypEXrrtYdML7aUuNeD0=",
+    "password": "pbkdf2_sha256$1200000$UCYC8a4oagciVzqY9y1AZo$jD/xneu1+QzGU57hF3+jyYK8dX/ZW2tCePWR4P35sJw=",
     "last_login": null,
     "is_superuser": false,
-    "username": "sofia_ramirez",
+    "username": "sofia_data",
     "first_name": "Sofía",
-    "last_name": "Ramírez",
-    "email": "sofia_ramirez@uni.edu.pe",
+    "last_name": "Pérez",
+    "email": "sofia_data@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:26.445Z",
+    "date_joined": "2026-08-06T17:17:25.270Z",
     "groups": [],
     "user_permissions": []
   }
@@ -273,16 +273,16 @@
   "model": "auth.user",
   "pk": 16,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$5znY74mCIIlUcUdyWsnMp5$cgR60LotCOGEDUndpAVbyz+Kei/A0lIRi3kPHFJRLsE=",
+    "password": "pbkdf2_sha256$1200000$UxLFPCdAy1LcAeh3kQPbBI$1ziu19Oh0D72ihLIgKAgoFDWodRM0M417RIBUuSsfgk=",
     "last_login": null,
     "is_superuser": false,
-    "username": "javier_lopez",
-    "first_name": "Javier",
-    "last_name": "López",
-    "email": "javier_lopez@uni.edu.pe",
+    "username": "mateo_rust",
+    "first_name": "Mateo",
+    "last_name": "Alvarez",
+    "email": "mateo_rust@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:27.954Z",
+    "date_joined": "2026-08-06T17:17:26.845Z",
     "groups": [],
     "user_permissions": []
   }
@@ -291,16 +291,16 @@
   "model": "auth.user",
   "pk": 17,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$ozEU2UKi0umG0tQpqI8lwH$vx0c/us7BCcXZ/tvERomWrrY8QufawZfeQRANqVdtKA=",
+    "password": "pbkdf2_sha256$1200000$EU2UJjmMHngNUU232BYZJm$U8aAgZOxTr8GUVCqGmLZYyDY163VW097jEU0yjOpft8=",
     "last_login": null,
     "is_superuser": false,
-    "username": "valentina_gomez",
-    "first_name": "Valentina",
-    "last_name": "Gómez",
-    "email": "valentina_gomez@uni.edu.pe",
+    "username": "camila_web",
+    "first_name": "Camila",
+    "last_name": "Salazar",
+    "email": "camila_web@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:29.447Z",
+    "date_joined": "2026-08-06T17:17:28.231Z",
     "groups": [],
     "user_permissions": []
   }
@@ -309,16 +309,16 @@
   "model": "auth.user",
   "pk": 18,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$WmE8x0bRURtqyhDWqdmHjH$5sc+walEJAva72PfzDlCf/Wj4DTvaKWz8MNUlHPSrzg=",
+    "password": "pbkdf2_sha256$1200000$pJQHm5uV1jeihaLDvGEVWJ$xRcRvbJz0SPbwWgnIs16l6KS5wkOnLILkphxCIS2WQM=",
     "last_login": null,
     "is_superuser": false,
-    "username": "gabriel_castro",
-    "first_name": "Gabriel",
+    "username": "renzo_devops",
+    "first_name": "Renzo",
     "last_name": "Castro",
-    "email": "gabriel_castro@uni.edu.pe",
+    "email": "renzo_devops@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:30.934Z",
+    "date_joined": "2026-08-06T17:17:29.619Z",
     "groups": [],
     "user_permissions": []
   }
@@ -327,16 +327,16 @@
   "model": "auth.user",
   "pk": 19,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$3MYWjvGOT2yw0soh64Gm8p$eUdQIFThErxOkQKPkaboqDAjUJ0n3mbxYMRb5p90AiI=",
+    "password": "pbkdf2_sha256$1200000$Hhy6frv529fGuJoJvEtXgU$TtCLvrnb1irwSc7Octvs+9ASI9DLY+w91dV/0/j3YcI=",
     "last_login": null,
     "is_superuser": false,
-    "username": "camila_morales",
-    "first_name": "Camila",
-    "last_name": "Morales",
-    "email": "camila_morales@uni.edu.pe",
+    "username": "valeria_ui",
+    "first_name": "Valeria",
+    "last_name": "Flores",
+    "email": "valeria_ui@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:32.451Z",
+    "date_joined": "2026-08-06T17:17:31.211Z",
     "groups": [],
     "user_permissions": []
   }
@@ -345,16 +345,16 @@
   "model": "auth.user",
   "pk": 20,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$L1FHByCk04WLtntfsTThFI$c+KhhFv+A8YcfnYcL5mq+IJF310MX9pV5YT9pRMEpx4=",
+    "password": "pbkdf2_sha256$1200000$NvwFK5fJ0LQ0RAOmVyQ4gh$/dbdlYl0iOpm3wTqV1gDXfF4XvZGmYFPvQjz8BL8IZI=",
     "last_login": null,
     "is_superuser": false,
-    "username": "andres_vargas",
-    "first_name": "Andrés",
-    "last_name": "Vargas",
-    "email": "andres_vargas@uni.edu.pe",
+    "username": "joaquin_java",
+    "first_name": "Joaquín",
+    "last_name": "Nunez",
+    "email": "joaquin_java@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:33.957Z",
+    "date_joined": "2026-08-06T17:17:32.586Z",
     "groups": [],
     "user_permissions": []
   }
@@ -363,16 +363,16 @@
   "model": "auth.user",
   "pk": 21,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$1mEBbBc78iBZ8VYdHq1YXG$z95CfBxd1EvuR27sbELdzkrzQHvd+IbQ1jjxcvtvRPg=",
+    "password": "pbkdf2_sha256$1200000$djAj8rncnL3ovux3dnquP5$Jm8hu8kKeAhBmy/MH1Rotf2VaqKFaF7lW53KNu+e788=",
     "last_login": null,
     "is_superuser": false,
-    "username": "isabella_rios",
-    "first_name": "Isabella",
-    "last_name": "Ríos",
-    "email": "isabella_rios@uni.edu.pe",
+    "username": "andrea_fullstack",
+    "first_name": "Andrea",
+    "last_name": "Guerrero",
+    "email": "andrea_fullstack@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:35.501Z",
+    "date_joined": "2026-08-06T17:17:33.971Z",
     "groups": [],
     "user_permissions": []
   }
@@ -381,16 +381,16 @@
   "model": "auth.user",
   "pk": 22,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$zJd2su4dnPHN5xvLjqTLTJ$4UjJb27eLQsfWlIIZMXKnGdJDu82b71uBNUNglaR3KM=",
+    "password": "pbkdf2_sha256$1200000$Vy3aiDmEVfYGdR6D1i7u9N$2VL0NxcDslXOsol3AqnY2CEW1oc3hY4tybwUHgjckvk=",
     "last_login": null,
     "is_superuser": false,
-    "username": "fernando_herrera",
-    "first_name": "Fernando",
-    "last_name": "Herrera",
-    "email": "fernando_herrera@uni.edu.pe",
+    "username": "gabriel_sec",
+    "first_name": "Gabriel",
+    "last_name": "Morales",
+    "email": "gabriel_sec@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:37.019Z",
+    "date_joined": "2026-08-06T17:17:35.345Z",
     "groups": [],
     "user_permissions": []
   }
@@ -399,16 +399,16 @@
   "model": "auth.user",
   "pk": 23,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$igYKB4X0S2d05MZfWDeE9v$o58KXjS/mWuPowHDoMYGBuR/kjgZLhSLnTvDD/gNJIQ=",
+    "password": "pbkdf2_sha256$1200000$KfEPw2ZtgjxoV7H4y1B2Da$iA15mr5UFdAquc31/ouOSpXKkEYLqheTfT91Cv6BbjI=",
     "last_login": null,
     "is_superuser": false,
-    "username": "elena_flores",
-    "first_name": "Elena",
-    "last_name": "Flores",
-    "email": "elena_flores@uni.edu.pe",
+    "username": "natalia_code",
+    "first_name": "Natalia",
+    "last_name": "Romero",
+    "email": "natalia_code@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:38.520Z",
+    "date_joined": "2026-08-06T17:17:36.723Z",
     "groups": [],
     "user_permissions": []
   }
@@ -417,16 +417,16 @@
   "model": "auth.user",
   "pk": 24,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$jNlYXRumqyGwqWzNpDBdAn$MNzsITC1WPPCvaIgzech2pEz5t5vKAFNQ85ipWMXuIw=",
+    "password": "pbkdf2_sha256$1200000$5UPkRayGmoFMIL0Hyhd6OV$EXDaEzFPAkBC3k8m9VNUgQRmU50VmDDWm+ivCkMSNjM=",
     "last_login": null,
     "is_superuser": false,
-    "username": "lucas_paredes",
-    "first_name": "Lucas",
-    "last_name": "Paredes",
-    "email": "lucas_paredes@uni.edu.pe",
+    "username": "sebastian_ai",
+    "first_name": "Sebastián",
+    "last_name": "Soto",
+    "email": "sebastian_ai@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:40.058Z",
+    "date_joined": "2026-08-06T17:17:38.096Z",
     "groups": [],
     "user_permissions": []
   }
@@ -435,16 +435,16 @@
   "model": "auth.user",
   "pk": 25,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$hBdjTLveO83tHA1mnfCIKw$BUEU4OG/thtbv0wbtytIxrnfbAKtISFLa+FkS0ieenA=",
+    "password": "pbkdf2_sha256$1200000$aAFVQrw84Kvpda99E137wS$jjZTWTMXVgTmz0zuAzJkWK29wLRuT4Xhlk9lBpixuNI=",
     "last_login": null,
     "is_superuser": false,
-    "username": "carolina_rojas",
-    "first_name": "Carolina",
-    "last_name": "Rojas",
-    "email": "carolina_rojas@uni.edu.pe",
+    "username": "elena_mobile",
+    "first_name": "Elena",
+    "last_name": "Navarro",
+    "email": "elena_mobile@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:41.570Z",
+    "date_joined": "2026-08-06T17:17:39.337Z",
     "groups": [],
     "user_permissions": []
   }
@@ -453,16 +453,16 @@
   "model": "auth.user",
   "pk": 26,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$dPO483h65zTXA2qw53zn9h$JBvuJMe19rIeIKsWQt+kiU5Ljv+iAGfhTMHsnL2OVV0=",
+    "password": "pbkdf2_sha256$1200000$vLxv2roeAV8LzZUgukz9Yv$2soQFGgPomSDEYDZ5g3/O9QZoJExlABBA6h7wJeLJ2U=",
     "last_login": null,
     "is_superuser": false,
-    "username": "sebastian_reyes",
-    "first_name": "Sebastián",
-    "last_name": "Reyes",
-    "email": "sebastian_reyes@uni.edu.pe",
+    "username": "rodrigo_backend",
+    "first_name": "Rodrigo",
+    "last_name": "Paredes",
+    "email": "rodrigo_backend@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:43.085Z",
+    "date_joined": "2026-08-06T17:17:39.883Z",
     "groups": [],
     "user_permissions": []
   }
@@ -471,16 +471,16 @@
   "model": "auth.user",
   "pk": 27,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$UfBFMxGAi6jZdbwdcNAEK7$Smp6/CEER+pwtoya238Lcjkown/+L32Qj2AVW/EfXFM=",
+    "password": "pbkdf2_sha256$1200000$LbHGwm6NqjkWDykSexJzqd$iG7yInnN6pvblxV4wwXEDG4V2Bnd7LPPlSfS9alfM0k=",
     "last_login": null,
     "is_superuser": false,
-    "username": "mariana_cruz",
-    "first_name": "Mariana",
-    "last_name": "Cruz",
-    "email": "mariana_cruz@uni.edu.pe",
+    "username": "isabel_cloud",
+    "first_name": "Isabel",
+    "last_name": "Campos",
+    "email": "isabel_cloud@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:44.614Z",
+    "date_joined": "2026-08-06T17:17:41.450Z",
     "groups": [],
     "user_permissions": []
   }
@@ -489,16 +489,16 @@
   "model": "auth.user",
   "pk": 28,
   "fields": {
-    "password": "",
+    "password": "pbkdf2_sha256$1200000$dWxOLwWSn67zclduKGzecG$WWfxYxllBSIWM3hUGVmvB04sCBJs7gyHK5vDcysv2Nk=",
     "last_login": null,
     "is_superuser": false,
-    "username": "rodrigo_aguilar",
-    "first_name": "Rodrigo",
-    "last_name": "Aguilar",
-    "email": "rodrigo_aguilar@uni.edu.pe",
+    "username": "fernando_games",
+    "first_name": "Fernando",
+    "last_name": "Rios",
+    "email": "fernando_games@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:36:46.115Z",
+    "date_joined": "2026-08-06T17:17:43.021Z",
     "groups": [],
     "user_permissions": []
   }
@@ -507,16 +507,16 @@
   "model": "auth.user",
   "pk": 29,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$eseDtWB9EyO6pWWwNXeTAx$bzTCH8I0V/AqA/h/vnBF0BcAc4g8A2g8XZA+tY60O4w=",
+    "password": "pbkdf2_sha256$1200000$0bWHFa8h3oQrCFWQoCWW6A$uJmPfVbpivd2y/ch6mVgyiHHxSLvZXfuB6qS8pu29BU=",
     "last_login": null,
     "is_superuser": false,
-    "username": "paula_navarro",
-    "first_name": "Paula",
-    "last_name": "Navarro",
-    "email": "paula_navarro@uni.edu.pe",
+    "username": "diana_web",
+    "first_name": "Diana",
+    "last_name": "Mejia",
+    "email": "diana_web@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:37:00.559Z",
+    "date_joined": "2026-08-06T17:17:44.484Z",
     "groups": [],
     "user_permissions": []
   }
@@ -525,16 +525,16 @@
   "model": "auth.user",
   "pk": 30,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$n8yeZW3zhr4zJk970uXtcx$rIIj3o7+R4FYJJjNO4kVUuim0bZjri5NtXBpJ/vAqho=",
+    "password": "pbkdf2_sha256$1200000$iGBuxRLTPofmqXThscjo66$Q+84Jg+3l1QxE8TmKtI5mUdg6BDPXvZnwzKXNZpjSpA=",
     "last_login": null,
     "is_superuser": false,
-    "username": "adrian_vega",
+    "username": "adrian_tech",
     "first_name": "Adrián",
-    "last_name": "Vega",
-    "email": "adrian_vega@uni.edu.pe",
+    "last_name": "Lozano",
+    "email": "adrian_tech@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:37:02.063Z",
+    "date_joined": "2026-08-06T17:17:46.153Z",
     "groups": [],
     "user_permissions": []
   }
@@ -543,16 +543,16 @@
   "model": "auth.user",
   "pk": 31,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$7Sd7oVIOr9QNMZeIJvu6Pf$o4rpxrnHN8ehx8ejkky+o1333Gt/gKfh8W20ghT2Lgg=",
+    "password": "pbkdf2_sha256$1200000$7IHvVlFe2fO69yIlNM5J27$NldXLB4ebccHypK/9SUMuiN/+zPdoo/rqB+cDtqMkK0=",
     "last_login": null,
     "is_superuser": false,
-    "username": "daniela_campos",
-    "first_name": "Daniela",
-    "last_name": "Campos",
-    "email": "daniela_campos@uni.edu.pe",
+    "username": "beatriz_dev",
+    "first_name": "Beatriz",
+    "last_name": "Delgado",
+    "email": "beatriz_dev@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:37:03.559Z",
+    "date_joined": "2026-08-06T17:17:47.800Z",
     "groups": [],
     "user_permissions": []
   }
@@ -561,16 +561,16 @@
   "model": "auth.user",
   "pk": 32,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$hoqnD7Lm5hUfIrejhA5ift$T1lt7Nqr71pM+dtt3bJTbMdeg2/cqKkC+jhYQJ2Sy20=",
+    "password": "pbkdf2_sha256$1200000$j2quXGRxQguWFl2lC4P14T$boYPE45hZxp7xkTNhhbRRbd9FhxT6AyE8JqeCC257LI=",
     "last_login": null,
     "is_superuser": false,
-    "username": "joaquin_medina",
-    "first_name": "Joaquín",
-    "last_name": "Medina",
-    "email": "joaquin_medina@uni.edu.pe",
+    "username": "hugo_sys",
+    "first_name": "Hugo",
+    "last_name": "Pena",
+    "email": "hugo_sys@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:37:05.080Z",
+    "date_joined": "2026-08-06T17:17:49.394Z",
     "groups": [],
     "user_permissions": []
   }
@@ -579,16 +579,34 @@
   "model": "auth.user",
   "pk": 33,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$anUmgJNJZTsN53G2IqoiNC$R5IKSGqXg/wNwoy5naZ6jciWsULYLo0gRftadKk4q9w=",
+    "password": "pbkdf2_sha256$1200000$fxdVT2I0gGCzexnr9CrKwk$vEEuIf5LEbJuhCarQ57QS3oyUZrGAMbC3m35KwSdX4o=",
     "last_login": null,
     "is_superuser": false,
-    "username": "fabiola_guerrero",
-    "first_name": "Fabiola",
-    "last_name": "Guerrero",
-    "email": "fabiola_guerrero@uni.edu.pe",
+    "username": "paula_code",
+    "first_name": "Paula",
+    "last_name": "Arias",
+    "email": "paula_code@uni.edu.pe",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-08-06T05:37:06.576Z",
+    "date_joined": "2026-08-06T17:17:51.030Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 34,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$hxr5ha5T7ZKZsfIYN8da5e$lw3QKKVkxeEn8FKvLjn9sM/xW/f+GUc4jJTuKyH76r4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alvaro_soft",
+    "first_name": "Álvaro",
+    "last_name": "Cruz",
+    "email": "alvaro_soft@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T17:17:52.652Z",
     "groups": [],
     "user_permissions": []
   }
@@ -697,7 +715,7 @@
   "fields": {
     "user": 8,
     "bio": null,
-    "avatar": "default.jpg",
+    "avatar": "",
     "linkedin": null,
     "github": null,
     "contact_email": null,
@@ -710,17 +728,12 @@
   "pk": 9,
   "fields": {
     "user": 9,
-    "bio": "Apasionada del desarrollo web con React y Django. Me encanta colaborar en proyectos open source.",
+    "bio": null,
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/maria_garcia",
-    "github": "https://github.com/maria_garcia",
+    "linkedin": null,
+    "github": null,
     "contact_email": null,
-    "tecnologias": [
-      1,
-      2,
-      3,
-      4
-    ],
+    "tecnologias": [],
     "intereses": []
   }
 },
@@ -729,16 +742,16 @@
   "pk": 10,
   "fields": {
     "user": 10,
-    "bio": "Estudiante de ciencias de la computación, enfocado en backend e infraestructura cloud.",
+    "bio": "Desarrollador Full Stack apasionado por Python y React.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/carlos_mendoza",
-    "github": "https://github.com/carlos_mendoza",
+    "linkedin": "https://linkedin.com/in/angel_dev",
+    "github": "https://github.com/angel_dev",
     "contact_email": null,
     "tecnologias": [
       1,
-      8,
-      9,
-      10
+      2,
+      3,
+      7
     ],
     "intereses": []
   }
@@ -748,16 +761,16 @@
   "pk": 11,
   "fields": {
     "user": 11,
-    "bio": "Desarrolladora frontend creativa. Experta en diseño UI/UX y TypeScript.",
+    "bio": "Frontend Engineer amante del diseño UI/UX y TypeScript.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/lucia_torres",
-    "github": "https://github.com/lucia_torres",
+    "linkedin": "https://linkedin.com/in/lucy_code",
+    "github": "https://github.com/lucy_code",
     "contact_email": null,
     "tecnologias": [
-      2,
       3,
-      6,
-      7
+      5,
+      16,
+      19
     ],
     "intereses": []
   }
@@ -767,15 +780,16 @@
   "pk": 12,
   "fields": {
     "user": 12,
-    "bio": "Entusiasta de la inteligencia artificial y machine learning con Python.",
+    "bio": "Especialista en Microservicios, Go y AWS Cloud Architecture.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/diego_rodriguez",
-    "github": "https://github.com/diego_rodriguez",
+    "linkedin": "https://linkedin.com/in/carlos_backend",
+    "github": "https://github.com/carlos_backend",
     "contact_email": null,
     "tecnologias": [
-      1,
+      7,
       8,
-      15
+      9,
+      11
     ],
     "intereses": []
   }
@@ -785,16 +799,15 @@
   "pk": 13,
   "fields": {
     "user": 13,
-    "bio": "Desarrolladora full stack enfocada en aplicaciones móviles y web.",
+    "bio": "Investigadora en Inteligencia Artificial y Visión por Computadora.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/ana_martinez",
-    "github": "https://github.com/ana_martinez",
+    "linkedin": "https://linkedin.com/in/maria_ml",
+    "github": "https://github.com/maria_ml",
     "contact_email": null,
     "tecnologias": [
-      3,
-      5,
-      6,
-      11
+      1,
+      15,
+      17
     ],
     "intereses": []
   }
@@ -804,15 +817,15 @@
   "pk": 14,
   "fields": {
     "user": 14,
-    "bio": "Fan del desarrollo en C++ y algoritmos competitivos.",
+    "bio": "Desarrollador Mobile Flutter / Android en UNI Open Source.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/mateo_silva",
-    "github": "https://github.com/mateo_silva",
+    "linkedin": "https://linkedin.com/in/diego_flutter",
+    "github": "https://github.com/diego_flutter",
     "contact_email": null,
     "tecnologias": [
-      13,
-      14,
-      15
+      4,
+      5,
+      10
     ],
     "intereses": []
   }
@@ -822,16 +835,15 @@
   "pk": 15,
   "fields": {
     "user": 15,
-    "bio": "Ingeniera de software en formación, apasionada por DevOps y automatización.",
+    "bio": "Data Scientist & Data Engineer enfocada en Big Data.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/sofia_ramirez",
-    "github": "https://github.com/sofia_ramirez",
+    "linkedin": "https://linkedin.com/in/sofia_data",
+    "github": "https://github.com/sofia_data",
     "contact_email": null,
     "tecnologias": [
       1,
-      9,
-      10,
-      15
+      8,
+      9
     ],
     "intereses": []
   }
@@ -841,15 +853,15 @@
   "pk": 16,
   "fields": {
     "user": 16,
-    "bio": "Desarrollador backend con Django y PostgreSQL. Contribuidor activo de software libre.",
+    "bio": "Entusiasta de Sistemas Distribuidos y desarrollo en Rust.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/javier_lopez",
-    "github": "https://github.com/javier_lopez",
+    "linkedin": "https://linkedin.com/in/mateo_rust",
+    "github": "https://github.com/mateo_rust",
     "contact_email": null,
     "tecnologias": [
-      1,
-      4,
-      8
+      7,
+      12,
+      17
     ],
     "intereses": []
   }
@@ -859,15 +871,16 @@
   "pk": 17,
   "fields": {
     "user": 17,
-    "bio": "Diseñadora y desarrolladora web apasionada por Vue.js y CSS.",
+    "bio": "Desarrolladora Web Fullstack con Vue.js y Django REST.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/valentina_gomez",
-    "github": "https://github.com/valentina_gomez",
+    "linkedin": "https://linkedin.com/in/camila_web",
+    "github": "https://github.com/camila_web",
     "contact_email": null,
     "tecnologias": [
+      1,
       2,
-      7,
-      12
+      6,
+      13
     ],
     "intereses": []
   }
@@ -877,14 +890,15 @@
   "pk": 18,
   "fields": {
     "user": 18,
-    "bio": "Desarrollador móvil apasionado por soluciones multiplataforma con Flutter.",
+    "bio": "DevOps Engineer | Kubernetes, Terraform, CI/CD pipelines.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/gabriel_castro",
-    "github": "https://github.com/gabriel_castro",
+    "linkedin": "https://linkedin.com/in/renzo_devops",
+    "github": "https://github.com/renzo_devops",
     "contact_email": null,
     "tecnologias": [
-      11,
-      13
+      7,
+      8,
+      11
     ],
     "intereses": []
   }
@@ -894,15 +908,15 @@
   "pk": 19,
   "fields": {
     "user": 19,
-    "bio": "Desarrolladora Java y sistemas distribuidos.",
+    "bio": "Product Designer y Frontend Developer apaixonada por CSS.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/camila_morales",
-    "github": "https://github.com/camila_morales",
+    "linkedin": "https://linkedin.com/in/valeria_ui",
+    "github": "https://github.com/valeria_ui",
     "contact_email": null,
     "tecnologias": [
-      8,
-      9,
-      13
+      3,
+      16,
+      19
     ],
     "intereses": []
   }
@@ -912,15 +926,15 @@
   "pk": 20,
   "fields": {
     "user": 20,
-    "bio": "Frontend developer enfocado en accesibilidad web y UI.",
+    "bio": "Desarrollador Java Spring Boot y Arquitectura limpia.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/andres_vargas",
-    "github": "https://github.com/andres_vargas",
+    "linkedin": "https://linkedin.com/in/joaquin_java",
+    "github": "https://github.com/joaquin_java",
     "contact_email": null,
     "tecnologias": [
-      2,
-      3,
-      7
+      7,
+      9,
+      18
     ],
     "intereses": []
   }
@@ -930,14 +944,15 @@
   "pk": 21,
   "fields": {
     "user": 21,
-    "bio": "Investigadora en ciencia de datos y apasionada por Python.",
+    "bio": "Fullstack Developer apasionada por Node.js y Angular.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/isabella_rios",
-    "github": "https://github.com/isabella_rios",
+    "linkedin": "https://linkedin.com/in/andrea_fullstack",
+    "github": "https://github.com/andrea_fullstack",
     "contact_email": null,
     "tecnologias": [
-      1,
-      8
+      4,
+      5,
+      14
     ],
     "intereses": []
   }
@@ -947,16 +962,15 @@
   "pk": 22,
   "fields": {
     "user": 22,
-    "bio": "Desarrollador Full Stack Jr. Aprendiendo arquitecturas modernas.",
+    "bio": "Estudiante de Ciberseguridad y Ethical Hacking en UNI.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/fernando_herrera",
-    "github": "https://github.com/fernando_herrera",
+    "linkedin": "https://linkedin.com/in/gabriel_sec",
+    "github": "https://github.com/gabriel_sec",
     "contact_email": null,
     "tecnologias": [
-      3,
-      5,
-      6,
-      9
+      1,
+      11,
+      17
     ],
     "intereses": []
   }
@@ -966,16 +980,15 @@
   "pk": 23,
   "fields": {
     "user": 23,
-    "bio": "Desarrolladora Python / Django creando APIs REST eficientes.",
+    "bio": "Desarrolladora React Native & Cloud Practitioner.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/elena_flores",
-    "github": "https://github.com/elena_flores",
+    "linkedin": "https://linkedin.com/in/natalia_code",
+    "github": "https://github.com/natalia_code",
     "contact_email": null,
     "tecnologias": [
-      1,
-      4,
-      8,
-      15
+      3,
+      5,
+      8
     ],
     "intereses": []
   }
@@ -985,16 +998,15 @@
   "pk": 24,
   "fields": {
     "user": 24,
-    "bio": "Entusiasta del desarrollo cloud native y microservicios.",
+    "bio": "Ingeniero de Software enfocado en LLMs y Deep Learning.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/lucas_paredes",
-    "github": "https://github.com/lucas_paredes",
+    "linkedin": "https://linkedin.com/in/sebastian_ai",
+    "github": "https://github.com/sebastian_ai",
     "contact_email": null,
     "tecnologias": [
       1,
-      5,
-      9,
-      10
+      7,
+      15
     ],
     "intereses": []
   }
@@ -1004,15 +1016,15 @@
   "pk": 25,
   "fields": {
     "user": 25,
-    "bio": "Especialista en frontend interactivo y animaciones CSS.",
+    "bio": "Mobile Dev apasionada por Flutter y Kotlin.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/carolina_rojas",
-    "github": "https://github.com/carolina_rojas",
+    "linkedin": "https://linkedin.com/in/elena_mobile",
+    "github": "https://github.com/elena_mobile",
     "contact_email": null,
     "tecnologias": [
-      2,
-      7,
-      12
+      4,
+      10,
+      18
     ],
     "intereses": []
   }
@@ -1022,15 +1034,15 @@
   "pk": 26,
   "fields": {
     "user": 26,
-    "bio": "Desarrollador C++ y amante de los videojuegos.",
+    "bio": "Backend Engineer construyendo APIs escalables con Django.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/sebastian_reyes",
-    "github": "https://github.com/sebastian_reyes",
+    "linkedin": "https://linkedin.com/in/rodrigo_backend",
+    "github": "https://github.com/rodrigo_backend",
     "contact_email": null,
     "tecnologias": [
-      13,
-      14,
-      15
+      1,
+      2,
+      9
     ],
     "intereses": []
   }
@@ -1040,10 +1052,117 @@
   "pk": 27,
   "fields": {
     "user": 27,
-    "bio": "Estudiante de ingeniería de sistemas interesada en ciberseguridad.",
+    "bio": "Cloud Architect y entusiasta del código libre.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/mariana_cruz",
-    "github": "https://github.com/mariana_cruz",
+    "linkedin": "https://linkedin.com/in/isabel_cloud",
+    "github": "https://github.com/isabel_cloud",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      7,
+      8
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 28,
+  "fields": {
+    "user": 28,
+    "bio": "Desarrollador de videojuegos y gráficos en C++.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/fernando_games",
+    "github": "https://github.com/fernando_games",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      17
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 29,
+  "fields": {
+    "user": 29,
+    "bio": "Frontend Dev creando experiencias interactivas con React.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/diana_web",
+    "github": "https://github.com/diana_web",
+    "contact_email": null,
+    "tecnologias": [
+      3,
+      6,
+      19
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 30,
+  "fields": {
+    "user": 30,
+    "bio": "Desarrollador Node.js y apasionado de la Web3.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/adrian_tech",
+    "github": "https://github.com/adrian_tech",
+    "contact_email": null,
+    "tecnologias": [
+      4,
+      5,
+      11
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 31,
+  "fields": {
+    "user": 31,
+    "bio": "Desarrolladora Fullstack Django & React.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/beatriz_dev",
+    "github": "https://github.com/beatriz_dev",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      2,
+      3
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 32,
+  "fields": {
+    "user": 32,
+    "bio": "SysAdmin & DevOps enfocado en infraestructura en la nube.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/hugo_sys",
+    "github": "https://github.com/hugo_sys",
+    "contact_email": null,
+    "tecnologias": [
+      7,
+      8,
+      11
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 33,
+  "fields": {
+    "user": 33,
+    "bio": "Estudiante de CC en UNI interesada en IA y Ciencia de Datos.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/paula_code",
+    "github": "https://github.com/paula_code",
     "contact_email": null,
     "tecnologias": [
       1,
@@ -1055,110 +1174,18 @@
 },
 {
   "model": "accounts.profile",
-  "pk": 28,
+  "pk": 34,
   "fields": {
-    "user": 28,
-    "bio": "Desarrollador web enfocado en Django y Node.js.",
+    "user": 34,
+    "bio": "Software Engineer construyendo herramientas Open Source.",
     "avatar": "",
-    "linkedin": "https://linkedin.com/in/rodrigo_aguilar",
-    "github": "https://github.com/rodrigo_aguilar",
+    "linkedin": "https://linkedin.com/in/alvaro_soft",
+    "github": "https://github.com/alvaro_soft",
     "contact_email": null,
     "tecnologias": [
       1,
-      2,
-      4,
-      5
-    ],
-    "intereses": []
-  }
-},
-{
-  "model": "accounts.profile",
-  "pk": 29,
-  "fields": {
-    "user": 29,
-    "bio": "Desarrolladora React y Flutter interesada en UX/UI.",
-    "avatar": "",
-    "linkedin": "https://linkedin.com/in/paula_navarro",
-    "github": "https://github.com/paula_navarro",
-    "contact_email": null,
-    "tecnologias": [
-      3,
-      6,
-      11
-    ],
-    "intereses": []
-  }
-},
-{
-  "model": "accounts.profile",
-  "pk": 30,
-  "fields": {
-    "user": 30,
-    "bio": "DevOps en aprendizaje y apasionado por la nube.",
-    "avatar": "",
-    "linkedin": "https://linkedin.com/in/adrian_vega",
-    "github": "https://github.com/adrian_vega",
-    "contact_email": null,
-    "tecnologias": [
-      1,
-      9,
-      10
-    ],
-    "intereses": []
-  }
-},
-{
-  "model": "accounts.profile",
-  "pk": 31,
-  "fields": {
-    "user": 31,
-    "bio": "Desarrolladora Full Stack con inclinación al backend.",
-    "avatar": "",
-    "linkedin": "https://linkedin.com/in/daniela_campos",
-    "github": "https://github.com/daniela_campos",
-    "contact_email": null,
-    "tecnologias": [
-      1,
-      3,
-      4,
-      8
-    ],
-    "intereses": []
-  }
-},
-{
-  "model": "accounts.profile",
-  "pk": 32,
-  "fields": {
-    "user": 32,
-    "bio": "Frontend Developer apasionado por React y TypeScript.",
-    "avatar": "",
-    "linkedin": "https://linkedin.com/in/joaquin_medina",
-    "github": "https://github.com/joaquin_medina",
-    "contact_email": null,
-    "tecnologias": [
-      2,
-      3,
-      6
-    ],
-    "intereses": []
-  }
-},
-{
-  "model": "accounts.profile",
-  "pk": 33,
-  "fields": {
-    "user": 33,
-    "bio": "Desarrolladora de software con interés en IA y datos.",
-    "avatar": "",
-    "linkedin": "https://linkedin.com/in/fabiola_guerrero",
-    "github": "https://github.com/fabiola_guerrero",
-    "contact_email": null,
-    "tecnologias": [
-      1,
-      8,
-      13
+      7,
+      12
     ],
     "intereses": []
   }
@@ -1174,7 +1201,7 @@
   "model": "accounts.technology",
   "pk": 2,
   "fields": {
-    "nombre": "JavaScript"
+    "nombre": "Django"
   }
 },
 {
@@ -1188,133 +1215,112 @@
   "model": "accounts.technology",
   "pk": 4,
   "fields": {
-    "nombre": "Django"
-  }
-},
-{
-  "model": "accounts.technology",
-  "pk": 5,
-  "fields": {
     "nombre": "Node.js"
   }
 },
 {
   "model": "accounts.technology",
-  "pk": 6,
+  "pk": 5,
   "fields": {
     "nombre": "TypeScript"
   }
 },
 {
   "model": "accounts.technology",
+  "pk": 6,
+  "fields": {
+    "nombre": "JavaScript"
+  }
+},
+{
+  "model": "accounts.technology",
   "pk": 7,
-  "fields": {
-    "nombre": "HTML/CSS"
-  }
-},
-{
-  "model": "accounts.technology",
-  "pk": 8,
-  "fields": {
-    "nombre": "PostgreSQL"
-  }
-},
-{
-  "model": "accounts.technology",
-  "pk": 9,
   "fields": {
     "nombre": "Docker"
   }
 },
 {
   "model": "accounts.technology",
-  "pk": 10,
+  "pk": 8,
   "fields": {
     "nombre": "AWS"
   }
 },
 {
   "model": "accounts.technology",
-  "pk": 11,
+  "pk": 9,
+  "fields": {
+    "nombre": "PostgreSQL"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 10,
   "fields": {
     "nombre": "Flutter"
   }
 },
 {
   "model": "accounts.technology",
+  "pk": 11,
+  "fields": {
+    "nombre": "Go"
+  }
+},
+{
+  "model": "accounts.technology",
   "pk": 12,
   "fields": {
-    "nombre": "Vue.js"
+    "nombre": "Rust"
   }
 },
 {
   "model": "accounts.technology",
   "pk": 13,
   "fields": {
-    "nombre": "Java"
+    "nombre": "Vue.js"
   }
 },
 {
   "model": "accounts.technology",
   "pk": 14,
   "fields": {
-    "nombre": "C++"
+    "nombre": "Angular"
   }
 },
 {
   "model": "accounts.technology",
   "pk": 15,
   "fields": {
-    "nombre": "Git"
+    "nombre": "Machine Learning"
   }
 },
 {
-  "model": "accounts.interest",
-  "pk": 1,
+  "model": "accounts.technology",
+  "pk": 16,
   "fields": {
-    "nombre": "Desarrollo Web"
+    "nombre": "Figma"
   }
 },
 {
-  "model": "accounts.interest",
-  "pk": 2,
+  "model": "accounts.technology",
+  "pk": 17,
   "fields": {
-    "nombre": "Inteligencia Artificial"
+    "nombre": "C++"
   }
 },
 {
-  "model": "accounts.interest",
-  "pk": 3,
+  "model": "accounts.technology",
+  "pk": 18,
   "fields": {
-    "nombre": "Ciencia de Datos"
+    "nombre": "Java"
   }
 },
 {
-  "model": "accounts.interest",
-  "pk": 4,
+  "model": "accounts.technology",
+  "pk": 19,
   "fields": {
-    "nombre": "Desarrollo Móvil"
-  }
-},
-{
-  "model": "accounts.interest",
-  "pk": 5,
-  "fields": {
-    "nombre": "Ciberseguridad"
-  }
-},
-{
-  "model": "accounts.interest",
-  "pk": 6,
-  "fields": {
-    "nombre": "DevOps"
-  }
-},
-{
-  "model": "accounts.interest",
-  "pk": 7,
-  "fields": {
-    "nombre": "Open Source"
+    "nombre": "TailwindCSS"
   }
 }
 ]
