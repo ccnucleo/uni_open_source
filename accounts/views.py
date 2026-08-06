@@ -19,7 +19,11 @@ from django.utils import timezone
 from django.core.validators import URLValidator, validate_email
 from django.core.exceptions import ValidationError
 
+# Modelos locales de la app accounts
 from .models import UnverifiedUser, Profile, Technology, Interest
+
+# Modelos de la app projects (Usamos alias para evitar conflictos con el Technology de accounts)
+from projects.models import Tag as ProjectTag, Technology as ProjectTechnology
 
 
 @never_cache
@@ -90,12 +94,21 @@ def login_view(request):
 @login_required(login_url="accounts:login")
 @never_cache
 def profile_view(request):
+    # Extraemos TODOS los datos (en uso y pre-creados) para el autocompletado del modal
+    all_tags = list(ProjectTag.objects.values_list('name', flat=True))
+    all_techs = list(ProjectTechnology.objects.values_list('name', flat=True))
+    all_users = list(User.objects.exclude(username=request.user.username).values_list('username', flat=True))
+
     return render(
         request,
         "web/pages/profile/profile.html",
         {
             "active_section": "profile",
             "page_title": "Mi perfil",
+            # Enviamos las listas convertidas a JSON para que JavaScript pueda leerlas sin problemas
+            "all_tags": json.dumps(all_tags),
+            "all_techs": json.dumps(all_techs),
+            "all_users": json.dumps(all_users),
         },
     )
 

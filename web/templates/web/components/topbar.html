@@ -21,8 +21,12 @@
                 {% csrf_token %}
                 <button type="submit" class="btn-reg-top"><i class="fas fa-sign-out-alt"></i> Cerrar Sesion</button>
             </form>
-            <a href="{% url 'accounts:profile' %}" class="topbar-avatar" aria-label="Ir a mi perfil">
-                <img src="{% static 'web/img/avatar.jpg' %}" alt="Avatar de perfil">
+            <a href="{% url 'accounts:profile' %}" class="topbar-avatar" aria-label="Ir a mi perfil" style="overflow: hidden;">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Avatar de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div class="auto-avatar" data-name="{{ user.username }}" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; color: white;">{{ user.username|make_list|first|upper }}</div>
+                {% endif %}
             </a>
             {% else %}
             <a href="{% url 'accounts:login' %}" class="btn-login-top"><i class="fas fa-sign-in-alt"></i> Iniciar

@@ -40,11 +40,14 @@ def courses_page(request):
     querystring = request.GET.copy()
     querystring.pop('page', None)
 
+    categories = Category.objects.all().order_by('name')
+    tags = Tag.objects.filter(course__isnull=False).distinct().order_by('name') # <-- Traemos solo las usadas
+
     context = {
         'page_obj': page_obj,
         'courses': page_obj.object_list,
-        'categories': Category.objects.all().order_by('name'),
-        'tags': Tag.objects.all().order_by('name'),
+        'categories': categories,
+        'tags': tags,
         'levels': Course.LEVEL_CHOICES,
         'query': query,
         'selected_category_id': category_id,

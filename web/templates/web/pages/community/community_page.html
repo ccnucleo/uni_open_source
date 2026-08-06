@@ -59,7 +59,11 @@
                     <div class="dev-card-header"></div>
                     
                     <div class="dev-card-body">
-                        <img src="{% static 'web/img/avatar.jpg' %}" alt="Avatar" class="dev-avatar">
+                        {% if dev.profile.avatar %}
+                            <img src="{{ dev.profile.avatar.url }}" alt="Avatar" class="dev-avatar">
+                        {% else %}
+                            <div class="dev-avatar auto-avatar" data-name="{{ dev.username }}" style="display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; color: white;">{{ dev.username|make_list|first|upper }}</div>
+                        {% endif %}
                         
                         <h3>{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{ dev.username }}{% endif %}</h3>
                         <p class="dev-username">@{{ dev.username }}</p>

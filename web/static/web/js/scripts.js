@@ -87,12 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
         
         if (textEl) {
             let btn = displaySobreMi.querySelector('.btn-read-more');
-            
             if(!textEl.classList.contains('expanded')) {
                 textEl.style.maxHeight = '120px';
             }
 
-            // Validar si el contenido excede el alto visible (130px de margen)
             if (textEl.scrollHeight > 130) {
                 if (!btn) {
                     btn = document.createElement('button');
@@ -118,9 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    // Revisar al iniciar
     checkReadMore();
-
 
     if (btnDesc && btnProy) {
         btnDesc.addEventListener('click', function () {
@@ -149,15 +145,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let selectedPhotoFile = null;
     let isAvatarRemoved = false; 
+    let avatarCropper = null;
+    let croppedAvatarBlob = null;
 
     if (btnEditProfile && modal) {
         btnEditProfile.addEventListener('click', function () {
             if(inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
             if(inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
-            if(photoPreviewImg && profileAvatar) photoPreviewImg.src = profileAvatar.src;
+            if(photoPreviewImg) {
+                if(profileAvatar && profileAvatar.tagName === 'IMG') {
+                    photoPreviewImg.src = profileAvatar.src;
+                } else {
+                    // No hay foto: mostrar preview vacío/default
+                    photoPreviewImg.src = '';
+                    photoPreviewImg.style.display = 'none';
+                }
+            }
             
             selectedPhotoFile = null;
             isAvatarRemoved = false;
+            croppedAvatarBlob = null;
+            if(avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
             
             const userSpan = document.querySelector('.username');
             const inputUsername = document.getElementById('input-username');
@@ -189,11 +197,60 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 const reader = new FileReader();
                 reader.onload = function (event) {
-                    if(photoPreviewImg) photoPreviewImg.src = event.target.result;
-                    const btnRm = document.getElementById('btn-remove-photo');
-                    if(btnRm) btnRm.style.display = 'inline-flex';
+                    const modalCrop = document.getElementById('modal-crop-avatar');
+                    const cropImg = document.getElementById('crop-avatar-img');
+                    
+                    if (modalCrop && cropImg) {
+                        cropImg.src = event.target.result;
+                        modalCrop.classList.add('active');
+                        
+                        if (avatarCropper) { avatarCropper.destroy(); }
+                        
+                        // Pequeño timeout para que el modal se muestre antes de inicializar cropper
+                        setTimeout(() => {
+                            avatarCropper = new Cropper(cropImg, {
+                                aspectRatio: 1,
+                                viewMode: 1,
+                                autoCropArea: 1,
+                            });
+                        }, 100);
+                    }
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Lógica para los botones del modal de recorte
+    const btnConfirmCrop = document.getElementById('btn-confirm-crop');
+    const btnCancelCrop = document.getElementById('btn-cancel-crop');
+    const btnCloseCropModal = document.getElementById('btn-close-crop-modal');
+    
+    const closeCropModal = () => {
+        const modalCrop = document.getElementById('modal-crop-avatar');
+        if (modalCrop) modalCrop.classList.remove('active');
+        if (avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
+        if (inputPhoto) inputPhoto.value = '';
+    };
+
+    if (btnCancelCrop) btnCancelCrop.addEventListener('click', closeCropModal);
+    if (btnCloseCropModal) btnCloseCropModal.addEventListener('click', closeCropModal);
+    
+    if (btnConfirmCrop) {
+        btnConfirmCrop.addEventListener('click', function() {
+            if (avatarCropper) {
+                avatarCropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
+                    croppedAvatarBlob = blob;
+                    if (photoPreviewImg) {
+                        photoPreviewImg.src = avatarCropper.getCroppedCanvas().toDataURL();
+                        photoPreviewImg.style.maxHeight = 'none';
+                        photoPreviewImg.style.display = 'block';
+                    }
+                    const btnRm = document.getElementById('btn-remove-photo');
+                    if(btnRm) btnRm.style.display = 'inline-flex';
+                    
+                    closeCropModal();
+                }, 'image/jpeg');
             }
         });
     }
@@ -201,8 +258,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnRemovePhoto = document.getElementById('btn-remove-photo');
     if (btnRemovePhoto) {
         btnRemovePhoto.addEventListener('click', function () {
-            if(photoPreviewImg) photoPreviewImg.src = photoPreviewImg.dataset.default;
+            if(photoPreviewImg) {
+                photoPreviewImg.src = photoPreviewImg.dataset.default;
+            }
             selectedPhotoFile = null;
+            croppedAvatarBlob = null;
             isAvatarRemoved = true; 
             if(inputPhoto) inputPhoto.value = '';
             this.style.display = 'none';
@@ -229,52 +289,119 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('last_name', apellido);
             formData.append('username', newUsername);
             
-            if (selectedPhotoFile) {
-                formData.append('avatar', selectedPhotoFile);
-            } else if (isAvatarRemoved) {
-                formData.append('remove_avatar', 'true');
-            }
+            const submitProfileData = () => {
+                fetch('/accounts/api/update-profile/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCSRFToken() },
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Fallo en el servidor");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (profileFullname) {
+                            profileFullname.dataset.nombre = nombre;
+                            profileFullname.dataset.apellido = apellido;
+                            profileFullname.innerHTML = nombre + '<br>' + apellido;
+                        }
+                        const userSpan = document.querySelector('.username');
+                        if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
+                        
+                        if (croppedAvatarBlob || isAvatarRemoved) {
+                            const container = document.getElementById('profile-pic-container');
+                            const username = document.querySelector('.username')?.textContent?.replace('@', '').trim() || '';
+                            const firstLetter = username.charAt(0).toUpperCase();
 
-            fetch('/accounts/api/update-profile/', {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() },
-                body: formData
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Fallo en el servidor");
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    if (profileFullname) {
-                        profileFullname.dataset.nombre = nombre;
-                        profileFullname.dataset.apellido = apellido;
-                        profileFullname.innerHTML = nombre + '<br>' + apellido;
+                            if (isAvatarRemoved) {
+                                // Remover foto -> mostrar auto-avatar con iniciales
+                                if (container) {
+                                    const oldEl = document.getElementById('profile-avatar');
+                                    if (oldEl) oldEl.remove();
+                                    const div = document.createElement('div');
+                                    div.className = 'auto-avatar';
+                                    div.id = 'profile-avatar';
+                                    div.setAttribute('data-name', username);
+                                    div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:white;';
+                                    div.textContent = firstLetter;
+                                    // Colorear
+                                    const avatarColors = ['#f97316','#3b82f6','#10b981','#8b5cf6','#ec4899','#14b8a6','#f43f5e','#6366f1'];
+                                    let hash = 0; for(let i=0;i<username.length;i++) hash = username.charCodeAt(i)+((hash<<5)-hash);
+                                    div.style.backgroundColor = avatarColors[Math.abs(hash) % avatarColors.length];
+                                    container.insertBefore(div, container.querySelector('.photo-overlay'));
+                                }
+                                // Topbar: reemplazar img con div de iniciales
+                                const topbarAv = document.querySelector('.topbar-avatar');
+                                if (topbarAv) {
+                                    const oldImg = topbarAv.querySelector('img');
+                                    if (oldImg) {
+                                        const span = document.createElement('div');
+                                        span.className = 'auto-avatar';
+                                        span.setAttribute('data-name', username);
+                                        span.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;color:white;';
+                                        span.textContent = firstLetter;
+                                        const avatarColors = ['#f97316','#3b82f6','#10b981','#8b5cf6','#ec4899','#14b8a6','#f43f5e','#6366f1'];
+                                        let hash2 = 0; for(let i=0;i<username.length;i++) hash2 = username.charCodeAt(i)+((hash2<<5)-hash2);
+                                        span.style.backgroundColor = avatarColors[Math.abs(hash2) % avatarColors.length];
+                                        oldImg.replaceWith(span);
+                                    }
+                                }
+                            } else if (croppedAvatarBlob) {
+                                // Subir foto nueva -> mostrar img
+                                const newSrc = photoPreviewImg.src;
+                                const oldEl = document.getElementById('profile-avatar');
+                                if (oldEl && oldEl.tagName === 'IMG') {
+                                    oldEl.src = newSrc;
+                                } else if (oldEl) {
+                                    const img = document.createElement('img');
+                                    img.src = newSrc;
+                                    img.alt = 'Usuario';
+                                    img.id = 'profile-avatar';
+                                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                                    oldEl.replaceWith(img);
+                                }
+                                const topbarAv = document.querySelector('.topbar-avatar');
+                                if (topbarAv) {
+                                    let topbarImg = topbarAv.querySelector('img');
+                                    if (!topbarImg) {
+                                        topbarImg = document.createElement('img');
+                                        topbarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                                        topbarImg.alt = 'Avatar';
+                                        topbarAv.innerHTML = '';
+                                        topbarAv.appendChild(topbarImg);
+                                    }
+                                    topbarImg.src = newSrc;
+                                }
+                            }
+                        }
+                        
+                        if (modal) modal.classList.remove('active');
+                        selectedPhotoFile = null;
+                        croppedAvatarBlob = null;
+                        isAvatarRemoved = false;
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error, 'error');
                     }
-                    const userSpan = document.querySelector('.username');
-                    if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
-                    
-                    if (selectedPhotoFile || isAvatarRemoved) {
-                        if (profileAvatar) profileAvatar.src = photoPreviewImg.src;
-                        const topbarAv = document.querySelector('.topbar-avatar img');
-                        if (topbarAv) topbarAv.src = photoPreviewImg.src;
-                    }
-                    
-                    if (modal) modal.classList.remove('active');
-                    selectedPhotoFile = null;
-                    isAvatarRemoved = false;
-                    showToast(data.message, 'success');
-                } else {
-                    showToast(data.error, 'error');
+                })
+                .catch((err) => {
+                    showToast('Error de conexión', 'error');
+                })
+                .finally(() => {
+                    btnSaveModal.classList.remove('btn-loading');
+                });
+            };
+
+            if (croppedAvatarBlob) {
+                formData.append('avatar', croppedAvatarBlob, 'avatar.jpg');
+                submitProfileData();
+            } else {
+                if (isAvatarRemoved) {
+                    formData.append('remove_avatar', 'true');
                 }
-            })
-            .catch((err) => {
-                console.error(err);
-                showToast('Error de conexión', 'error');
-            })
-            .finally(() => {
-                btnSaveModal.classList.remove('btn-loading');
-            });
+                submitProfileData();
+            }
         });
     }
 
@@ -388,7 +515,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnSaveCard) {
         btnSaveCard.addEventListener('click', function () {
             let sobreMiText = textareaSobreMi ? textareaSobreMi.value.trim() : '';
-            // JS Regex: Limpiamos los excesos de Enters antes de mandar a Django
             sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n'); 
 
             btnSaveCard.classList.add('btn-loading');
@@ -474,7 +600,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch((err) => {
-                console.error(err);
                 showToast('Error interno del servidor. Intenta de nuevo.', 'error');
             })
             .finally(() => {
@@ -840,112 +965,84 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ============================================
+    // MODAL NUEVO PROYECTO (DISEÑO FIGMA / ANTI-SPAM)
+    // ============================================
     const modalNewProject = document.getElementById('modal-new-project');
     const btnNewProjectTrigger = document.getElementById('btn-new-project');
+    const btnCloseNew = document.getElementById('btn-close-new-project');
+    const btnCancelNew = document.getElementById('btn-cancel-new-project');
+    const formNewProject = document.getElementById('form-new-project');
 
     if (btnNewProjectTrigger && modalNewProject) {
-        btnNewProjectTrigger.addEventListener('click', () => modalNewProject.classList.add('active'));
+        btnNewProjectTrigger.addEventListener('click', () => {
+            modalNewProject.classList.add('active');
+        });
         
-        const btnCloseNew = document.getElementById('btn-close-new-project');
-        const btnCancelNew = document.getElementById('btn-cancel-new-project');
-        
-        if(btnCloseNew) btnCloseNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
-        if(btnCancelNew) btnCancelNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
+        const closeMod = () => { 
+            modalNewProject.classList.remove('active'); 
+            if(formNewProject) formNewProject.reset(); 
+            resetImagePreview();
+        };
+
+        if(btnCloseNew) btnCloseNew.addEventListener('click', closeMod);
+        if(btnCancelNew) btnCancelNew.addEventListener('click', closeMod);
     }
 
-    function resetNewProjectForm() {
-        if(document.getElementById('input-project-name')) document.getElementById('input-project-name').value = '';
-        if(document.getElementById('input-project-desc')) document.getElementById('input-project-desc').value = '';
-        if(document.getElementById('select-project-theme')) document.getElementById('select-project-theme').value = '';
-        if(document.getElementById('select-project-tech')) document.getElementById('select-project-tech').value = '';
-        if(document.getElementById('input-project-repo')) document.getElementById('input-project-repo').value = '';
-        if(document.getElementById('count-project-name')) document.getElementById('count-project-name').textContent = '0';
-        if(document.getElementById('count-project-desc')) document.getElementById('count-project-desc').textContent = '0';
-        
-        const preview = document.getElementById('new-project-image-preview');
-        if (preview) {
-            preview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Haz clic o arrastra una imagen</span>';
-            preview.classList.remove('has-image');
-        }
-        
-        if(document.getElementById('input-project-p1')) document.getElementById('input-project-p1').value = '';
-        if(document.getElementById('input-project-p2')) document.getElementById('input-project-p2').value = '';
-        if(document.getElementById('input-project-p3')) document.getElementById('input-project-p3').value = '';
-        if(document.getElementById('input-project-tags')) document.getElementById('input-project-tags').value = '';
-        if(document.getElementById('new-project-tags-list')) document.getElementById('new-project-tags-list').innerHTML = '';
-        if(document.getElementById('gallery-preview-grid')) document.getElementById('gallery-preview-grid').innerHTML = '';
-        if(document.getElementById('input-gallery-images')) document.getElementById('input-gallery-images').value = '';
-        window.newProjectTagsArray = [];
-    }
-
-    const inputProjectName = document.getElementById('input-project-name');
-    if (inputProjectName) {
-        inputProjectName.addEventListener('input', function () {
-            const countLabel = document.getElementById('count-project-name');
-            if(countLabel) countLabel.textContent = this.value.length;
+    // Contador del Textarea Resumen
+    const newSummaryInput = document.getElementById('new-summary');
+    if (newSummaryInput) {
+        newSummaryInput.addEventListener('input', function() {
+            const countLabel = document.getElementById('new-summary-counter');
+            if(countLabel) countLabel.textContent = `${this.value.length}/150`;
         });
     }
 
-    const inputProjectDesc = document.getElementById('input-project-desc');
-    if (inputProjectDesc) {
-        inputProjectDesc.addEventListener('input', function () {
-            const countLabel = document.getElementById('count-project-desc');
-            if(countLabel) countLabel.textContent = this.value.length;
-        });
+    // Preview de la Portada
+    const dropArea = document.getElementById('new-image-drop-area');
+    const fileInput = document.getElementById('new-image');
+    const previewContainer = document.getElementById('new-image-preview-container');
+    const previewImg = document.getElementById('new-image-preview-img');
+    const btnRemoveImg = document.getElementById('btn-remove-new-image');
+
+    function resetImagePreview() {
+        if(fileInput) fileInput.value = '';
+        if(previewContainer) previewContainer.style.display = 'none';
+        if(dropArea) dropArea.style.display = 'block';
     }
 
-    const newProjectImagePreview = document.getElementById('new-project-image-preview');
-    const inputProjectImage = document.getElementById('input-project-image');
+    if (dropArea && fileInput) {
+        dropArea.addEventListener('click', () => fileInput.click());
 
-    if (newProjectImagePreview && inputProjectImage) {
-        newProjectImagePreview.addEventListener('click', () => inputProjectImage.click());
-
-        inputProjectImage.addEventListener('change', function () {
+        fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    newProjectImagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    newProjectImagePreview.classList.add('has-image');
-                };
+                reader.onload = function(e) {
+                    if(previewImg) previewImg.src = e.target.result;
+                    dropArea.style.display = 'none';
+                    previewContainer.style.display = 'block';
+                }
                 reader.readAsDataURL(this.files[0]);
             }
         });
-    }    const btnSaveNewProject = document.getElementById('btn-save-new-project');
-    if (btnSaveNewProject) {
-        btnSaveNewProject.addEventListener('click', function () {
-            const nameEl = document.getElementById('input-project-name');
-            const descEl = document.getElementById('input-project-desc');
-            const themeEl = document.getElementById('select-project-theme');
-            const techEl = document.getElementById('select-project-tech');
-            const repoEl = document.getElementById('input-project-repo');
-            const p1El = document.getElementById('input-project-p1');
-            const p2El = document.getElementById('input-project-p2');
-            const p3El = document.getElementById('input-project-p3');
-            const imgInput = document.getElementById('input-project-image');
 
-            const name = nameEl ? nameEl.value.trim() : '';
-            const desc = descEl ? descEl.value.trim() : '';
-            const theme = themeEl ? themeEl.value : 'web';
-            const tech = techEl ? techEl.value.trim() : '';
+        if (btnRemoveImg) {
+            btnRemoveImg.addEventListener('click', resetImagePreview);
+        }
+    }
 
-            if (!name) { showToast('Por favor, ingresa un nombre para el proyecto', 'error'); return; }
-            if (!desc) { showToast('Por favor, ingresa una descripción', 'error'); return; }
+    // Petición a Django con Fetch y FormData
+    if (formNewProject) {
+        formNewProject.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btn-submit-new-project');
+            const originalText = btnSubmit.textContent;
+            
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            btnSubmit.disabled = true;
+            btnSubmit.style.opacity = '0.7';
 
-            btnSaveNewProject.classList.add('btn-loading');
-
-            const formData = new FormData();
-            formData.append('title', name);
-            formData.append('summary', desc);
-            formData.append('description', desc);
-            formData.append('theme', theme);
-            formData.append('main_tech', tech);
-            if (repoEl && repoEl.value.trim()) formData.append('repository_url', repoEl.value.trim());
-            if (p1El && p1El.value.trim()) formData.append('paragraph_1', p1El.value.trim());
-            if (p2El && p2El.value.trim()) formData.append('paragraph_2', p2El.value.trim());
-            if (p3El && p3El.value.trim()) formData.append('paragraph_3', p3El.value.trim());
-            if (imgInput && imgInput.files && imgInput.files[0]) {
-                formData.append('image', imgInput.files[0]);
-            }
+            const formData = new FormData(this);
 
             fetch('/projects/api/projects/', {
                 method: 'POST',
@@ -955,369 +1052,36 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Proyecto creado exitosamente', 'success');
-                    if (modalNewProject) modalNewProject.classList.remove('active');
-                    resetNewProjectForm();
-                    setTimeout(() => window.location.reload(), 800);
+                    showToast(data.message, 'success');
+                    // Refrescamos la página tras un segundo para que la nueva tarjeta
+                    // se renderice perfectamente con todos los datos y la imagen de Django.
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
                 } else {
-                    showToast(data.message || 'Error al crear proyecto', 'error');
+                    showToast(data.message || 'Error de validación', 'error');
+                    btnSubmit.innerHTML = originalText;
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.opacity = '1';
                 }
             })
             .catch(err => {
-                console.error(err);
-                showToast('Error de conexión con la API de proyectos', 'error');
-            })
-            .finally(() => {
-                btnSaveNewProject.classList.remove('btn-loading');
+                showToast('Error de conexión con el servidor', 'error');
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                btnSubmit.style.opacity = '1';
             });
         });
     }
 
-    function createProjectCard(data) {
-        const themeNames = { 'web': 'Web', 'mobile': 'Móvil', 'ia': 'IA', 'data': 'Data', 'iot': 'IoT', 'games': 'Juegos', 'security': 'Seguridad', 'automation': 'Automatización', 'api': 'API', 'devops': 'DevOps', 'research': 'Investigación' };
-        const techNames = { 'python': 'Python', 'javascript': 'JavaScript', 'java': 'Java', 'react': 'React', 'angular': 'Angular', 'vue': 'Vue.js', 'node': 'Node.js', 'django': 'Django', 'flask': 'Flask', 'tensorflow': 'TensorFlow', 'docker': 'Docker', 'aws': 'AWS' };
-
-        const card = document.createElement('div');
-        card.className = 'project-card-full';
-        card.dataset.name = data.name || 'Nuevo Proyecto';
-        card.dataset.date = data.date;
-        card.dataset.views = data.views;
-        card.dataset.collaborators = data.collaborators;
-        card.dataset.theme = data.theme || '';
-        card.dataset.tech = data.tech || '';
-
-        const dateFormatted = new Date(data.date).toLocaleDateString('es-ES');
-        const displayName = data.name || 'Nuevo Proyecto';
-        const displayDesc = data.desc || 'Descripción del proyecto';
-        const isNamePlaceholder = !data.name;
-        const isDescPlaceholder = !data.desc;
-
-        let imageContent = data.imageSrc ? `<img src="${data.imageSrc}" alt="Imagen del proyecto">` : '<div class="project-card-img-placeholder"></div>';
-
-        card.innerHTML = `
-            <div class="project-card-img">${imageContent}</div>
-            <div class="project-card-body">
-                <h4 class="project-card-title ${isNamePlaceholder ? 'placeholder' : ''}">${displayName}</h4>
-                <p class="project-card-desc ${isDescPlaceholder ? 'placeholder' : ''}">${displayDesc}</p>
-                <div class="project-card-tags">
-                    ${data.tech ? `<span class="tag-tech">${techNames[data.tech] || data.tech}</span>` : ''}
-                    ${data.theme ? `<span class="tag-theme">${themeNames[data.theme] || data.theme}</span>` : ''}
-                </div>
-                <div class="project-card-meta">
-                    <span><i class="fas fa-eye"></i> ${data.views}</span>
-                    <span><i class="fas fa-users"></i> ${data.collaborators}</span>
-                    <span><i class="fas fa-calendar"></i> ${dateFormatted}</span>
-                </div>
-            </div>
-        `;
-        return card;
-    }
-
-    const modalEditProject = document.getElementById('modal-edit-project');
-    const editProjectImagePreview = document.getElementById('edit-project-image-preview');
-    const inputEditProjectImage = document.getElementById('input-edit-project-image');
-
-    if (projectsGrid) {
-        projectsGrid.addEventListener('click', function (e) {
-            const editBtn = e.target.closest('.btn-edit-card-icon');
-            if (editBtn) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const card = editBtn.closest('.project-card-full') || editBtn.closest('.domain-card');
-                if (card) {
-                    currentEditingProject = card;
-                    openEditProjectModal(card);
-                }
-            }
-        });
-    }
-
-    function openEditProjectModal(card) {
-        const titleEl = card.querySelector('.project-card-title') || card.querySelector('h2');
-        const descEl = card.querySelector('.project-card-desc') || card.querySelector('p');
-
-        const name = titleEl && titleEl.classList.contains('placeholder') ? '' : (card.dataset.name || (titleEl ? titleEl.textContent.trim() : ''));
-        const desc = descEl && descEl.classList.contains('placeholder') ? '' : (descEl ? descEl.textContent.trim() : '');
-
-        const editNameInp = document.getElementById('edit-project-name');
-        if(editNameInp) editNameInp.value = name;
-        
-        const editDescInp = document.getElementById('edit-project-desc');
-        if(editDescInp) editDescInp.value = desc;
-        
-        const editTheme = document.getElementById('edit-project-theme');
-        if(editTheme) editTheme.value = card.dataset.theme || 'web';
-        
-        const editTech = document.getElementById('edit-project-tech');
-        if(editTech) editTech.value = card.dataset.tech ? card.dataset.tech.split(',')[0] : '';
-        
-        const countName = document.getElementById('count-edit-project-name');
-        if(countName) countName.textContent = name ? name.length : 0;
-        
-        const countDesc = document.getElementById('count-edit-project-desc');
-        if(countDesc) countDesc.textContent = desc ? desc.length : 0;
-
-        const cardImg = card.querySelector('.project-card-img img') || card.querySelector('img');
-        if (editProjectImagePreview) {
-            if (cardImg) {
-                editProjectImagePreview.innerHTML = `<img src="${cardImg.src}" alt="Preview">`;
-                editProjectImagePreview.classList.add('has-image');
-            } else {
-                editProjectImagePreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Haz clic o arrastra una imagen</span>';
-                editProjectImagePreview.classList.remove('has-image');
-            }
-        }
-        if(inputEditProjectImage) inputEditProjectImage.value = '';
-
-        if(modalEditProject) modalEditProject.classList.add('active');
-    }
-
-    function resetEditProjectForm() {
-        if(document.getElementById('edit-project-tags-list')) document.getElementById('edit-project-tags-list').innerHTML = '';
-        if(document.getElementById('input-edit-project-tags')) document.getElementById('input-edit-project-tags').value = '';
-        if(document.getElementById('edit-project-p1')) document.getElementById('edit-project-p1').value = '';
-        if(document.getElementById('edit-project-p2')) document.getElementById('edit-project-p2').value = '';
-        if(document.getElementById('edit-project-p3')) document.getElementById('edit-project-p3').value = '';
-        if(document.getElementById('edit-gallery-preview-grid')) document.getElementById('edit-gallery-preview-grid').innerHTML = '';
-        if(document.getElementById('input-edit-gallery-images')) document.getElementById('input-edit-gallery-images').value = '';
-        window.editProjectTagsArray = [];
-    }
-
-    const btnCloseEditProject = document.getElementById('btn-close-edit-project');
-    const btnCancelEditProject = document.getElementById('btn-cancel-edit-project');
-    
-    if (btnCloseEditProject) btnCloseEditProject.addEventListener('click', () => { if(modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
-    if (btnCancelEditProject) btnCancelEditProject.addEventListener('click', () => { if(modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
-
-    const editProjectName = document.getElementById('edit-project-name');
-    if (editProjectName) editProjectName.addEventListener('input', function () { 
-        const ct = document.getElementById('count-edit-project-name');
-        if(ct) ct.textContent = this.value.length; 
-    });
-
-    const editProjectDesc = document.getElementById('edit-project-desc');
-    if (editProjectDesc) editProjectDesc.addEventListener('input', function () { 
-        const ct = document.getElementById('count-edit-project-desc');
-        if(ct) ct.textContent = this.value.length; 
-    });
-
-    if (editProjectImagePreview && inputEditProjectImage) {
-        editProjectImagePreview.addEventListener('click', () => inputEditProjectImage.click());
-        inputEditProjectImage.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    editProjectImagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    editProjectImagePreview.classList.add('has-image');
-                };
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-    }
-
-    window.newProjectTagsArray = [];
-    window.editProjectTagsArray = [];
-
-    function setupTagsLogic(inputId, listId, arrayVarName) {
-        const input = document.getElementById(inputId);
-        const list = document.getElementById(listId);
-        if (!input || !list) return;
-
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const value = this.value.trim();
-                if (value && !window[arrayVarName].includes(value)) {
-                    window[arrayVarName].push(value);
-                    renderTags(list, window[arrayVarName]);
-                }
-                this.value = '';
-            }
-        });
-
-        list.addEventListener('click', function(e) {
-            if (e.target.classList.contains('tag-chip-remove')) {
-                const index = e.target.getAttribute('data-index');
-                window[arrayVarName].splice(index, 1);
-                renderTags(list, window[arrayVarName]);
-            }
-        });
-    }
-
-    function renderTags(listElement, currentArray) {
-        if(!listElement) return;
-        listElement.innerHTML = '';
-        currentArray.forEach((tag, index) => {
-            const chip = document.createElement('span');
-            chip.className = 'tag-chip';
-            chip.innerHTML = `#${tag} <span class="tag-chip-remove" data-index="${index}">x</span>`;
-            listElement.appendChild(chip);
-        });
-    }
-
-    setupTagsLogic('input-project-tags', 'new-project-tags-list', 'newProjectTagsArray');
-    setupTagsLogic('input-edit-project-tags', 'edit-project-tags-list', 'editProjectTagsArray');
-
-    function setupGallery(dropAreaId, inputId, previewGridId) {
-        const dropArea = document.getElementById(dropAreaId);
-        const input = document.getElementById(inputId);
-        const previewGrid = document.getElementById(previewGridId);
-        if (!dropArea || !input || !previewGrid) return;
-
-        dropArea.addEventListener('click', () => input.click());
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
-        });
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.style.borderColor = 'var(--orange-primary)';
-                dropArea.style.backgroundColor = 'var(--orange-light)';
-            });
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.style.borderColor = 'var(--gray-300)';
-                dropArea.style.backgroundColor = 'white';
-            });
-        });
-
-        dropArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
-        input.addEventListener('change', function() { handleFiles(this.files); this.value = ''; });
-
-        function handleFiles(files) {
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const thumbDiv = document.createElement('div');
-                        thumbDiv.className = 'gallery-thumbnail';
-                        thumbDiv.innerHTML = `
-                            <img src="${event.target.result}" alt="Gallery image">
-                            <button type="button" class="gallery-thumbnail-remove" title="Eliminar"><i class="fas fa-times"></i></button>
-                        `;
-                        thumbDiv.querySelector('.gallery-thumbnail-remove').addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            thumbDiv.remove();
-                        });
-                        previewGrid.appendChild(thumbDiv);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    }
-
-    setupGallery('gallery-upload-area', 'input-gallery-images', 'gallery-preview-grid');
-    setupGallery('edit-gallery-upload-area', 'input-edit-gallery-images', 'edit-gallery-preview-grid');
-
-    const btnSaveEditProject = document.getElementById('btn-save-edit-project');
-    if (btnSaveEditProject) {
-        btnSaveEditProject.addEventListener('click', function () {
-            if (!currentEditingProject) return;
-            const projectId = currentEditingProject.dataset.id;
-            if (!projectId) {
-                showToast('No se encontró el ID del proyecto', 'error');
-                return;
-            }
-
-            const name = document.getElementById('edit-project-name').value.trim();
-            const desc = document.getElementById('edit-project-desc').value.trim();
-            const theme = document.getElementById('edit-project-theme').value;
-            const tech = document.getElementById('edit-project-tech').value.trim();
-            const p1El = document.getElementById('edit-project-p1');
-            const p2El = document.getElementById('edit-project-p2');
-            const p3El = document.getElementById('edit-project-p3');
-            const imgInput = document.getElementById('input-edit-project-image');
-
-            if (!name) { showToast('El nombre es obligatorio', 'error'); return; }
-
-            btnSaveEditProject.classList.add('btn-loading');
-
-            const formData = new FormData();
-            formData.append('title', name);
-            formData.append('summary', desc);
-            formData.append('description', desc);
-            formData.append('theme', theme);
-            formData.append('main_tech', tech);
-            if (p1El && p1El.value.trim()) formData.append('paragraph_1', p1El.value.trim());
-            if (p2El && p2El.value.trim()) formData.append('paragraph_2', p2El.value.trim());
-            if (p3El && p3El.value.trim()) formData.append('paragraph_3', p3El.value.trim());
-            if (imgInput && imgInput.files && imgInput.files[0]) {
-                formData.append('image', imgInput.files[0]);
-            }
-
-            fetch(`/projects/api/projects/${projectId}/`, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Proyecto actualizado exitosamente', 'success');
-                    if (modalEditProject) modalEditProject.classList.remove('active');
-                    currentEditingProject = null;
-                    resetEditProjectForm();
-                    setTimeout(() => window.location.reload(), 800);
-                } else {
-                    showToast(data.message || 'Error al actualizar proyecto', 'error');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Error de conexión', 'error');
-            })
-            .finally(() => {
-                btnSaveEditProject.classList.remove('btn-loading');
-            });
-        });
-    }
-
-    const btnDeleteProject = document.getElementById('btn-delete-project');
-    if (btnDeleteProject) {
-        btnDeleteProject.addEventListener('click', function () {
-            if (!currentEditingProject) return;
-            const projectId = currentEditingProject.dataset.id;
-            if (!projectId) return;
-
-            if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
-                btnDeleteProject.classList.add('btn-loading');
-                fetch(`/projects/api/projects/${projectId}/`, {
-                    method: 'DELETE',
-                    headers: { 'X-CSRFToken': getCSRFToken() }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Proyecto eliminado', 'success');
-                        if (modalEditProject) modalEditProject.classList.remove('active');
-                        currentEditingProject = null;
-                        setTimeout(() => window.location.reload(), 600);
-                    } else {
-                        showToast(data.message || 'Error al eliminar', 'error');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast('Error de conexión', 'error');
-                })
-                .finally(() => {
-                    btnDeleteProject.classList.remove('btn-loading');
-                });
-            }
-        });
-    }
-
+    // ============================================
+    // MANEJO DE EVENTOS GLOBALES DE CIERRE
+    // ============================================
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.active').forEach(modal => {
                 modal.classList.remove('active');
-                if(modal.id === 'modal-edit-project') resetEditProjectForm();
-                if(modal.id === 'modal-new-project') resetNewProjectForm();
+                if(modal.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
             });
             currentEditingProject = null;
         }
@@ -1327,8 +1091,7 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) {
                 this.classList.remove('active');
-                if(this.id === 'modal-edit-project') resetEditProjectForm();
-                if(this.id === 'modal-new-project') resetNewProjectForm();
+                if(this.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
                 currentEditingProject = null;
             }
         });

@@ -431,6 +431,7 @@ textarea {
     align-items: center;
     gap: 7px;
     transition: all 0.2s;
+    text-decoration: none;
 }
 
 .btn-login-top:hover {
@@ -452,6 +453,7 @@ textarea {
     align-items: center;
     gap: 7px;
     transition: all 0.2s;
+    text-decoration: none;
     box-shadow: 0 4px 12px rgba(249, 115, 22, .3);
 }
 
@@ -466,14 +468,14 @@ textarea {
     height: 40px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2.5px solid var(--orange-soft);
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: opacity 0.2s;
     flex-shrink: 0;
+    text-decoration: none;
 }
 
 .topbar-avatar:hover {
-    border-color: var(--orange-primary);
+    opacity: 0.85;
 }
 
 .topbar-avatar img {
