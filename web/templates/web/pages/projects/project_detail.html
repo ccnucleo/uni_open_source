@@ -16,7 +16,7 @@
     <div class="project-content-grid">
         <div class="project-main-col">
             <!-- NUEVA PORTADA Y DETALLES -->
-            <div class="hero-main-card {% if project.image %}has-image{% else %}no-image{% endif %}" data-title="{{ project.title }}" style="{% if project.image %}background-image: url('{{ project.image.url }}');{% endif %}">
+            <div class="hero-main-card {% if project.image %}has-image{% else %}no-image{% endif %}" data-title="{{ project.title }}" {% if project.image %}style="background-image: url('{{ project.image.url }}');"{% endif %}>
                 {% if request.user == project.owner %}
                 <button class="btn-edit-banner-float" onclick="openModal('modal-edit-banner')"><i class="fas fa-camera"></i> Cambiar Portada</button>
                 {% endif %}
@@ -198,26 +198,35 @@
             </div>
 
             <div class="detail-card">
-                <h3 class="sidebar-title-accent">Colaboradores</h3>
+                <h3 class="sidebar-title-accent">Equipo</h3>
                 <div class="avatar-stack">
-                    <div class="avatar-stack-item" data-name="{{ project.owner.username }}" title="Dueño: {{ project.owner.username }}" style="overflow: hidden;">
-                        {% if project.owner.profile.avatar %}
-                            <img src="{{ project.owner.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        {% else %}
-                            {{ project.owner.username|make_list|first|upper }}
-                        {% endif %}
-                    </div>
-                    {% for colaborador in project.collaborators.all %}
-                        <div class="avatar-stack-item" data-name="{{ colaborador.username }}" title="Colaborador: {{ colaborador.username }}" style="overflow: hidden;">
-                            {% if colaborador.profile.avatar %}
-                                <img src="{{ colaborador.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    
+                    <!-- 1. Dueño (Enlace a su perfil) -->
+                    <a href="{% url 'community:profile' project.owner.username %}" style="text-decoration: none;">
+                        <div class="avatar-stack-item" data-name="{{ project.owner.username }}" title="Dueño: {{ project.owner.username }}" style="border-color: var(--orange-primary); overflow: hidden; z-index: 10;">
+                            {% if project.owner.profile.avatar %}
+                                <img src="{{ project.owner.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
                             {% else %}
-                                {{ colaborador.username|make_list|first|upper }}
+                                {{ project.owner.username|make_list|first|upper }}
                             {% endif %}
                         </div>
+                    </a>
+
+                    <!-- 2. Colaboradores (Enlaces a sus perfiles) -->
+                    {% for colaborador in project.collaborators.all %}
+                        <a href="{% url 'community:profile' colaborador.username %}" style="text-decoration: none;">
+                            <div class="avatar-stack-item" data-name="{{ colaborador.username }}" title="Colaborador: {{ colaborador.username }}" style="overflow: hidden;">
+                                {% if colaborador.profile.avatar %}
+                                    <img src="{{ colaborador.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                    {{ colaborador.username|make_list|first|upper }}
+                                {% endif %}
+                            </div>
+                        </a>
                     {% empty %}
                         <div class="avatar-stack-item" style="background: var(--gray-200); color: var(--gray-500); border-color: white;" title="Sin colaboradores">+0</div>
                     {% endfor %}
+                    
                 </div>
             </div>
         </div> 
@@ -359,7 +368,7 @@
                     {% for img in project.gallery.all %}
                         <div class="img-box" id="existing-img-{{ img.id }}" data-id="{{ img.id }}" style="cursor: grab;">
                             <img src="{{ img.image.url }}">
-                            <span class="delete-btn" onclick="markDeleteGallery({{ img.id }})">&times;</span>
+                            <span class="delete-btn" onclick="markDeleteGallery('{{ img.id }}')">&times;</span>
                         </div>
                     {% endfor %}
                 </div>

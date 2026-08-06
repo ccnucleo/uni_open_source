@@ -1,9 +1,75 @@
+:root {
+  --topbar-height: 68px;
+
+  overscroll-behavior-y: none;
+}
+
 .sidebar-main-wrapper {
   min-height: 100vh;
 }
 
 .app-topbar {
   z-index: 120;
+}
+
+.content-area.has-hero-page {
+  padding: 0 0 48px 0;
+  flex-direction: column;
+}
+
+/* ============================================
+   TOPBAR TRANSPARENTE EN SCROLL 0
+   ============================================ */
+.topbar {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.topbar.topbar-transparent {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.topbar.topbar-transparent .platform-name {
+  color: #ffffff;
+}
+
+.topbar.topbar-transparent .app-page-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.topbar.topbar-transparent .sidebar-toggle-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.topbar.topbar-transparent .sidebar-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: var(--orange-primary);
+  color: var(--orange-primary);
+}
+
+.topbar.topbar-transparent .btn-login-top {
+  background: rgba(100, 99, 99, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.topbar.topbar-transparent .btn-login-top:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #000000;
+}
+
+.topbar.topbar-transparent .theme-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 
 .app-topbar-left {
@@ -204,4 +270,3 @@ body.theme-forest .app-page-title {
     transform: rotate(360deg);
   }
 }
-

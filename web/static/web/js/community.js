@@ -1,5 +1,66 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ==========================================
+    // BÚSQUEDA Y FILTRADO SERVIDOR (DEBOUNCE)
+    // ==========================================
+    const filterForm = document.querySelector('.community-filter-form');
+    const searchDevInput = document.getElementById('search-dev');
+    const searchTechInput = document.getElementById('search-tech');
+    let debounceTimer = null;
+
+    function triggerServerFilter() {
+        if (!filterForm) return;
+        // Al realizar una nueva búsqueda/filtrado, reseteamos a la página 1
+        let pageInput = filterForm.querySelector('input[name="page"]');
+        if (pageInput) {
+            pageInput.value = '1';
+        }
+        filterForm.submit();
+    }
+
+    function handleDebouncedInput() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            triggerServerFilter();
+        }, 700); // 550ms debounce para evitar sobrecarga de peticiones al servidor
+    }
+
+    if (searchDevInput) {
+        searchDevInput.addEventListener('input', handleDebouncedInput);
+    }
+
+    if (searchTechInput) {
+        searchTechInput.addEventListener('input', handleDebouncedInput);
+    }
+
+    // ==========================================
+    // DESPLAZAMIENTO SUAVE EN PAGINACIÓN
+    // ==========================================
+    const paginationControls = document.getElementById('pagination-controls');
+    if (paginationControls) {
+        const pageButtons = paginationControls.querySelectorAll('.btn-page:not(.disabled)');
+        pageButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const mainArea = document.querySelector('.community-main') || document.querySelector('.community-grid');
+                if (mainArea) {
+                    mainArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    }
+
+    // ==========================================
+    // MANEJO DE FALLBACK EN AVATARES DE DESARROLLADORES
+    // ==========================================
+    const devAvatars = document.querySelectorAll('.dev-avatar');
+    devAvatars.forEach(img => {
+        img.addEventListener('error', function () {
+            if (this.tagName === 'IMG') {
+                this.src = '/static/web/img/avatar.jpg';
+            }
+        });
+    });
+
     // ==========================================
     // TABS DEL PERFIL PÚBLICO
     // ==========================================
@@ -12,146 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
         btnDesc.addEventListener('click', function () {
             btnDesc.classList.add('active');
             btnProy.classList.remove('active');
-            viewGeneral.style.display = 'block';
-            viewProjects.style.display = 'none';
+            if (viewGeneral) viewGeneral.style.display = 'block';
+            if (viewProjects) viewProjects.style.display = 'none';
         });
 
         btnProy.addEventListener('click', function () {
             btnProy.classList.add('active');
             btnDesc.classList.remove('active');
-            viewGeneral.style.display = 'none';
-            viewProjects.style.display = 'block';
+            if (viewGeneral) viewGeneral.style.display = 'none';
+            if (viewProjects) viewProjects.style.display = 'block';
         });
-    }
-
-    // ==========================================
-    // LÓGICA DE FILTRADO Y PAGINACIÓN
-    // ==========================================
-    const searchInput = document.getElementById('search-dev');
-    const techInput = document.getElementById('search-tech');
-    const cards = Array.from(document.querySelectorAll('.dev-card')); // Convertido a Array
-    const noResultsMsg = document.getElementById('no-results-msg');
-    
-    // Elementos de Paginación
-    const selectPerPage = document.getElementById('per-page');
-    const resultsCount = document.getElementById('results-count');
-    const paginationControls = document.getElementById('pagination-controls');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const pageInfo = document.getElementById('page-info');
-
-    // Variables de estado
-    let filteredCards = [];
-    let currentPage = 1;
-    let itemsPerPage = 6;
-
-    // Función 1: Filtrar la lista
-    function filterDevelopers() {
-        if (!searchInput || !techInput) return;
-
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        const techTerm = techInput.value.toLowerCase().trim();
-        
-        filteredCards = []; // Reiniciamos los resultados
-
-        cards.forEach(card => {
-            const username = card.dataset.username || '';
-            const name = card.dataset.name || '';
-            const userTechs = card.dataset.techs || '';
-
-            const matchesText = searchTerm === '' || username.includes(searchTerm) || name.includes(searchTerm);
-            const matchesTech = techTerm === '' || userTechs.includes(techTerm);
-
-            if (matchesText && matchesTech) {
-                filteredCards.push(card);
-            } else {
-                card.style.display = 'none'; // Ocultamos los que no coinciden de inmediato
-            }
-        });
-
-        // Al hacer una nueva búsqueda, volvemos a la página 1
-        currentPage = 1;
-        applyPagination();
-    }
-
-    // Función 2: Aplicar Paginación sobre los resultados filtrados
-    function applyPagination() {
-        const totalItems = filteredCards.length;
-
-        // Caso: Sin resultados
-        if (totalItems === 0) {
-            noResultsMsg.style.display = 'block';
-            paginationControls.style.display = 'none';
-            resultsCount.textContent = 'Mostrando 0 resultados';
-            return;
-        }
-
-        // Hay resultados
-        noResultsMsg.style.display = 'none';
-        
-        // Determinar cuántos por página
-        const perPageValue = selectPerPage.value;
-        itemsPerPage = perPageValue === 'all' ? totalItems : parseInt(perPageValue);
-
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-
-        // Mostrar solo los del rango actual
-        filteredCards.forEach((card, index) => {
-            if (index >= startIndex && index < endIndex) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Actualizar textos UI
-        resultsCount.textContent = `Mostrando ${totalItems} talento(s)`;
-        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
-
-        // Mostrar/Ocultar controles de paginación inferiores
-        if (totalPages > 1) {
-            paginationControls.style.display = 'flex';
-            btnPrev.disabled = currentPage === 1;
-            btnNext.disabled = currentPage === totalPages;
-        } else {
-            paginationControls.style.display = 'none';
-        }
-    }
-
-    // ==========================================
-    // LISTENERS DE EVENTOS
-    // ==========================================
-    if (searchInput) {
-        // Al escribir en los buscadores
-        searchInput.addEventListener('input', filterDevelopers);
-        techInput.addEventListener('input', filterDevelopers);
-
-        // Al cambiar la cantidad por página
-        selectPerPage.addEventListener('change', function() {
-            currentPage = 1; // Volver a pag 1
-            applyPagination();
-        });
-
-        // Botón Anterior
-        btnPrev.addEventListener('click', function() {
-            if (currentPage > 1) {
-                currentPage--;
-                applyPagination();
-            }
-        });
-
-        // Botón Siguiente
-        btnNext.addEventListener('click', function() {
-            const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                applyPagination();
-            }
-        });
-
-        // Ejecutar por primera vez al cargar la página
-        filterDevelopers();
     }
 });

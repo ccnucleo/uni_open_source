@@ -4,30 +4,42 @@
 {% block title %}Comunidad - UNI Open Source{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'web/css/pages/community.css' %}">
+<link rel="stylesheet" href="{% static 'web/css/pages/community.css' %}">
 {% endblock %}
 
 {% block content %}
+{% static 'web/img/avatar.jpg' as default_avatar %}
 <div class="community-wrapper">
-    
+
     <aside class="community-sidebar">
         <h3 class="filter-title">Filtrar Talentos</h3>
-        
-        <div class="filter-group">
-            <label>BUSCAR POR NOMBRE O USUARIO</label>
-            <div class="search-input-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-dev" placeholder="Ej. angel, lucy...">
-            </div>
-        </div>
 
-        <div class="filter-group">
-            <label>BUSCAR POR TECNOLOGÍA</label>
-            <div class="search-input-wrapper">
-                <i class="fas fa-code"></i>
-                <input type="text" id="search-tech" placeholder="Ej. python, react, aws...">
+        <form method="GET" action="{% url 'community:list' %}" class="community-filter-form">
+            <div class="filter-group">
+                <label for="search-dev">BUSCAR POR NOMBRE O USUARIO</label>
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-dev" name="search" value="{{ search_query }}"
+                        placeholder="Ej. angel, lucy...">
+                </div>
             </div>
-        </div>
+
+            <div class="filter-group">
+                <label for="search-tech">BUSCAR POR TECNOLOGÍA</label>
+                <div class="search-input-wrapper">
+                    <i class="fas fa-code"></i>
+                    <input type="text" id="search-tech" name="skill" value="{{ skill_query }}"
+                        placeholder="Ej. python, react, aws...">
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter-submit"><i class="fas fa-filter"></i> Buscar</button>
+                {% if search_query or skill_query %}
+                <a href="{% url 'community:list' %}" class="btn-filter-clear"><i class="fas fa-times"></i> Limpiar</a>
+                {% endif %}
+            </div>
+        </form>
     </aside>
 
     <main class="community-main">
@@ -37,77 +49,90 @@
         </div>
 
         <div class="community-controls">
-            <span id="results-count" class="results-count">Calculando resultados...</span>
-            <div class="items-per-page">
-                <label for="per-page">Mostrar:</label>
-                <select id="per-page">
-                    <option value="6">6 por página</option>
-                    <option value="12">12 por página</option>
-                    <option value="24">24 por página</option>
-                    <option value="all">Todos</option>
-                </select>
-            </div>
+            <span id="results-count" class="results-count">
+                Mostrando {{ page_obj.paginator.count }} talento(s) encontrado(s)
+            </span>
         </div>
 
         <div class="community-grid" id="community-grid">
-            {% for dev in developers %}
-                <div class="dev-card" 
-                     data-username="{{ dev.username|lower }}" 
-                     data-name="{{ dev.first_name|lower }} {{ dev.last_name|lower }}"
-                     data-techs="{% for t in dev.profile.tecnologias.all %}{{ t.nombre|lower }} {% endfor %}">
-                    
-                    <div class="dev-card-header"></div>
-                    
-                    <div class="dev-card-body">
-                        {% if dev.profile.avatar %}
-                            <img src="{{ dev.profile.avatar.url }}" alt="Avatar" class="dev-avatar">
-                        {% else %}
-                            <div class="dev-avatar auto-avatar" data-name="{{ dev.username }}" style="display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; color: white;">{{ dev.username|make_list|first|upper }}</div>
+            {% for dev in page_obj %}
+            <div class="dev-card">
+                <div class="dev-card-header"></div>
+
+                <div class="dev-card-body">
+                    {% if dev.profile.avatar %}
+                    <img src="{{ dev.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_avatar }}';" alt="{{ dev.username }}" class="dev-avatar">
+                    {% else %}
+                    <img src="{{ default_avatar }}" alt="Avatar" class="dev-avatar">
+                    {% endif %}
+
+                    <h3 class="dev-name">{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{
+                        dev.username }}{% endif %}</h3>
+                    <p class="dev-username">@{{ dev.username }}</p>
+
+                    <div class="dev-social-links">
+                        {% if dev.profile.github %}
+                        <a href="{{ dev.profile.github }}" target="_blank" rel="noopener noreferrer" title="GitHub"
+                            class="social-icon"><i class="fab fa-github"></i></a>
                         {% endif %}
-                        
-                        <h3>{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{ dev.username }}{% endif %}</h3>
-                        <p class="dev-username">@{{ dev.username }}</p>
-                        
-                        <div class="dev-tech-tags">
-                            {% for tech in dev.profile.tecnologias.all|slice:":3" %}
-                                <span class="mini-tag">{{ tech.nombre }}</span>
-                            {% endfor %}
-                        </div>
-
-                        <div class="dev-stats">
-                            <span title="Proyectos">
-                                <i class="fas fa-folder-open" style="color: var(--orange-primary);"></i> 
-                                {{ dev.owned_projects.count|default:"0" }} Proyectos
-                            </span>
-                        </div>
-
-                        <a href="{% url 'community:profile' dev.username %}" class="btn-view-dev">Ver Perfil</a>
+                        {% if dev.profile.linkedin %}
+                        <a href="{{ dev.profile.linkedin }}" target="_blank" rel="noopener noreferrer" title="LinkedIn"
+                            class="social-icon"><i class="fab fa-linkedin"></i></a>
+                        {% endif %}
                     </div>
+
+                    <div class="dev-tech-tags">
+                        {% if dev.profile.tecnologias.all %}
+                        {% for tech in dev.profile.tecnologias.all|slice:":3" %}
+                        <span class="mini-tag" title="{{ tech.nombre }}">{{ tech.nombre }}</span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="mini-tag empty-tag">Sin tecnologías</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="dev-stats">
+                        <span title="Proyectos">
+                            <i class="fas fa-folder-open" style="color: var(--orange-primary);"></i>
+                            {{ dev.owned_projects.count|default:"0" }} Proyectos
+                        </span>
+                    </div>
+
+                    <a href="{% url 'community:profile' dev.username %}" class="btn-view-dev">Ver Perfil</a>
                 </div>
+            </div>
             {% empty %}
-                <div class="no-devs">
-                    <i class="fas fa-users-slash fa-3x"></i>
-                    <h3>Aún no hay usuarios públicos</h3>
-                </div>
+            <div class="no-devs">
+                <i class="fas fa-search-minus fa-3x" style="color: var(--orange-primary); margin-bottom: 15px;"></i>
+                <h3>No se encontraron desarrolladores</h3>
+                <p>Intenta con otros términos de búsqueda.</p>
+            </div>
             {% endfor %}
         </div>
-        
-        <div id="no-results-msg" class="no-devs" style="display: none;">
-            <i class="fas fa-search-minus fa-3x" style="color: #FF6B2B; margin-bottom: 15px;"></i>
-            <h3 style="color: #1e293b;">No se encontraron usuarios</h3>
-            <p>Intenta con otros términos de búsqueda.</p>
-        </div>
 
-        <div class="pagination-container" id="pagination-controls" style="display: none;">
-            <button id="btn-prev" class="btn-page"><i class="fas fa-chevron-left"></i> Anterior</button>
-            <span id="page-info" class="page-info">Página 1 de 1</span>
-            <button id="btn-next" class="btn-page">Siguiente <i class="fas fa-chevron-right"></i></button>
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-container" id="pagination-controls">
+            {% if page_obj.has_previous %}
+            <a href="?search={{ search_query }}&skill={{ skill_query }}&page={{ page_obj.previous_page_number }}"
+                class="btn-page"><i class="fas fa-chevron-left"></i> Anterior</a>
+            {% else %}
+            <span class="btn-page disabled"><i class="fas fa-chevron-left"></i> Anterior</span>
+            {% endif %}
+
+            <span class="page-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+            <a href="?search={{ search_query }}&skill={{ skill_query }}&page={{ page_obj.next_page_number }}"
+                class="btn-page">Siguiente <i class="fas fa-chevron-right"></i></a>
+            {% else %}
+            <span class="btn-page disabled">Siguiente <i class="fas fa-chevron-right"></i></span>
+            {% endif %}
         </div>
+        {% endif %}
 
     </main>
-</div>
-{% endblock %}
+    {% endblock %}
 
-{% block extra_js %}
+    {% block extra_js %}
     <script src="{% static 'web/js/community.js' %}"></script>
-{% endblock %}
+    {% endblock %}

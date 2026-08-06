@@ -1,54 +1,59 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'web/favicon.ico' %}" type="image/x-icon">
     <title>{% block title %}UNI Open Source{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'web/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'web/css/themes.css' %}">
     <link rel="stylesheet" href="{% static 'web/css/layouts.css' %}">
-    
+
     <!-- Prevención de FOUC e Inyección de Tema por Defecto -->
     <script>
-        (function() {
+        (function () {
             var theme = localStorage.getItem('theme');
             if (theme !== 'light' && theme !== 'dark') {
                 localStorage.setItem('theme', 'light');
                 theme = 'light';
             }
             var themeClass = 'theme-' + theme;
-            
+
             // MutationObserver para inyectar la clase del tema en el body de inmediato
-            var observer = new MutationObserver(function(mutations) {
+            var observer = new MutationObserver(function (mutations) {
                 if (document.body) {
                     document.body.classList.add(themeClass);
                     observer.disconnect();
                 }
             });
             observer.observe(document.documentElement, { childList: true, subtree: true });
-            
+
             // Respaldo en DOMContentLoaded por si acaso
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 if (document.body && !document.body.classList.contains(themeClass)) {
                     document.body.classList.add(themeClass);
                 }
             });
         })();
     </script>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
     {% include 'web/components/sidebar.html' %}
 
     <div class="main-wrapper sidebar-main-wrapper">
         {% include 'web/components/topbar.html' %}
-        <main class="content-area">
+        <main class="content-area {% block content_class %}{% endblock %}">
             {% block content %}{% endblock %}
         </main>
         {% include 'web/components/footer.html' %}
@@ -56,6 +61,7 @@
 
     <script src="{% static 'web/js/themes.js' %}"></script>
     <script src="{% static 'web/js/sidebar-collapse.js' %}"></script>
+    <script src="{% static 'web/js/topbar-scroll.js' %}"></script>
     <script src="{% static 'web/js/loading.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -131,4 +137,5 @@
     </script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

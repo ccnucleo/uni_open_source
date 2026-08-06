@@ -15,11 +15,26 @@
         {% if user.is_authenticated %}
         <a href="/courses/" class="sidebar-link{% if active_section == 'courses' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-graduation-cap"></i></div>
-            <span>Courses</span>
+            <span>Cursos</span>
         </a>
         <a href="{% url 'community:list' %}"
             class="sidebar-link{% if active_section == 'community' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+            <span>Comunidad</span>
+        </a>
+        {% else %}
+        <a href="/courses/" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="courses" title="Acceso restringido a miembros">
+            <div class="sidebar-icon">
+                <i class="fas fa-graduation-cap"></i>
+                <i class="fas fa-lock sidebar-lock-icon"></i>
+            </div>
+            <span>Cursos</span>
+        </a>
+        <a href="{% url 'community:list' %}" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="community" title="Acceso restringido a miembros">
+            <div class="sidebar-icon">
+                <i class="fas fa-users"></i>
+                <i class="fas fa-lock sidebar-lock-icon"></i>
+            </div>
             <span>Comunidad</span>
         </a>
         {% endif %}
@@ -38,3 +53,139 @@
         {% endif %}
     </div>
 </aside>
+
+{% if not user.is_authenticated %}
+<!-- MODAL CARD FLOTANTE PARA INVITAR A REGISTRARSE/UNIRSE -->
+<div class="guest-modal-backdrop" id="guest-modal-backdrop" style="display: none;">
+    <div class="guest-modal-card" id="guest-modal-card" role="dialog" aria-modal="true" aria-labelledby="guest-modal-title">
+        <button type="button" class="guest-modal-close" id="guest-modal-close" aria-label="Cerrar ventana">&times;</button>
+        
+        <div class="guest-modal-header">
+            <div class="guest-modal-badge">
+                <i class="fas fa-lock"></i> Contenido Exclusivo
+            </div>
+            <div class="guest-modal-icon-wrapper" id="guest-modal-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3 class="guest-modal-title" id="guest-modal-title">¡Desbloquea este Contenido!</h3>
+            <p class="guest-modal-subtitle" id="guest-modal-subtitle">
+                Únete a la comunidad de <strong>UNI Open Source</strong> para acceder a nuestros cursos interactivos, guías y foros de debate.
+            </p>
+        </div>
+
+        <div class="guest-modal-benefits">
+            <h4 class="benefits-title"><i class="fas fa-sparkles"></i> Beneficios de unirte:</h4>
+            <ul class="benefits-list">
+                <li>
+                    <div class="benefit-icon"><i class="fas fa-laptop-code"></i></div>
+                    <div class="benefit-text">
+                        <strong>Cursos y Talleres Gratuitos</strong>
+                        <span>Accede a rutas de aprendizaje en desarrollo web, backend, bases de datos y DevOps.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="benefit-icon"><i class="fas fa-users-line"></i></div>
+                    <div class="benefit-text">
+                        <strong>Comunidad & Networking UNI</strong>
+                        <span>Conéctate con estudiantes, mentores y apasionados de la tecnología.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="benefit-icon"><i class="fas fa-folder-open"></i></div>
+                    <div class="benefit-text">
+                        <strong>Proyectos Colaborativos</strong>
+                        <span>Participa activamente en proyectos de código abierto y fortalece tu portfolio.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="benefit-icon"><i class="fas fa-comments"></i></div>
+                    <div class="benefit-text">
+                        <strong>Foro & Asistencia Técnica</strong>
+                        <span>Haz preguntas, debate ideas y recibe respuestas de compañeros y mentores.</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="guest-modal-actions">
+            <a href="{% url 'accounts:register' %}" class="btn-guest-register">
+                <i class="fas fa-user-plus"></i> Crear Cuenta Gratis
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn-guest-login">
+                <i class="fas fa-sign-in-alt"></i> Ya tengo una cuenta (Iniciar sesión)
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const lockTriggers = document.querySelectorAll('.js-guest-lock-trigger');
+    const backdrop = document.getElementById('guest-modal-backdrop');
+    const closeBtn = document.getElementById('guest-modal-close');
+    const titleEl = document.getElementById('guest-modal-title');
+    const subtitleEl = document.getElementById('guest-modal-subtitle');
+    const iconEl = document.getElementById('guest-modal-icon');
+
+    if (!backdrop) return;
+
+    const modalData = {
+        courses: {
+            icon: '<i class="fas fa-graduation-cap"></i>',
+            title: '¡Desbloquea los Cursos de UNI Open Source!',
+            subtitle: 'Regístrate o inicia sesión para acceder a nuestras rutas de aprendizaje, talleres prácticos y material educativo en programación.'
+        },
+        community: {
+            icon: '<i class="fas fa-users"></i>',
+            title: '¡Únete a la Comunidad UNI Open Source!',
+            subtitle: 'Forma parte del grupo universitario open source. Comparte dudas, publica contenido, conecta con mentores y colabora en proyectos.'
+        }
+    };
+
+    function openGuestModal(targetKey) {
+        const data = modalData[targetKey] || modalData.courses;
+        if (iconEl) iconEl.innerHTML = data.icon;
+        if (titleEl) titleEl.textContent = data.title;
+        if (subtitleEl) subtitleEl.textContent = data.subtitle;
+
+        backdrop.style.display = 'flex';
+        requestAnimationFrame(() => {
+            backdrop.classList.add('active');
+        });
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeGuestModal() {
+        backdrop.classList.remove('active');
+        setTimeout(() => {
+            backdrop.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 250);
+    }
+
+    lockTriggers.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = this.getAttribute('data-target');
+            openGuestModal(target);
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeGuestModal);
+    }
+
+    backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) {
+            closeGuestModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && backdrop.classList.contains('active')) {
+            closeGuestModal();
+        }
+    });
+});
+</script>
+{% endif %}

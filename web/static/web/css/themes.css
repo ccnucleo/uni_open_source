@@ -377,13 +377,24 @@ body.theme-dark .feature-card {
     color: var(--text-primary);
 }
 
-body.theme-dark .metric-card .number,
-body.theme-dark .metric-card .label {
-    color: inherit;
-}
-
 body.theme-dark .metric-card .label {
     color: var(--text-secondary);
+}
+
+body.theme-dark .metric-card .c-blue {
+    color: #60a5fa !important;
+}
+
+body.theme-dark .metric-card .c-orange {
+    color: #ff9c3f !important;
+}
+
+body.theme-dark .metric-card .c-pink {
+    color: #f472b6 !important;
+}
+
+body.theme-dark .metric-card .c-green {
+    color: #34d399 !important;
 }
 
 body.theme-dark .feature-card h4 {
@@ -459,17 +470,21 @@ body.theme-dark .project-card-meta {
     color: var(--text-secondary);
 }
 
+/* Máscara blanca en la sección de Aliados para destacar logotipos oscuros en tema oscuro */
 body.theme-dark .allies-track .carousel-item {
-    background: var(--bg-card);
-    border-color: var(--border-color);
+    background: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 body.theme-dark .allies-track .carousel-item:hover {
-    box-shadow: 0 4px 12px rgba(255, 156, 63, 0.15);
+    box-shadow: 0 8px 24px rgba(255, 156, 63, 0.35);
+    transform: scale(1.05);
 }
 
 body.theme-dark .ally-text {
-    color: var(--text-secondary);
+    color: #334155 !important;
+    font-weight: 700;
 }
 
 body.theme-dark .view-all-link {
