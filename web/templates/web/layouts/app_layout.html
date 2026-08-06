@@ -48,7 +48,7 @@
 
     <div class="main-wrapper sidebar-main-wrapper">
         {% include 'web/components/topbar.html' %}
-        <main class="content-area">
+        <main class="content-area {% block content_class %}{% endblock %}">
             {% block content %}{% endblock %}
         </main>
         {% include 'web/components/footer.html' %}
@@ -56,6 +56,7 @@
 
     <script src="{% static 'web/js/themes.js' %}"></script>
     <script src="{% static 'web/js/sidebar-collapse.js' %}"></script>
+    <script src="{% static 'web/js/topbar-scroll.js' %}"></script>
     <script src="{% static 'web/js/loading.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

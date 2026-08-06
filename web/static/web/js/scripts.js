@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return cookieValue;
     }
 
-    function showToast(message, type='success') {
+    function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.style.position = 'fixed';
         toast.style.bottom = '20px';
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.style.fontWeight = '600';
         toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>  ${message}`;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkReadMore() {
         if (!displaySobreMi) return;
         const textEl = displaySobreMi.querySelector('.user-text');
-        
+
         if (textEl) {
             let btn = displaySobreMi.querySelector('.btn-read-more');
-            if(!textEl.classList.contains('expanded')) {
+            if (!textEl.classList.contains('expanded')) {
                 textEl.style.maxHeight = '120px';
             }
 
@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     btn.className = 'btn-read-more';
                     btn.style.cssText = 'display: inline-block; background: none; border: none; color: var(--orange-primary); cursor: pointer; font-weight: 600; padding: 0; margin-top: 8px; font-size: 0.9rem;';
                     btn.textContent = 'Leer más';
-                    
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation(); 
+
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
                         textEl.classList.toggle('expanded');
                         if (textEl.classList.contains('expanded')) {
                             textEl.style.maxHeight = textEl.scrollHeight + 'px';
@@ -122,15 +122,15 @@ document.addEventListener('DOMContentLoaded', function () {
         btnDesc.addEventListener('click', function () {
             btnDesc.classList.add('active');
             btnProy.classList.remove('active');
-            if(viewGeneral) viewGeneral.style.display = 'block';
-            if(viewProjects) viewProjects.style.display = 'none';
+            if (viewGeneral) viewGeneral.style.display = 'block';
+            if (viewProjects) viewProjects.style.display = 'none';
         });
 
         btnProy.addEventListener('click', function () {
             btnProy.classList.add('active');
             btnDesc.classList.remove('active');
-            if(viewGeneral) viewGeneral.style.display = 'none';
-            if(viewProjects) viewProjects.style.display = 'block';
+            if (viewGeneral) viewGeneral.style.display = 'none';
+            if (viewProjects) viewProjects.style.display = 'block';
             updateProjectCount();
         });
     }
@@ -144,16 +144,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnSaveModal = document.getElementById('btn-save-modal');
 
     let selectedPhotoFile = null;
-    let isAvatarRemoved = false; 
+    let isAvatarRemoved = false;
     let avatarCropper = null;
     let croppedAvatarBlob = null;
 
     if (btnEditProfile && modal) {
         btnEditProfile.addEventListener('click', function () {
-            if(inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
-            if(inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
-            if(photoPreviewImg) {
-                if(profileAvatar && profileAvatar.tagName === 'IMG') {
+            if (inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
+            if (inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
+            if (photoPreviewImg) {
+                if (profileAvatar && profileAvatar.tagName === 'IMG') {
                     photoPreviewImg.src = profileAvatar.src;
                 } else {
                     // No hay foto: mostrar preview vacío/default
@@ -161,12 +161,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     photoPreviewImg.style.display = 'none';
                 }
             }
-            
+
             selectedPhotoFile = null;
             isAvatarRemoved = false;
             croppedAvatarBlob = null;
-            if(avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
-            
+            if (avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
+
             const userSpan = document.querySelector('.username');
             const inputUsername = document.getElementById('input-username');
             if (userSpan && inputUsername) {
@@ -194,18 +194,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 selectedPhotoFile = file;
                 isAvatarRemoved = false;
-                
+
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const modalCrop = document.getElementById('modal-crop-avatar');
                     const cropImg = document.getElementById('crop-avatar-img');
-                    
+
                     if (modalCrop && cropImg) {
                         cropImg.src = event.target.result;
                         modalCrop.classList.add('active');
-                        
+
                         if (avatarCropper) { avatarCropper.destroy(); }
-                        
+
                         // Pequeño timeout para que el modal se muestre antes de inicializar cropper
                         setTimeout(() => {
                             avatarCropper = new Cropper(cropImg, {
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnConfirmCrop = document.getElementById('btn-confirm-crop');
     const btnCancelCrop = document.getElementById('btn-cancel-crop');
     const btnCloseCropModal = document.getElementById('btn-close-crop-modal');
-    
+
     const closeCropModal = () => {
         const modalCrop = document.getElementById('modal-crop-avatar');
         if (modalCrop) modalCrop.classList.remove('active');
@@ -235,9 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (btnCancelCrop) btnCancelCrop.addEventListener('click', closeCropModal);
     if (btnCloseCropModal) btnCloseCropModal.addEventListener('click', closeCropModal);
-    
+
     if (btnConfirmCrop) {
-        btnConfirmCrop.addEventListener('click', function() {
+        btnConfirmCrop.addEventListener('click', function () {
             if (avatarCropper) {
                 avatarCropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
                     croppedAvatarBlob = blob;
@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         photoPreviewImg.style.display = 'block';
                     }
                     const btnRm = document.getElementById('btn-remove-photo');
-                    if(btnRm) btnRm.style.display = 'inline-flex';
-                    
+                    if (btnRm) btnRm.style.display = 'inline-flex';
+
                     closeCropModal();
                 }, 'image/jpeg');
             }
@@ -258,13 +258,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnRemovePhoto = document.getElementById('btn-remove-photo');
     if (btnRemovePhoto) {
         btnRemovePhoto.addEventListener('click', function () {
-            if(photoPreviewImg) {
+            if (photoPreviewImg) {
                 photoPreviewImg.src = photoPreviewImg.dataset.default;
             }
             selectedPhotoFile = null;
             croppedAvatarBlob = null;
-            isAvatarRemoved = true; 
-            if(inputPhoto) inputPhoto.value = '';
+            isAvatarRemoved = true;
+            if (inputPhoto) inputPhoto.value = '';
             this.style.display = 'none';
         });
     }
@@ -288,109 +288,109 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('first_name', nombre);
             formData.append('last_name', apellido);
             formData.append('username', newUsername);
-            
+
             const submitProfileData = () => {
                 fetch('/accounts/api/update-profile/', {
                     method: 'POST',
                     headers: { 'X-CSRFToken': getCSRFToken() },
                     body: formData
                 })
-                .then(res => {
-                    if (!res.ok) throw new Error("Fallo en el servidor");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        if (profileFullname) {
-                            profileFullname.dataset.nombre = nombre;
-                            profileFullname.dataset.apellido = apellido;
-                            profileFullname.innerHTML = nombre + '<br>' + apellido;
-                        }
-                        const userSpan = document.querySelector('.username');
-                        if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
-                        
-                        if (croppedAvatarBlob || isAvatarRemoved) {
-                            const container = document.getElementById('profile-pic-container');
-                            const username = document.querySelector('.username')?.textContent?.replace('@', '').trim() || '';
-                            const firstLetter = username.charAt(0).toUpperCase();
+                    .then(res => {
+                        if (!res.ok) throw new Error("Fallo en el servidor");
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            if (profileFullname) {
+                                profileFullname.dataset.nombre = nombre;
+                                profileFullname.dataset.apellido = apellido;
+                                profileFullname.innerHTML = nombre + '<br>' + apellido;
+                            }
+                            const userSpan = document.querySelector('.username');
+                            if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
 
-                            if (isAvatarRemoved) {
-                                // Remover foto -> mostrar auto-avatar con iniciales
-                                if (container) {
+                            if (croppedAvatarBlob || isAvatarRemoved) {
+                                const container = document.getElementById('profile-pic-container');
+                                const username = document.querySelector('.username')?.textContent?.replace('@', '').trim() || '';
+                                const firstLetter = username.charAt(0).toUpperCase();
+
+                                if (isAvatarRemoved) {
+                                    // Remover foto -> mostrar auto-avatar con iniciales
+                                    if (container) {
+                                        const oldEl = document.getElementById('profile-avatar');
+                                        if (oldEl) oldEl.remove();
+                                        const div = document.createElement('div');
+                                        div.className = 'auto-avatar';
+                                        div.id = 'profile-avatar';
+                                        div.setAttribute('data-name', username);
+                                        div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:white;';
+                                        div.textContent = firstLetter;
+                                        // Colorear
+                                        const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+                                        let hash = 0; for (let i = 0; i < username.length; i++) hash = username.charCodeAt(i) + ((hash << 5) - hash);
+                                        div.style.backgroundColor = avatarColors[Math.abs(hash) % avatarColors.length];
+                                        container.insertBefore(div, container.querySelector('.photo-overlay'));
+                                    }
+                                    // Topbar: reemplazar img con div de iniciales
+                                    const topbarAv = document.querySelector('.topbar-avatar');
+                                    if (topbarAv) {
+                                        const oldImg = topbarAv.querySelector('img');
+                                        if (oldImg) {
+                                            const span = document.createElement('div');
+                                            span.className = 'auto-avatar';
+                                            span.setAttribute('data-name', username);
+                                            span.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;color:white;';
+                                            span.textContent = firstLetter;
+                                            const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+                                            let hash2 = 0; for (let i = 0; i < username.length; i++) hash2 = username.charCodeAt(i) + ((hash2 << 5) - hash2);
+                                            span.style.backgroundColor = avatarColors[Math.abs(hash2) % avatarColors.length];
+                                            oldImg.replaceWith(span);
+                                        }
+                                    }
+                                } else if (croppedAvatarBlob) {
+                                    // Subir foto nueva -> mostrar img
+                                    const newSrc = photoPreviewImg.src;
                                     const oldEl = document.getElementById('profile-avatar');
-                                    if (oldEl) oldEl.remove();
-                                    const div = document.createElement('div');
-                                    div.className = 'auto-avatar';
-                                    div.id = 'profile-avatar';
-                                    div.setAttribute('data-name', username);
-                                    div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:white;';
-                                    div.textContent = firstLetter;
-                                    // Colorear
-                                    const avatarColors = ['#f97316','#3b82f6','#10b981','#8b5cf6','#ec4899','#14b8a6','#f43f5e','#6366f1'];
-                                    let hash = 0; for(let i=0;i<username.length;i++) hash = username.charCodeAt(i)+((hash<<5)-hash);
-                                    div.style.backgroundColor = avatarColors[Math.abs(hash) % avatarColors.length];
-                                    container.insertBefore(div, container.querySelector('.photo-overlay'));
-                                }
-                                // Topbar: reemplazar img con div de iniciales
-                                const topbarAv = document.querySelector('.topbar-avatar');
-                                if (topbarAv) {
-                                    const oldImg = topbarAv.querySelector('img');
-                                    if (oldImg) {
-                                        const span = document.createElement('div');
-                                        span.className = 'auto-avatar';
-                                        span.setAttribute('data-name', username);
-                                        span.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;color:white;';
-                                        span.textContent = firstLetter;
-                                        const avatarColors = ['#f97316','#3b82f6','#10b981','#8b5cf6','#ec4899','#14b8a6','#f43f5e','#6366f1'];
-                                        let hash2 = 0; for(let i=0;i<username.length;i++) hash2 = username.charCodeAt(i)+((hash2<<5)-hash2);
-                                        span.style.backgroundColor = avatarColors[Math.abs(hash2) % avatarColors.length];
-                                        oldImg.replaceWith(span);
+                                    if (oldEl && oldEl.tagName === 'IMG') {
+                                        oldEl.src = newSrc;
+                                    } else if (oldEl) {
+                                        const img = document.createElement('img');
+                                        img.src = newSrc;
+                                        img.alt = 'Usuario';
+                                        img.id = 'profile-avatar';
+                                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                                        oldEl.replaceWith(img);
                                     }
-                                }
-                            } else if (croppedAvatarBlob) {
-                                // Subir foto nueva -> mostrar img
-                                const newSrc = photoPreviewImg.src;
-                                const oldEl = document.getElementById('profile-avatar');
-                                if (oldEl && oldEl.tagName === 'IMG') {
-                                    oldEl.src = newSrc;
-                                } else if (oldEl) {
-                                    const img = document.createElement('img');
-                                    img.src = newSrc;
-                                    img.alt = 'Usuario';
-                                    img.id = 'profile-avatar';
-                                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                                    oldEl.replaceWith(img);
-                                }
-                                const topbarAv = document.querySelector('.topbar-avatar');
-                                if (topbarAv) {
-                                    let topbarImg = topbarAv.querySelector('img');
-                                    if (!topbarImg) {
-                                        topbarImg = document.createElement('img');
-                                        topbarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-                                        topbarImg.alt = 'Avatar';
-                                        topbarAv.innerHTML = '';
-                                        topbarAv.appendChild(topbarImg);
+                                    const topbarAv = document.querySelector('.topbar-avatar');
+                                    if (topbarAv) {
+                                        let topbarImg = topbarAv.querySelector('img');
+                                        if (!topbarImg) {
+                                            topbarImg = document.createElement('img');
+                                            topbarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                                            topbarImg.alt = 'Avatar';
+                                            topbarAv.innerHTML = '';
+                                            topbarAv.appendChild(topbarImg);
+                                        }
+                                        topbarImg.src = newSrc;
                                     }
-                                    topbarImg.src = newSrc;
                                 }
                             }
+
+                            if (modal) modal.classList.remove('active');
+                            selectedPhotoFile = null;
+                            croppedAvatarBlob = null;
+                            isAvatarRemoved = false;
+                            showToast(data.message, 'success');
+                        } else {
+                            showToast(data.error, 'error');
                         }
-                        
-                        if (modal) modal.classList.remove('active');
-                        selectedPhotoFile = null;
-                        croppedAvatarBlob = null;
-                        isAvatarRemoved = false;
-                        showToast(data.message, 'success');
-                    } else {
-                        showToast(data.error, 'error');
-                    }
-                })
-                .catch((err) => {
-                    showToast('Error de conexión', 'error');
-                })
-                .finally(() => {
-                    btnSaveModal.classList.remove('btn-loading');
-                });
+                    })
+                    .catch((err) => {
+                        showToast('Error de conexión', 'error');
+                    })
+                    .finally(() => {
+                        btnSaveModal.classList.remove('btn-loading');
+                    });
             };
 
             if (croppedAvatarBlob) {
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
         originalData.tags.forEach(item => {
             if (item.element) {
                 item.element.classList.remove('tag-deleted');
-                item.element.style.display = ''; 
+                item.element.style.display = '';
                 const content = item.element.querySelector('.tag-content');
                 const input = item.element.querySelector('.tag-input');
                 if (content) {
@@ -485,17 +485,17 @@ document.addEventListener('DOMContentLoaded', function () {
         isEditMode = enable;
         if (enable) {
             saveOriginalData();
-            if(cardInfo) cardInfo.classList.add('edit-mode');
-            if(btnEditCard) btnEditCard.style.display = 'none';
-            if(editButtons) editButtons.classList.add('active');
+            if (cardInfo) cardInfo.classList.add('edit-mode');
+            if (btnEditCard) btnEditCard.style.display = 'none';
+            if (editButtons) editButtons.classList.add('active');
             document.querySelectorAll('.empty-msg').forEach(msg => msg.style.display = 'none');
         } else {
-            if(cardInfo) cardInfo.classList.remove('edit-mode');
-            if(btnEditCard) btnEditCard.style.display = 'inline-flex';
-            if(editButtons) editButtons.classList.remove('active');
+            if (cardInfo) cardInfo.classList.remove('edit-mode');
+            if (btnEditCard) btnEditCard.style.display = 'inline-flex';
+            if (editButtons) editButtons.classList.remove('active');
             document.querySelectorAll('.editing').forEach(el => el.classList.remove('editing'));
-            if(editSobreMi) editSobreMi.classList.remove('active');
-            if(displaySobreMi) displaySobreMi.style.display = 'block';
+            if (editSobreMi) editSobreMi.classList.remove('active');
+            if (displaySobreMi) displaySobreMi.style.display = 'block';
 
             ['tags-intereses', 'tags-tecnologias'].forEach(id => {
                 const container = document.getElementById(id);
@@ -515,10 +515,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnSaveCard) {
         btnSaveCard.addEventListener('click', function () {
             let sobreMiText = textareaSobreMi ? textareaSobreMi.value.trim() : '';
-            sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n'); 
+            sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n');
 
             btnSaveCard.classList.add('btn-loading');
-            
+
             const formData = new FormData();
             formData.append('update_type', 'detailed_info');
             formData.append('bio', sobreMiText);
@@ -556,55 +556,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Fallo de comunicación con servidor");
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    if (displaySobreMi) {
-                        if (sobreMiText !== '') {
-                            displaySobreMi.innerHTML = `<div class="user-text" style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">${sobreMiText}</div>`;
-                        } else {
-                            displaySobreMi.innerHTML = '<div class="placeholder-text">Aquí va tu descripción detallada</div>';
-                        }
-                    }
-
-                    document.querySelectorAll('.tag-deleted').forEach(t => t.remove());
-                    document.querySelectorAll('.tag-new').forEach(t => t.classList.remove('tag-new'));
-
-                    document.querySelectorAll('#card-descripcion .tag').forEach(tag => {
-                        const input = tag.querySelector('.tag-input');
-                        const content = tag.querySelector('.tag-content');
-                        if (input && content) {
-                            if (input.value.trim() !== '') {
-                                content.textContent = input.value.trim();
-                                content.classList.remove('placeholder');
+                .then(res => {
+                    if (!res.ok) throw new Error("Fallo de comunicación con servidor");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (displaySobreMi) {
+                            if (sobreMiText !== '') {
+                                displaySobreMi.innerHTML = `<div class="user-text" style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">${sobreMiText}</div>`;
+                            } else {
+                                displaySobreMi.innerHTML = '<div class="placeholder-text">Aquí va tu descripción detallada</div>';
                             }
                         }
-                    });
 
-                    document.querySelectorAll('.contact-item').forEach(contact => {
-                        const input = contact.querySelector('.contact-input');
-                        const display = contact.querySelector('.contact-display');
-                        if (input && display && input.value.trim() !== '') {
-                            display.textContent = input.value.trim();
-                            display.classList.remove('placeholder');
-                        }
-                    });
+                        document.querySelectorAll('.tag-deleted').forEach(t => t.remove());
+                        document.querySelectorAll('.tag-new').forEach(t => t.classList.remove('tag-new'));
 
-                    toggleEditMode(false);
-                    showToast(data.message, 'success');
-                } else {
-                    showToast(data.error, 'error');
-                }
-            })
-            .catch((err) => {
-                showToast('Error interno del servidor. Intenta de nuevo.', 'error');
-            })
-            .finally(() => {
-                btnSaveCard.classList.remove('btn-loading');
-            });
+                        document.querySelectorAll('#card-descripcion .tag').forEach(tag => {
+                            const input = tag.querySelector('.tag-input');
+                            const content = tag.querySelector('.tag-content');
+                            if (input && content) {
+                                if (input.value.trim() !== '') {
+                                    content.textContent = input.value.trim();
+                                    content.classList.remove('placeholder');
+                                }
+                            }
+                        });
+
+                        document.querySelectorAll('.contact-item').forEach(contact => {
+                            const input = contact.querySelector('.contact-input');
+                            const display = contact.querySelector('.contact-display');
+                            if (input && display && input.value.trim() !== '') {
+                                display.textContent = input.value.trim();
+                                display.classList.remove('placeholder');
+                            }
+                        });
+
+                        toggleEditMode(false);
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error, 'error');
+                    }
+                })
+                .catch((err) => {
+                    showToast('Error interno del servidor. Intenta de nuevo.', 'error');
+                })
+                .finally(() => {
+                    btnSaveCard.classList.remove('btn-loading');
+                });
         });
     }
 
@@ -635,18 +635,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     input.focus();
                 }
             } else if (sobreMiDisplayEl) {
-                if(displaySobreMi) displaySobreMi.style.display = 'none';
-                if(editSobreMi) editSobreMi.classList.add('active');
-                
+                if (displaySobreMi) displaySobreMi.style.display = 'none';
+                if (editSobreMi) editSobreMi.classList.add('active');
+
                 const userText = displaySobreMi ? displaySobreMi.querySelector('.user-text') : null;
                 if (textareaSobreMi) {
                     textareaSobreMi.value = userText ? userText.innerText : '';
                     if (counterSobreMi) counterSobreMi.textContent = `${textareaSobreMi.value.length}/200`;
-                    
+
                     textareaSobreMi.style.height = 'auto';
                     textareaSobreMi.style.height = Math.min(textareaSobreMi.scrollHeight, 180) + 'px';
                     textareaSobreMi.style.overflowY = textareaSobreMi.scrollHeight > 180 ? 'auto' : 'hidden';
-                    
+
                     textareaSobreMi.focus();
                 }
             }
@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newHeight = Math.min(this.scrollHeight, 180);
             this.style.height = newHeight + 'px';
             this.style.overflowY = this.scrollHeight > 180 ? 'auto' : 'hidden';
-            
+
             const count = this.value.length;
             if (counterSobreMi) {
                 counterSobreMi.textContent = `${count}/200`;
@@ -725,9 +725,9 @@ document.addEventListener('DOMContentLoaded', function () {
         tag.className = 'tag tag-new';
         tag.dataset.placeholder = placeholder;
         tag.dataset.maxlength = maxLength;
-        
+
         const contentClass = isFilled ? 'tag-content' : 'tag-content placeholder';
-        
+
         tag.innerHTML = `
             <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
             <span class="${contentClass}">${placeholder}</span>
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 container.insertBefore(nt, this);
                 nt.classList.add('editing');
                 const inp = nt.querySelector('.tag-input');
-                if(inp) {
+                if (inp) {
                     inp.value = sug;
                     inp.focus();
                 }
@@ -771,13 +771,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnAddTecnologia) {
         btnAddTecnologia.addEventListener('click', function () {
             const container = document.getElementById('tags-tecnologias');
-            if(container) {
+            if (container) {
                 const sug = getNextTecnologiaSugerencia();
                 const nt = createNewTag(sug, 20, true);
                 container.insertBefore(nt, this);
                 nt.classList.add('editing');
                 const inp = nt.querySelector('.tag-input');
-                if(inp) {
+                if (inp) {
                     inp.value = sug;
                     inp.focus();
                 }
@@ -950,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const btnViewGrid = document.getElementById('btn-view-grid');
     const btnViewList = document.getElementById('btn-view-list');
-    
+
     if (btnViewGrid && btnViewList && projectsGrid) {
         btnViewGrid.addEventListener('click', function () {
             projectsGrid.classList.remove('list-view');
@@ -978,23 +978,23 @@ document.addEventListener('DOMContentLoaded', function () {
         btnNewProjectTrigger.addEventListener('click', () => {
             modalNewProject.classList.add('active');
         });
-        
-        const closeMod = () => { 
-            modalNewProject.classList.remove('active'); 
-            if(formNewProject) formNewProject.reset(); 
+
+        const closeMod = () => {
+            modalNewProject.classList.remove('active');
+            if (formNewProject) formNewProject.reset();
             resetImagePreview();
         };
 
-        if(btnCloseNew) btnCloseNew.addEventListener('click', closeMod);
-        if(btnCancelNew) btnCancelNew.addEventListener('click', closeMod);
+        if (btnCloseNew) btnCloseNew.addEventListener('click', closeMod);
+        if (btnCancelNew) btnCancelNew.addEventListener('click', closeMod);
     }
 
     // Contador del Textarea Resumen
     const newSummaryInput = document.getElementById('new-summary');
     if (newSummaryInput) {
-        newSummaryInput.addEventListener('input', function() {
+        newSummaryInput.addEventListener('input', function () {
             const countLabel = document.getElementById('new-summary-counter');
-            if(countLabel) countLabel.textContent = `${this.value.length}/150`;
+            if (countLabel) countLabel.textContent = `${this.value.length}/150`;
         });
     }
 
@@ -1006,19 +1006,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnRemoveImg = document.getElementById('btn-remove-new-image');
 
     function resetImagePreview() {
-        if(fileInput) fileInput.value = '';
-        if(previewContainer) previewContainer.style.display = 'none';
-        if(dropArea) dropArea.style.display = 'block';
+        if (fileInput) fileInput.value = '';
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (dropArea) dropArea.style.display = 'block';
     }
 
     if (dropArea && fileInput) {
         dropArea.addEventListener('click', () => fileInput.click());
 
-        fileInput.addEventListener('change', function() {
+        fileInput.addEventListener('change', function () {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    if(previewImg) previewImg.src = e.target.result;
+                reader.onload = function (e) {
+                    if (previewImg) previewImg.src = e.target.result;
                     dropArea.style.display = 'none';
                     previewContainer.style.display = 'block';
                 }
@@ -1033,11 +1033,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Petición a Django con Fetch y FormData
     if (formNewProject) {
-        formNewProject.addEventListener('submit', function(e) {
+        formNewProject.addEventListener('submit', function (e) {
             e.preventDefault();
             const btnSubmit = document.getElementById('btn-submit-new-project');
             const originalText = btnSubmit.textContent;
-            
+
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
             btnSubmit.disabled = true;
             btnSubmit.style.opacity = '0.7';
@@ -1049,28 +1049,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast(data.message, 'success');
-                    // Refrescamos la página tras un segundo para que la nueva tarjeta
-                    // se renderice perfectamente con todos los datos y la imagen de Django.
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1200);
-                } else {
-                    showToast(data.message || 'Error de validación', 'error');
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        // Refrescamos la página tras un segundo para que la nueva tarjeta
+                        // se renderice perfectamente con todos los datos y la imagen de Django.
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1200);
+                    } else {
+                        showToast(data.message || 'Error de validación', 'error');
+                        btnSubmit.innerHTML = originalText;
+                        btnSubmit.disabled = false;
+                        btnSubmit.style.opacity = '1';
+                    }
+                })
+                .catch(err => {
+                    showToast('Error de conexión con el servidor', 'error');
                     btnSubmit.innerHTML = originalText;
                     btnSubmit.disabled = false;
                     btnSubmit.style.opacity = '1';
-                }
-            })
-            .catch(err => {
-                showToast('Error de conexión con el servidor', 'error');
-                btnSubmit.innerHTML = originalText;
-                btnSubmit.disabled = false;
-                btnSubmit.style.opacity = '1';
-            });
+                });
         });
     }
 
@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.active').forEach(modal => {
                 modal.classList.remove('active');
-                if(modal.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
+                if (modal.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
             });
             currentEditingProject = null;
         }
@@ -1091,11 +1091,30 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) {
                 this.classList.remove('active');
-                if(this.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
+                if (this.id === 'modal-new-project' && formNewProject) { formNewProject.reset(); resetImagePreview(); }
                 currentEditingProject = null;
             }
         });
     });
+
+    const dynamicWordEl = document.getElementById('dynamicWord');
+    if (dynamicWordEl) {
+        const words = ['Construye', 'Transforma', 'Impulsa', 'Desarrolla'];
+        let wordIdx = 0;
+        const animationDuration = 250;
+
+        setInterval(() => {
+            dynamicWordEl.classList.remove('slide-in');
+            dynamicWordEl.classList.add('slide-out');
+
+            setTimeout(() => {
+                wordIdx = (wordIdx + 1) % words.length;
+                dynamicWordEl.textContent = words[wordIdx];
+                dynamicWordEl.classList.remove('slide-out');
+                dynamicWordEl.classList.add('slide-in');
+            }, animationDuration);
+        }, 2600);
+    }
 
     if (document.getElementById('project-count')) {
         updateProjectCount();
