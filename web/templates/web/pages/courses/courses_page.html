@@ -35,8 +35,7 @@
                         onchange="document.getElementById('filtersForm').submit()">
                         <option value="">Todas las categorías</option>
                         {% for category in categories %}
-                        <option value="{{ category.id }}" {% if selected_category_id==category.id|stringformat:'s'
-                            %}selected{% endif %}>{{ category.name }}</option>
+                        <option value="{{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -46,9 +45,7 @@
                     <div class="checkbox-group">
                         {% for level_code, level_label in levels %}
                         <label>
-                            <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if
-                                level_code in selected_levels %}checked{% endif %}
-                                onchange="document.getElementById('filtersForm').submit()">
+                            <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if level_code in selected_levels %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
                             {{ level_label }}
                         </label>
                         {% endfor %}
@@ -59,11 +56,8 @@
                     <label>Tecnologías (Tags)</label>
                     <div class="tag-container-box">
                         {% for tag in tags %}
-                        <label
-                            style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                            <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if
-                                tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %}
-                                onchange="document.getElementById('filtersForm').submit()">
+                        <label style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
                             <span style="margin-left: 8px;">{{ tag.name }}</span>
                         </label>
                         {% empty %}
