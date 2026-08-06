@@ -12,18 +12,25 @@ main.content-area.project-detail-area { padding-top: 0; padding-left: 0; padding
     background-size: cover; background-position: center; background-repeat: no-repeat;
     position: relative;
     display: flex; flex-direction: column;
-    min-height: 1000px;
+    height: 550px; 
+    max-height: 1000px;
 }
 .hero-main-card.has-image::before { 
     content: ''; position: absolute; inset: 0; 
-    background: rgba(0, 0, 0, 0.15); /* Opacidad reducida */
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 100%);
     z-index: 0; 
 }
 .hero-main-card.no-image { background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%); }
 
 .hero-overlay-content {
-    position: relative; z-index: 1; padding: 40px;
-    display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-height: inherit; gap: 40px;
+    position: relative; 
+    z-index: 1; 
+    padding: 30px 40px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    height: 100%; 
+    box-sizing: border-box; 
 }
 
 /* Sombras elegantes para legibilidad sobre imágenes sin degradado */

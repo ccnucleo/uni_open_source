@@ -1114,4 +1114,89 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('project-count')) {
         updateProjectCount();
     }
+
+    function initCollabPredictive(inputId, pillsAreaId, hiddenInputId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const pillsArea = document.getElementById(pillsAreaId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const dropdown = document.getElementById(dropdownId);
+        
+        if (!input || !pillsArea || !hiddenInput || !dropdown) return;
+
+        let usersList = [];
+        try {
+            const rawUsers = document.getElementById('all_users_data')?.textContent;
+            if(rawUsers) usersList = JSON.parse(rawUsers);
+        } catch(e) {
+            console.error("Error cargando usuarios:", e);
+        }
+
+        let selectedUsers = []; 
+
+        function renderPills() {
+            pillsArea.innerHTML = '';
+            selectedUsers.forEach(user => {
+                const pill = document.createElement('div');
+                pill.className = 'pill-item collab-pill';
+                pill.innerHTML = `@${user} <span data-user="${user}" style="cursor:pointer; color:red;">&times;</span>`;
+                pillsArea.appendChild(pill);
+            });
+            hiddenInput.value = selectedUsers.join(',');
+        }
+
+        pillsArea.addEventListener('click', function(e) {
+            if (e.target.tagName === 'SPAN') {
+                const userToRemove = e.target.getAttribute('data-user');
+                selectedUsers = selectedUsers.filter(u => u !== userToRemove);
+                renderPills();
+            }
+        });
+
+        input.addEventListener('input', function() {
+            const val = this.value.toLowerCase().trim();
+            dropdown.innerHTML = ''; 
+            
+            if (val.length > 0) {
+                // Filtrar usuarios que coincidan y que no estén ya seleccionados
+                const matches = usersList.filter(u => u.toLowerCase().includes(val) && !selectedUsers.includes(u));
+                
+                if (matches.length > 0) {
+                    // Mostrar máximo 5 resultados sugeridos
+                    matches.slice(0, 5).forEach(match => {
+                        const div = document.createElement('div');
+                        div.className = 'predictive-item';
+                        div.textContent = `@${match}`;
+                        
+                        // Si hace clic en la sugerencia, agregarlo
+                        div.addEventListener('click', function() {
+                            selectedUsers.push(match);
+                            input.value = ''; 
+                            dropdown.style.display = 'none'; 
+                            renderPills(); 
+                        });
+                        dropdown.appendChild(div);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            } else {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    initCollabPredictive(
+        'input-new-collab',       
+        'new-collab-pills',      
+        'hidden-new-collaborators', 
+        'new-collab-dropdown'    
+    );
+
 });
