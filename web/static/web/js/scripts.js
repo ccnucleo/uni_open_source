@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return cookieValue;
     }
 
-    function showToast(message, type='success') {
+    function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.style.position = 'fixed';
         toast.style.bottom = '20px';
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.style.fontWeight = '600';
         toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>  ${message}`;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
@@ -84,11 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkReadMore() {
         if (!displaySobreMi) return;
         const textEl = displaySobreMi.querySelector('.user-text');
-        
+
         if (textEl) {
             let btn = displaySobreMi.querySelector('.btn-read-more');
-            
-            if(!textEl.classList.contains('expanded')) {
+
+            if (!textEl.classList.contains('expanded')) {
                 textEl.style.maxHeight = '120px';
             }
 
@@ -99,9 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     btn.className = 'btn-read-more';
                     btn.style.cssText = 'display: inline-block; background: none; border: none; color: var(--orange-primary); cursor: pointer; font-weight: 600; padding: 0; margin-top: 8px; font-size: 0.9rem;';
                     btn.textContent = 'Leer más';
-                    
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation(); 
+
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
                         textEl.classList.toggle('expanded');
                         if (textEl.classList.contains('expanded')) {
                             textEl.style.maxHeight = textEl.scrollHeight + 'px';
@@ -126,15 +126,15 @@ document.addEventListener('DOMContentLoaded', function () {
         btnDesc.addEventListener('click', function () {
             btnDesc.classList.add('active');
             btnProy.classList.remove('active');
-            if(viewGeneral) viewGeneral.style.display = 'block';
-            if(viewProjects) viewProjects.style.display = 'none';
+            if (viewGeneral) viewGeneral.style.display = 'block';
+            if (viewProjects) viewProjects.style.display = 'none';
         });
 
         btnProy.addEventListener('click', function () {
             btnProy.classList.add('active');
             btnDesc.classList.remove('active');
-            if(viewGeneral) viewGeneral.style.display = 'none';
-            if(viewProjects) viewProjects.style.display = 'block';
+            if (viewGeneral) viewGeneral.style.display = 'none';
+            if (viewProjects) viewProjects.style.display = 'block';
             updateProjectCount();
         });
     }
@@ -148,17 +148,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnSaveModal = document.getElementById('btn-save-modal');
 
     let selectedPhotoFile = null;
-    let isAvatarRemoved = false; 
+    let isAvatarRemoved = false;
 
     if (btnEditProfile && modal) {
         btnEditProfile.addEventListener('click', function () {
-            if(inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
-            if(inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
-            if(photoPreviewImg && profileAvatar) photoPreviewImg.src = profileAvatar.src;
-            
+            if (inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
+            if (inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
+            if (photoPreviewImg && profileAvatar) photoPreviewImg.src = profileAvatar.src;
+
             selectedPhotoFile = null;
             isAvatarRemoved = false;
-            
+
             const userSpan = document.querySelector('.username');
             const inputUsername = document.getElementById('input-username');
             if (userSpan && inputUsername) {
@@ -186,12 +186,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 selectedPhotoFile = file;
                 isAvatarRemoved = false;
-                
+
                 const reader = new FileReader();
                 reader.onload = function (event) {
-                    if(photoPreviewImg) photoPreviewImg.src = event.target.result;
+                    if (photoPreviewImg) photoPreviewImg.src = event.target.result;
                     const btnRm = document.getElementById('btn-remove-photo');
-                    if(btnRm) btnRm.style.display = 'inline-flex';
+                    if (btnRm) btnRm.style.display = 'inline-flex';
                 };
                 reader.readAsDataURL(file);
             }
@@ -201,10 +201,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnRemovePhoto = document.getElementById('btn-remove-photo');
     if (btnRemovePhoto) {
         btnRemovePhoto.addEventListener('click', function () {
-            if(photoPreviewImg) photoPreviewImg.src = photoPreviewImg.dataset.default;
+            if (photoPreviewImg) photoPreviewImg.src = photoPreviewImg.dataset.default;
             selectedPhotoFile = null;
-            isAvatarRemoved = true; 
-            if(inputPhoto) inputPhoto.value = '';
+            isAvatarRemoved = true;
+            if (inputPhoto) inputPhoto.value = '';
             this.style.display = 'none';
         });
     }
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('first_name', nombre);
             formData.append('last_name', apellido);
             formData.append('username', newUsername);
-            
+
             if (selectedPhotoFile) {
                 formData.append('avatar', selectedPhotoFile);
             } else if (isAvatarRemoved) {
@@ -240,41 +240,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Fallo en el servidor");
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    if (profileFullname) {
-                        profileFullname.dataset.nombre = nombre;
-                        profileFullname.dataset.apellido = apellido;
-                        profileFullname.innerHTML = nombre + '<br>' + apellido;
+                .then(res => {
+                    if (!res.ok) throw new Error("Fallo en el servidor");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (profileFullname) {
+                            profileFullname.dataset.nombre = nombre;
+                            profileFullname.dataset.apellido = apellido;
+                            profileFullname.innerHTML = nombre + '<br>' + apellido;
+                        }
+                        const userSpan = document.querySelector('.username');
+                        if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
+
+                        if (selectedPhotoFile || isAvatarRemoved) {
+                            if (profileAvatar) profileAvatar.src = photoPreviewImg.src;
+                            const topbarAv = document.querySelector('.topbar-avatar img');
+                            if (topbarAv) topbarAv.src = photoPreviewImg.src;
+                        }
+
+                        if (modal) modal.classList.remove('active');
+                        selectedPhotoFile = null;
+                        isAvatarRemoved = false;
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error, 'error');
                     }
-                    const userSpan = document.querySelector('.username');
-                    if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
-                    
-                    if (selectedPhotoFile || isAvatarRemoved) {
-                        if (profileAvatar) profileAvatar.src = photoPreviewImg.src;
-                        const topbarAv = document.querySelector('.topbar-avatar img');
-                        if (topbarAv) topbarAv.src = photoPreviewImg.src;
-                    }
-                    
-                    if (modal) modal.classList.remove('active');
-                    selectedPhotoFile = null;
-                    isAvatarRemoved = false;
-                    showToast(data.message, 'success');
-                } else {
-                    showToast(data.error, 'error');
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showToast('Error de conexión', 'error');
-            })
-            .finally(() => {
-                btnSaveModal.classList.remove('btn-loading');
-            });
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showToast('Error de conexión', 'error');
+                })
+                .finally(() => {
+                    btnSaveModal.classList.remove('btn-loading');
+                });
         });
     }
 
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
         originalData.tags.forEach(item => {
             if (item.element) {
                 item.element.classList.remove('tag-deleted');
-                item.element.style.display = ''; 
+                item.element.style.display = '';
                 const content = item.element.querySelector('.tag-content');
                 const input = item.element.querySelector('.tag-input');
                 if (content) {
@@ -358,17 +358,17 @@ document.addEventListener('DOMContentLoaded', function () {
         isEditMode = enable;
         if (enable) {
             saveOriginalData();
-            if(cardInfo) cardInfo.classList.add('edit-mode');
-            if(btnEditCard) btnEditCard.style.display = 'none';
-            if(editButtons) editButtons.classList.add('active');
+            if (cardInfo) cardInfo.classList.add('edit-mode');
+            if (btnEditCard) btnEditCard.style.display = 'none';
+            if (editButtons) editButtons.classList.add('active');
             document.querySelectorAll('.empty-msg').forEach(msg => msg.style.display = 'none');
         } else {
-            if(cardInfo) cardInfo.classList.remove('edit-mode');
-            if(btnEditCard) btnEditCard.style.display = 'inline-flex';
-            if(editButtons) editButtons.classList.remove('active');
+            if (cardInfo) cardInfo.classList.remove('edit-mode');
+            if (btnEditCard) btnEditCard.style.display = 'inline-flex';
+            if (editButtons) editButtons.classList.remove('active');
             document.querySelectorAll('.editing').forEach(el => el.classList.remove('editing'));
-            if(editSobreMi) editSobreMi.classList.remove('active');
-            if(displaySobreMi) displaySobreMi.style.display = 'block';
+            if (editSobreMi) editSobreMi.classList.remove('active');
+            if (displaySobreMi) displaySobreMi.style.display = 'block';
 
             ['tags-intereses', 'tags-tecnologias'].forEach(id => {
                 const container = document.getElementById(id);
@@ -389,10 +389,10 @@ document.addEventListener('DOMContentLoaded', function () {
         btnSaveCard.addEventListener('click', function () {
             let sobreMiText = textareaSobreMi ? textareaSobreMi.value.trim() : '';
             // JS Regex: Limpiamos los excesos de Enters antes de mandar a Django
-            sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n'); 
+            sobreMiText = sobreMiText.replace(/\n{3,}/g, '\n\n');
 
             btnSaveCard.classList.add('btn-loading');
-            
+
             const formData = new FormData();
             formData.append('update_type', 'detailed_info');
             formData.append('bio', sobreMiText);
@@ -430,56 +430,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Fallo de comunicación con servidor");
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    if (displaySobreMi) {
-                        if (sobreMiText !== '') {
-                            displaySobreMi.innerHTML = `<div class="user-text" style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">${sobreMiText}</div>`;
-                        } else {
-                            displaySobreMi.innerHTML = '<div class="placeholder-text">Aquí va tu descripción detallada</div>';
-                        }
-                    }
-
-                    document.querySelectorAll('.tag-deleted').forEach(t => t.remove());
-                    document.querySelectorAll('.tag-new').forEach(t => t.classList.remove('tag-new'));
-
-                    document.querySelectorAll('#card-descripcion .tag').forEach(tag => {
-                        const input = tag.querySelector('.tag-input');
-                        const content = tag.querySelector('.tag-content');
-                        if (input && content) {
-                            if (input.value.trim() !== '') {
-                                content.textContent = input.value.trim();
-                                content.classList.remove('placeholder');
+                .then(res => {
+                    if (!res.ok) throw new Error("Fallo de comunicación con servidor");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (displaySobreMi) {
+                            if (sobreMiText !== '') {
+                                displaySobreMi.innerHTML = `<div class="user-text" style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">${sobreMiText}</div>`;
+                            } else {
+                                displaySobreMi.innerHTML = '<div class="placeholder-text">Aquí va tu descripción detallada</div>';
                             }
                         }
-                    });
 
-                    document.querySelectorAll('.contact-item').forEach(contact => {
-                        const input = contact.querySelector('.contact-input');
-                        const display = contact.querySelector('.contact-display');
-                        if (input && display && input.value.trim() !== '') {
-                            display.textContent = input.value.trim();
-                            display.classList.remove('placeholder');
-                        }
-                    });
+                        document.querySelectorAll('.tag-deleted').forEach(t => t.remove());
+                        document.querySelectorAll('.tag-new').forEach(t => t.classList.remove('tag-new'));
 
-                    toggleEditMode(false);
-                    showToast(data.message, 'success');
-                } else {
-                    showToast(data.error, 'error');
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showToast('Error interno del servidor. Intenta de nuevo.', 'error');
-            })
-            .finally(() => {
-                btnSaveCard.classList.remove('btn-loading');
-            });
+                        document.querySelectorAll('#card-descripcion .tag').forEach(tag => {
+                            const input = tag.querySelector('.tag-input');
+                            const content = tag.querySelector('.tag-content');
+                            if (input && content) {
+                                if (input.value.trim() !== '') {
+                                    content.textContent = input.value.trim();
+                                    content.classList.remove('placeholder');
+                                }
+                            }
+                        });
+
+                        document.querySelectorAll('.contact-item').forEach(contact => {
+                            const input = contact.querySelector('.contact-input');
+                            const display = contact.querySelector('.contact-display');
+                            if (input && display && input.value.trim() !== '') {
+                                display.textContent = input.value.trim();
+                                display.classList.remove('placeholder');
+                            }
+                        });
+
+                        toggleEditMode(false);
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error, 'error');
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showToast('Error interno del servidor. Intenta de nuevo.', 'error');
+                })
+                .finally(() => {
+                    btnSaveCard.classList.remove('btn-loading');
+                });
         });
     }
 
@@ -510,18 +510,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     input.focus();
                 }
             } else if (sobreMiDisplayEl) {
-                if(displaySobreMi) displaySobreMi.style.display = 'none';
-                if(editSobreMi) editSobreMi.classList.add('active');
-                
+                if (displaySobreMi) displaySobreMi.style.display = 'none';
+                if (editSobreMi) editSobreMi.classList.add('active');
+
                 const userText = displaySobreMi ? displaySobreMi.querySelector('.user-text') : null;
                 if (textareaSobreMi) {
                     textareaSobreMi.value = userText ? userText.innerText : '';
                     if (counterSobreMi) counterSobreMi.textContent = `${textareaSobreMi.value.length}/200`;
-                    
+
                     textareaSobreMi.style.height = 'auto';
                     textareaSobreMi.style.height = Math.min(textareaSobreMi.scrollHeight, 180) + 'px';
                     textareaSobreMi.style.overflowY = textareaSobreMi.scrollHeight > 180 ? 'auto' : 'hidden';
-                    
+
                     textareaSobreMi.focus();
                 }
             }
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newHeight = Math.min(this.scrollHeight, 180);
             this.style.height = newHeight + 'px';
             this.style.overflowY = this.scrollHeight > 180 ? 'auto' : 'hidden';
-            
+
             const count = this.value.length;
             if (counterSobreMi) {
                 counterSobreMi.textContent = `${count}/200`;
@@ -600,9 +600,9 @@ document.addEventListener('DOMContentLoaded', function () {
         tag.className = 'tag tag-new';
         tag.dataset.placeholder = placeholder;
         tag.dataset.maxlength = maxLength;
-        
+
         const contentClass = isFilled ? 'tag-content' : 'tag-content placeholder';
-        
+
         tag.innerHTML = `
             <button class="btn-delete-tag" title="Eliminar"><i class="fas fa-times"></i></button>
             <span class="${contentClass}">${placeholder}</span>
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 container.insertBefore(nt, this);
                 nt.classList.add('editing');
                 const inp = nt.querySelector('.tag-input');
-                if(inp) {
+                if (inp) {
                     inp.value = sug;
                     inp.focus();
                 }
@@ -646,13 +646,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnAddTecnologia) {
         btnAddTecnologia.addEventListener('click', function () {
             const container = document.getElementById('tags-tecnologias');
-            if(container) {
+            if (container) {
                 const sug = getNextTecnologiaSugerencia();
                 const nt = createNewTag(sug, 20, true);
                 container.insertBefore(nt, this);
                 nt.classList.add('editing');
                 const inp = nt.querySelector('.tag-input');
-                if(inp) {
+                if (inp) {
                     inp.value = sug;
                     inp.focus();
                 }
@@ -825,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const btnViewGrid = document.getElementById('btn-view-grid');
     const btnViewList = document.getElementById('btn-view-list');
-    
+
     if (btnViewGrid && btnViewList && projectsGrid) {
         btnViewGrid.addEventListener('click', function () {
             projectsGrid.classList.remove('list-view');
@@ -845,36 +845,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (btnNewProjectTrigger && modalNewProject) {
         btnNewProjectTrigger.addEventListener('click', () => modalNewProject.classList.add('active'));
-        
+
         const btnCloseNew = document.getElementById('btn-close-new-project');
         const btnCancelNew = document.getElementById('btn-cancel-new-project');
-        
-        if(btnCloseNew) btnCloseNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
-        if(btnCancelNew) btnCancelNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
+
+        if (btnCloseNew) btnCloseNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
+        if (btnCancelNew) btnCancelNew.addEventListener('click', () => { modalNewProject.classList.remove('active'); resetNewProjectForm(); });
     }
 
     function resetNewProjectForm() {
-        if(document.getElementById('input-project-name')) document.getElementById('input-project-name').value = '';
-        if(document.getElementById('input-project-desc')) document.getElementById('input-project-desc').value = '';
-        if(document.getElementById('select-project-theme')) document.getElementById('select-project-theme').value = '';
-        if(document.getElementById('select-project-tech')) document.getElementById('select-project-tech').value = '';
-        if(document.getElementById('input-project-repo')) document.getElementById('input-project-repo').value = '';
-        if(document.getElementById('count-project-name')) document.getElementById('count-project-name').textContent = '0';
-        if(document.getElementById('count-project-desc')) document.getElementById('count-project-desc').textContent = '0';
-        
+        if (document.getElementById('input-project-name')) document.getElementById('input-project-name').value = '';
+        if (document.getElementById('input-project-desc')) document.getElementById('input-project-desc').value = '';
+        if (document.getElementById('select-project-theme')) document.getElementById('select-project-theme').value = '';
+        if (document.getElementById('select-project-tech')) document.getElementById('select-project-tech').value = '';
+        if (document.getElementById('input-project-repo')) document.getElementById('input-project-repo').value = '';
+        if (document.getElementById('count-project-name')) document.getElementById('count-project-name').textContent = '0';
+        if (document.getElementById('count-project-desc')) document.getElementById('count-project-desc').textContent = '0';
+
         const preview = document.getElementById('new-project-image-preview');
         if (preview) {
             preview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Haz clic o arrastra una imagen</span>';
             preview.classList.remove('has-image');
         }
-        
-        if(document.getElementById('input-project-p1')) document.getElementById('input-project-p1').value = '';
-        if(document.getElementById('input-project-p2')) document.getElementById('input-project-p2').value = '';
-        if(document.getElementById('input-project-p3')) document.getElementById('input-project-p3').value = '';
-        if(document.getElementById('input-project-tags')) document.getElementById('input-project-tags').value = '';
-        if(document.getElementById('new-project-tags-list')) document.getElementById('new-project-tags-list').innerHTML = '';
-        if(document.getElementById('gallery-preview-grid')) document.getElementById('gallery-preview-grid').innerHTML = '';
-        if(document.getElementById('input-gallery-images')) document.getElementById('input-gallery-images').value = '';
+
+        if (document.getElementById('input-project-p1')) document.getElementById('input-project-p1').value = '';
+        if (document.getElementById('input-project-p2')) document.getElementById('input-project-p2').value = '';
+        if (document.getElementById('input-project-p3')) document.getElementById('input-project-p3').value = '';
+        if (document.getElementById('input-project-tags')) document.getElementById('input-project-tags').value = '';
+        if (document.getElementById('new-project-tags-list')) document.getElementById('new-project-tags-list').innerHTML = '';
+        if (document.getElementById('gallery-preview-grid')) document.getElementById('gallery-preview-grid').innerHTML = '';
+        if (document.getElementById('input-gallery-images')) document.getElementById('input-gallery-images').value = '';
         window.newProjectTagsArray = [];
     }
 
@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (inputProjectName) {
         inputProjectName.addEventListener('input', function () {
             const countLabel = document.getElementById('count-project-name');
-            if(countLabel) countLabel.textContent = this.value.length;
+            if (countLabel) countLabel.textContent = this.value.length;
         });
     }
 
@@ -890,7 +890,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (inputProjectDesc) {
         inputProjectDesc.addEventListener('input', function () {
             const countLabel = document.getElementById('count-project-desc');
-            if(countLabel) countLabel.textContent = this.value.length;
+            if (countLabel) countLabel.textContent = this.value.length;
         });
     }
 
@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 reader.readAsDataURL(this.files[0]);
             }
         });
-    }    const btnSaveNewProject = document.getElementById('btn-save-new-project');
+    } const btnSaveNewProject = document.getElementById('btn-save-new-project');
     if (btnSaveNewProject) {
         btnSaveNewProject.addEventListener('click', function () {
             const nameEl = document.getElementById('input-project-name');
@@ -952,24 +952,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Proyecto creado exitosamente', 'success');
-                    if (modalNewProject) modalNewProject.classList.remove('active');
-                    resetNewProjectForm();
-                    setTimeout(() => window.location.reload(), 800);
-                } else {
-                    showToast(data.message || 'Error al crear proyecto', 'error');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Error de conexión con la API de proyectos', 'error');
-            })
-            .finally(() => {
-                btnSaveNewProject.classList.remove('btn-loading');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Proyecto creado exitosamente', 'success');
+                        if (modalNewProject) modalNewProject.classList.remove('active');
+                        resetNewProjectForm();
+                        setTimeout(() => window.location.reload(), 800);
+                    } else {
+                        showToast(data.message || 'Error al crear proyecto', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Error de conexión con la API de proyectos', 'error');
+                })
+                .finally(() => {
+                    btnSaveNewProject.classList.remove('btn-loading');
+                });
         });
     }
 
@@ -1023,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (editBtn) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const card = editBtn.closest('.project-card-full') || editBtn.closest('.domain-card');
                 if (card) {
                     currentEditingProject = card;
@@ -1041,22 +1041,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const desc = descEl && descEl.classList.contains('placeholder') ? '' : (descEl ? descEl.textContent.trim() : '');
 
         const editNameInp = document.getElementById('edit-project-name');
-        if(editNameInp) editNameInp.value = name;
-        
+        if (editNameInp) editNameInp.value = name;
+
         const editDescInp = document.getElementById('edit-project-desc');
-        if(editDescInp) editDescInp.value = desc;
-        
+        if (editDescInp) editDescInp.value = desc;
+
         const editTheme = document.getElementById('edit-project-theme');
-        if(editTheme) editTheme.value = card.dataset.theme || 'web';
-        
+        if (editTheme) editTheme.value = card.dataset.theme || 'web';
+
         const editTech = document.getElementById('edit-project-tech');
-        if(editTech) editTech.value = card.dataset.tech ? card.dataset.tech.split(',')[0] : '';
-        
+        if (editTech) editTech.value = card.dataset.tech ? card.dataset.tech.split(',')[0] : '';
+
         const countName = document.getElementById('count-edit-project-name');
-        if(countName) countName.textContent = name ? name.length : 0;
-        
+        if (countName) countName.textContent = name ? name.length : 0;
+
         const countDesc = document.getElementById('count-edit-project-desc');
-        if(countDesc) countDesc.textContent = desc ? desc.length : 0;
+        if (countDesc) countDesc.textContent = desc ? desc.length : 0;
 
         const cardImg = card.querySelector('.project-card-img img') || card.querySelector('img');
         if (editProjectImagePreview) {
@@ -1068,38 +1068,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 editProjectImagePreview.classList.remove('has-image');
             }
         }
-        if(inputEditProjectImage) inputEditProjectImage.value = '';
+        if (inputEditProjectImage) inputEditProjectImage.value = '';
 
-        if(modalEditProject) modalEditProject.classList.add('active');
+        if (modalEditProject) modalEditProject.classList.add('active');
     }
 
     function resetEditProjectForm() {
-        if(document.getElementById('edit-project-tags-list')) document.getElementById('edit-project-tags-list').innerHTML = '';
-        if(document.getElementById('input-edit-project-tags')) document.getElementById('input-edit-project-tags').value = '';
-        if(document.getElementById('edit-project-p1')) document.getElementById('edit-project-p1').value = '';
-        if(document.getElementById('edit-project-p2')) document.getElementById('edit-project-p2').value = '';
-        if(document.getElementById('edit-project-p3')) document.getElementById('edit-project-p3').value = '';
-        if(document.getElementById('edit-gallery-preview-grid')) document.getElementById('edit-gallery-preview-grid').innerHTML = '';
-        if(document.getElementById('input-edit-gallery-images')) document.getElementById('input-edit-gallery-images').value = '';
+        if (document.getElementById('edit-project-tags-list')) document.getElementById('edit-project-tags-list').innerHTML = '';
+        if (document.getElementById('input-edit-project-tags')) document.getElementById('input-edit-project-tags').value = '';
+        if (document.getElementById('edit-project-p1')) document.getElementById('edit-project-p1').value = '';
+        if (document.getElementById('edit-project-p2')) document.getElementById('edit-project-p2').value = '';
+        if (document.getElementById('edit-project-p3')) document.getElementById('edit-project-p3').value = '';
+        if (document.getElementById('edit-gallery-preview-grid')) document.getElementById('edit-gallery-preview-grid').innerHTML = '';
+        if (document.getElementById('input-edit-gallery-images')) document.getElementById('input-edit-gallery-images').value = '';
         window.editProjectTagsArray = [];
     }
 
     const btnCloseEditProject = document.getElementById('btn-close-edit-project');
     const btnCancelEditProject = document.getElementById('btn-cancel-edit-project');
-    
-    if (btnCloseEditProject) btnCloseEditProject.addEventListener('click', () => { if(modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
-    if (btnCancelEditProject) btnCancelEditProject.addEventListener('click', () => { if(modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
+
+    if (btnCloseEditProject) btnCloseEditProject.addEventListener('click', () => { if (modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
+    if (btnCancelEditProject) btnCancelEditProject.addEventListener('click', () => { if (modalEditProject) modalEditProject.classList.remove('active'); currentEditingProject = null; resetEditProjectForm(); });
 
     const editProjectName = document.getElementById('edit-project-name');
-    if (editProjectName) editProjectName.addEventListener('input', function () { 
+    if (editProjectName) editProjectName.addEventListener('input', function () {
         const ct = document.getElementById('count-edit-project-name');
-        if(ct) ct.textContent = this.value.length; 
+        if (ct) ct.textContent = this.value.length;
     });
 
     const editProjectDesc = document.getElementById('edit-project-desc');
-    if (editProjectDesc) editProjectDesc.addEventListener('input', function () { 
+    if (editProjectDesc) editProjectDesc.addEventListener('input', function () {
         const ct = document.getElementById('count-edit-project-desc');
-        if(ct) ct.textContent = this.value.length; 
+        if (ct) ct.textContent = this.value.length;
     });
 
     if (editProjectImagePreview && inputEditProjectImage) {
@@ -1124,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const list = document.getElementById(listId);
         if (!input || !list) return;
 
-        input.addEventListener('keydown', function(e) {
+        input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const value = this.value.trim();
@@ -1136,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        list.addEventListener('click', function(e) {
+        list.addEventListener('click', function (e) {
             if (e.target.classList.contains('tag-chip-remove')) {
                 const index = e.target.getAttribute('data-index');
                 window[arrayVarName].splice(index, 1);
@@ -1146,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderTags(listElement, currentArray) {
-        if(!listElement) return;
+        if (!listElement) return;
         listElement.innerHTML = '';
         currentArray.forEach((tag, index) => {
             const chip = document.createElement('span');
@@ -1186,20 +1186,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         dropArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
-        input.addEventListener('change', function() { handleFiles(this.files); this.value = ''; });
+        input.addEventListener('change', function () { handleFiles(this.files); this.value = ''; });
 
         function handleFiles(files) {
             Array.from(files).forEach(file => {
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
-                    reader.onload = function(event) {
+                    reader.onload = function (event) {
                         const thumbDiv = document.createElement('div');
                         thumbDiv.className = 'gallery-thumbnail';
                         thumbDiv.innerHTML = `
                             <img src="${event.target.result}" alt="Gallery image">
                             <button type="button" class="gallery-thumbnail-remove" title="Eliminar"><i class="fas fa-times"></i></button>
                         `;
-                        thumbDiv.querySelector('.gallery-thumbnail-remove').addEventListener('click', function(e) {
+                        thumbDiv.querySelector('.gallery-thumbnail-remove').addEventListener('click', function (e) {
                             e.stopPropagation();
                             thumbDiv.remove();
                         });
@@ -1255,25 +1255,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Proyecto actualizado exitosamente', 'success');
-                    if (modalEditProject) modalEditProject.classList.remove('active');
-                    currentEditingProject = null;
-                    resetEditProjectForm();
-                    setTimeout(() => window.location.reload(), 800);
-                } else {
-                    showToast(data.message || 'Error al actualizar proyecto', 'error');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Error de conexión', 'error');
-            })
-            .finally(() => {
-                btnSaveEditProject.classList.remove('btn-loading');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Proyecto actualizado exitosamente', 'success');
+                        if (modalEditProject) modalEditProject.classList.remove('active');
+                        currentEditingProject = null;
+                        resetEditProjectForm();
+                        setTimeout(() => window.location.reload(), 800);
+                    } else {
+                        showToast(data.message || 'Error al actualizar proyecto', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Error de conexión', 'error');
+                })
+                .finally(() => {
+                    btnSaveEditProject.classList.remove('btn-loading');
+                });
         });
     }
 
@@ -1290,24 +1290,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'DELETE',
                     headers: { 'X-CSRFToken': getCSRFToken() }
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Proyecto eliminado', 'success');
-                        if (modalEditProject) modalEditProject.classList.remove('active');
-                        currentEditingProject = null;
-                        setTimeout(() => window.location.reload(), 600);
-                    } else {
-                        showToast(data.message || 'Error al eliminar', 'error');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast('Error de conexión', 'error');
-                })
-                .finally(() => {
-                    btnDeleteProject.classList.remove('btn-loading');
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Proyecto eliminado', 'success');
+                            if (modalEditProject) modalEditProject.classList.remove('active');
+                            currentEditingProject = null;
+                            setTimeout(() => window.location.reload(), 600);
+                        } else {
+                            showToast(data.message || 'Error al eliminar', 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showToast('Error de conexión', 'error');
+                    })
+                    .finally(() => {
+                        btnDeleteProject.classList.remove('btn-loading');
+                    });
             }
         });
     }
@@ -1316,8 +1316,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.active').forEach(modal => {
                 modal.classList.remove('active');
-                if(modal.id === 'modal-edit-project') resetEditProjectForm();
-                if(modal.id === 'modal-new-project') resetNewProjectForm();
+                if (modal.id === 'modal-edit-project') resetEditProjectForm();
+                if (modal.id === 'modal-new-project') resetNewProjectForm();
             });
             currentEditingProject = null;
         }
@@ -1327,12 +1327,31 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) {
                 this.classList.remove('active');
-                if(this.id === 'modal-edit-project') resetEditProjectForm();
-                if(this.id === 'modal-new-project') resetNewProjectForm();
+                if (this.id === 'modal-edit-project') resetEditProjectForm();
+                if (this.id === 'modal-new-project') resetNewProjectForm();
                 currentEditingProject = null;
             }
         });
     });
+
+    const dynamicWordEl = document.getElementById('dynamicWord');
+    if (dynamicWordEl) {
+        const words = ['Construye', 'Transforma', 'Impulsa', 'Desarrolla'];
+        let wordIdx = 0;
+        const animationDuration = 250;
+
+        setInterval(() => {
+            dynamicWordEl.classList.remove('slide-in');
+            dynamicWordEl.classList.add('slide-out');
+
+            setTimeout(() => {
+                wordIdx = (wordIdx + 1) % words.length;
+                dynamicWordEl.textContent = words[wordIdx];
+                dynamicWordEl.classList.remove('slide-out');
+                dynamicWordEl.classList.add('slide-in');
+            }, animationDuration);
+        }, 2600);
+    }
 
     if (document.getElementById('project-count')) {
         updateProjectCount();

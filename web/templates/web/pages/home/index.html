@@ -15,7 +15,7 @@
     <section class="hero-banner">
         <img class="hero-bg" src="{% static 'web/img/backgroundHero.jpg' %}" alt="Hero background">
         <div class="hero-content">
-            <h1>Construye el mundo del <span class="highlight">Software</span></h1>
+            <h1><span class="dynamic-word-wrapper"><span class="dynamic-word" id="dynamicWord">Construye</span></span> el mundo del <span class="highlight">Software</span></h1>
             <h2>El espacio donde los estudiantes de la UNI colaboran, crean e innovan.</h2>
             <div class="hero-buttons">
                 {% if not user.is_authenticated %}
@@ -32,12 +32,12 @@
         </div>
         <div class="row-content">
             <article class="metric-card">
-                <p class="number c-blue">+100</p>
-                <p class="label">Proyectos Activos</p>
+                <p class="number c-blue">{{ total_proyectos }}</p>
+                <p class="label">Proyectos Subidos</p>
             </article>
             <article class="metric-card">
-                <p class="number c-orange">+3200</p>
-                <p class="label">Estudiantes</p>
+                <p class="number c-orange">{{ total_usuarios }}</p>
+                <p class="label">Usuarios Registrados</p>
             </article>
             <article class="metric-card">
                 <p class="number c-pink">+10</p>
@@ -59,24 +59,21 @@
         <div class="row-content">
             <article class="feature-card">
                 <div class="feature-card-image">
-                    <img src="https://www.figma.com/api/mcp/asset/bc275a74-1b8d-4eab-ae94-31edb1168dba"
-                        alt="Comparte tus proyectos">
-                </div>
-                <h4>Comparte tus proyectos</h4>
-                <p>Sube tus desarrollos y dale visibilidad a tu trabajo frente a toda la universidad y empresas.</p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-card-image">
-                    <img src="https://www.figma.com/api/mcp/asset/376b2000-1676-4a28-9470-97e37a18fa1e"
-                        alt="Crece profesionalmente">
+                    <img src="{% static 'web/img/crece-profesionalmente.jpg' %}" alt="Crece profesionalmente">
                 </div>
                 <h4>Crece profesionalmente</h4>
                 <p>Construye tu portafolio, aprende de otros desarrolladores y destaca en la industria tecnológica.</p>
             </article>
             <article class="feature-card">
                 <div class="feature-card-image">
-                    <img src="https://www.figma.com/api/mcp/asset/ff8515ff-971f-465c-92a4-d7a11fff5e7b"
-                        alt="Colabora en equipo">
+                    <img src="{% static 'web/img/comparte-proyectos.jpg' %}" alt="Comparte tus proyectos">
+                </div>
+                <h4>Comparte tus proyectos</h4>
+                <p>Sube tus desarrollos y dale visibilidad a tu trabajo frente a toda la universidad y empresas.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-card-image">
+                    <img src="{% static 'web/img/colabora-en-equipo.jpg' %}" alt="Colabora en equipo">
                 </div>
                 <h4>Colabora en equipo</h4>
                 <p>Únete a proyectos existentes, conoce a estudiantes de otras facultades y genera impacto real.</p>
@@ -178,15 +175,18 @@
             <h3><i class="fas fa-handshake icon-allies"></i> Nuestros Aliados</h3>
         </div>
         <div class="carousel-track allies-track">
+            {% for colab in colaboradores %}
             <div class="carousel-item">
-                <img src="https://www.figma.com/api/mcp/asset/34be17d1-1faf-404c-a7e4-4b831e2d9dfe" alt="Aliado 1">
+                <img src="{% static 'web/img/colaborators/' %}{{ colab }}" alt="{{ colab }}">
+            </div>
+            {% empty %}
+            <div class="carousel-item">
+                <img src="{% static 'web/img/colaborators/apesol.png' %}" alt="APESOL">
             </div>
             <div class="carousel-item">
-                <img src="https://www.figma.com/api/mcp/asset/da21bf04-9546-4a21-af54-169f56637010" alt="Aliado 2">
+                <img src="{% static 'web/img/colaborators/nucleo.png' %}" alt="Núcleo">
             </div>
-            <div class="carousel-item">
-                <img src="https://www.figma.com/api/mcp/asset/2bb76faf-583b-422b-98ce-ea66c9e40617" alt="Aliado 3">
-            </div>
+            {% endfor %}
             <div class="carousel-item">
                 <div class="ally-text">+ Tu Empresa</div>
             </div>
@@ -198,4 +198,36 @@
 
 {% block extra_js %}
 <script src="{% static 'web/js/scripts.js' %}"></script>
+<script>
+(function() {
+    function initDynamicWord() {
+        const dynamicWordEl = document.getElementById('dynamicWord');
+        if (!dynamicWordEl) return;
+
+        const words = ['Construye', 'Transforma', 'Impulsa', 'Crea', 'Desarrolla'];
+        let wordIdx = 0;
+        const animationDuration = 250;
+
+        setInterval(() => {
+            dynamicWordEl.classList.remove('slide-in');
+            dynamicWordEl.classList.add('slide-out');
+
+            setTimeout(() => {
+                wordIdx = (wordIdx + 1) % words.length;
+                dynamicWordEl.textContent = words[wordIdx];
+                dynamicWordEl.classList.remove('slide-out');
+                // Forzar reflow en el DOM para reiniciar la animación CSS limpiamente
+                void dynamicWordEl.offsetWidth;
+                dynamicWordEl.classList.add('slide-in');
+            }, animationDuration);
+        }, 2600);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDynamicWord);
+    } else {
+        initDynamicWord();
+    }
+})();
+</script>
 {% endblock %}

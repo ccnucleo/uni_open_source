@@ -22,14 +22,33 @@ from django.core.exceptions import ValidationError
 from .models import UnverifiedUser, Profile, Technology, Interest
 
 
+from projects.models import Project
+from django.conf import settings
+
+
 @never_cache
 def index_view(request):
+    colaborators_dir = os.path.join(settings.BASE_DIR, "web", "static", "web", "img", "colaborators")
+    colaboradores = []
+    if os.path.exists(colaborators_dir):
+        valid_exts = ('.png', '.jpg', '.jpeg', '.svg', '.webp')
+        colaboradores = sorted([
+            f for f in os.listdir(colaborators_dir)
+            if f.lower().endswith(valid_exts)
+        ])
+
+    total_proyectos = Project.objects.count()
+    total_usuarios = User.objects.count()
+
     return render(
         request,
         "web/pages/home/index.html",
         {
             "active_section": "home",
             "page_title": "Inicio",
+            "colaboradores": colaboradores,
+            "total_proyectos": total_proyectos,
+            "total_usuarios": total_usuarios,
         },
     )
 
