@@ -16,11 +16,20 @@
             </div>
         </div>
         <div class="footer-col">
-            <h4>Centro Cultural Núcleo</h4>
+            <h4>Navegación</h4>
             <ul>
                 <li><a href="{% url 'index' %}">Inicio</a></li>
-                <li><a href="{% url 'quienes_somos' %}">¿Quiénes Somos?</a></li>
-                <li><a href="{% url 'projects:list' %}">Proyectos Destacados</a></li>
+                <li><a href="{% url 'projects:list' %}">Proyectos</a></li>
+                <li>
+                    <a href="{% url 'courses:list' %}" {% if not user.is_authenticated %}class="js-guest-lock-trigger" data-target="courses"{% endif %}>
+                        Cursos {% if not user.is_authenticated %}<i class="fas fa-lock" style="font-size: 0.72rem; margin-left: 3px; opacity: 0.8;"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'community:list' %}" {% if not user.is_authenticated %}class="js-guest-lock-trigger" data-target="community"{% endif %}>
+                        Comunidad {% if not user.is_authenticated %}<i class="fas fa-lock" style="font-size: 0.72rem; margin-left: 3px; opacity: 0.8;"></i>{% endif %}
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="footer-col">
