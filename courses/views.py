@@ -11,7 +11,7 @@ from .models import Course, Category  # <-- Asegúrate de importar Category
 def courses_page(request):
     courses = Course.objects.all()
     categories = Category.objects.all().order_by('name')
-    tags = Tag.objects.all().order_by('name') # <-- Traemos todas las etiquetas ordenadas
+    tags = Tag.objects.filter(course__isnull=False).distinct().order_by('name') # <-- Traemos solo las usadas
     
     context = {
         'courses': courses,

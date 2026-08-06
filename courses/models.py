@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class Category(models.Model):
     name = models.CharField(max_length=80, verbose_name="Nombre de la Categoría")
@@ -12,14 +13,22 @@ class Category(models.Model):
         return self.name
 
 class Tag(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Etiqueta (Tecnología)")
+    name = models.CharField(max_length=50, verbose_name="Tecnología")
 
     class Meta:
-        verbose_name = "Etiqueta"
-        verbose_name_plural = "Etiquetas"
+        verbose_name = "Tecnología"
+        verbose_name_plural = "Tecnologías"
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if Tag.objects.filter(name__iexact=self.name).exclude(pk=self.pk).exists():
+            raise ValidationError({'name': 'Esta tecnología ya existe.'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 class Course(models.Model):
     BEGINNER = "beginner"

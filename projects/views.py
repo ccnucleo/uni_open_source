@@ -1,196 +1,210 @@
 import json
+from django.db.models import Q, Count
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
-from .models import Project
+from django.contrib.auth import get_user_model
+from .models import Project, ProjectImage, Tag, Technology
 
+User = get_user_model()
 
 def projects_page(request):
-	projects = Project.objects.select_related("owner").all()[:24]
-	return render(
-		request,
-		"web/pages/projects/projects_page.html",
-		{
-			"projects": projects,
-			"active_section": "projects",
-			"page_title": "Proyectos",
-		},
-	)
+    # 1. Obtener parámetros de la URL enviados por el formulario
+    q = request.GET.get('q', '').strip()
+    sort = request.GET.get('sort', 'recent')
+    theme = request.GET.get('theme', '').strip()
+    tech = request.GET.get('tech', '').strip()
+    author = request.GET.get('author', '').strip()
+    
+    # Parámetros de rango de fecha
+    date_from = request.GET.get('date_from', '').strip()
+    date_to = request.GET.get('date_to', '').strip()
 
+    # 2. QuerySet base
+    projects = Project.objects.select_related("owner").prefetch_related("technologies", "tags").annotate(likes_count=Count('likes', distinct=True))
+
+    # 3. Aplicar Filtros dinámicos
+    if q:
+        projects = projects.filter(Q(title__icontains=q) | Q(summary__icontains=q) | Q(description__icontains=q))
+    if theme:
+        projects = projects.filter(tags__name__iexact=theme)
+    if tech:
+        projects = projects.filter(technologies__name__iexact=tech)
+    if author:
+        projects = projects.filter(owner__username__icontains=author)
+    if date_from:
+        projects = projects.filter(created_at__date__gte=date_from)
+    if date_to:
+        projects = projects.filter(created_at__date__lte=date_to)
+
+    # 4. Eliminar duplicados
+    projects = projects.distinct()
+
+    # 5. Aplicar Ordenamiento
+    if sort == 'popular':
+        projects = projects.order_by('-likes_count', '-created_at')
+    elif sort == 'views':
+        projects = projects.order_by('-views_count', '-created_at')
+    elif sort == 'az':
+        projects = projects.order_by('title')
+    else: # Por defecto: más recientes
+        projects = projects.order_by('-created_at')
+
+    # Limitamos los resultados
+    projects = projects[:24]
+
+    # Extraemos TODOS los datos (en uso y pre-creados) para el autocompletado predictivo
+    all_tags = list(Tag.objects.values_list('name', flat=True))
+    all_techs = list(Technology.objects.values_list('name', flat=True))
+    all_authors = list(User.objects.filter(owned_projects__isnull=False).values_list('username', flat=True).distinct())
+
+    return render(
+        request, 
+        "web/pages/projects/projects_page.html", 
+        {
+            "projects": projects, 
+            "active_section": "projects",
+            "all_tags": all_tags,
+            "all_techs": all_techs,
+            "all_authors": all_authors,
+        }
+    )
 
 def project_detail_page(request, project_id):
-	project = get_object_or_404(Project.objects.select_related("owner"), pk=project_id)
-	return render(
-		request,
-		"web/pages/projects/project_detail.html",
-		{
-			"project": project,
-			"active_section": "projects",
-			"page_title": project.title,
-		},
-	)
+    project = get_object_or_404(Project.objects.select_related("owner").prefetch_related('gallery', 'collaborators', 'likes', 'tags', 'technologies'), pk=project_id)
+    project.views_count += 1
+    project.save(update_fields=['views_count'])
 
+    all_tags = list(Tag.objects.values_list('name', flat=True))
+    all_techs = list(Technology.objects.values_list('name', flat=True))
+    all_users = list(User.objects.exclude(id=project.owner.id).values_list('username', flat=True))
 
-def _parse_payload(request):
-	if request.content_type == "application/json" or (request.body and not request.POST):
-		try:
-			return json.loads(request.body.decode("utf-8"))
-		except (json.JSONDecodeError, UnicodeDecodeError):
-			return None
-	if request.POST:
-		return dict(request.POST.items())
-	return {}
+    return render(
+        request,
+        "web/pages/projects/project_detail.html",
+        {
+            "project": project,
+            "all_tags": json.dumps(all_tags),
+            "all_techs": json.dumps(all_techs),
+            "all_users": json.dumps(all_users),
+            "active_section": "projects",
+            "page_title": "Proyectos", 
+        },
+    )
 
+def _parse_json_body(request):
+    try: return json.loads(request.body.decode("utf-8"))
+    except: return None
 
-def _serialize_project(project):
-	return {
-		"id": project.id,
-		"title": project.title,
-		"summary": project.summary,
-		"description": project.description,
-		"theme": project.theme,
-		"theme_display": project.get_theme_display(),
-		"tech_stack": project.tech_stack,
-		"main_tech": project.main_tech,
-		"image_url": project.image_url,
-		"repository_url": project.repository_url,
-		"demo_url": project.demo_url,
-		"owner": project.owner.username,
-		"owner_id": project.owner_id,
-		"is_public": project.is_public,
-		"created_at": project.created_at.isoformat() if project.created_at else None,
-		"updated_at": project.updated_at.isoformat() if project.updated_at else None,
-	}
-
+@require_http_methods(["POST"])
+def toggle_like_api(request, project_id):
+    if not request.user.is_authenticated: return JsonResponse({"success": False, "message": "Debes iniciar sesión."}, status=401)
+    project = get_object_or_404(Project, pk=project_id)
+    if request.user in project.likes.all():
+        project.likes.remove(request.user)
+        return JsonResponse({"success": True, "liked": False, "likes_count": project.likes.count()})
+    else:
+        project.likes.add(request.user)
+        return JsonResponse({"success": True, "liked": True, "likes_count": project.likes.count()})
 
 @require_http_methods(["GET", "POST"])
 def projects_collection_api(request):
-	if request.method == "GET":
-		items = [_serialize_project(p) for p in Project.objects.select_related("owner").all()]
-		return JsonResponse({"success": True, "data": items})
+    if not request.user.is_authenticated: return JsonResponse({"success": False, "message": "Autenticación requerida."}, status=401)
+    
+    is_multipart = request.content_type.startswith('multipart/form-data')
+    data = request.POST if is_multipart else (_parse_json_body(request) or {})
+    files = request.FILES if is_multipart else {}
 
-	if not request.user.is_authenticated:
-		return JsonResponse(
-			{"success": False, "message": "Autenticacion requerida."},
-			status=401,
-		)
+    title = str(data.get("title", "")).strip()
+    summary = str(data.get("summary", "")).strip()
+    image = files.get("image")
 
-	payload = _parse_payload(request)
-	if payload is None:
-		return JsonResponse(
-			{"success": False, "message": "JSON invalido."},
-			status=400,
-		)
+    if len(title) < 3 or len(summary) < 10: 
+        return JsonResponse({"success": False, "message": "El título debe tener al menos 3 caracteres y el resumen 10."}, status=400)
 
-	title = (payload.get("title") or payload.get("name") or "").strip()
-	if not title:
-		return JsonResponse(
-			{"success": False, "message": "El titulo es obligatorio."},
-			status=400,
-		)
+    tech_names = [t.strip() for t in str(data.get("technologies", "")).split(",") if t.strip()]
+    tag_names = [t.strip().lower() for t in str(data.get("tags", "")).split(",") if t.strip()]
 
-	summary = (payload.get("summary") or payload.get("desc") or "").strip()
-	description = (payload.get("description") or payload.get("desc") or "").strip()
-	main_tech = (payload.get("main_tech") or payload.get("tech_stack") or payload.get("tech") or "").strip()
-	theme = (payload.get("theme") or "web").strip()
-	repository_url = (payload.get("repository_url") or payload.get("repo_url") or "").strip()
-	p1 = (payload.get("paragraph_1") or payload.get("p1") or description).strip()
-	p2 = (payload.get("paragraph_2") or payload.get("p2") or "").strip()
-	p3 = (payload.get("paragraph_3") or payload.get("p3") or "").strip()
+    if not tech_names and not tag_names:
+        return JsonResponse({"success": False, "message": "Debes añadir al menos una tecnología o etiqueta."}, status=400)
 
-	if not summary and description:
-		summary = description[:255]
+    project = Project.objects.create(title=title, summary=summary, image=image, owner=request.user, is_public=True)
 
-	project = Project(
-		title=title,
-		summary=summary,
-		paragraph_1=p1,
-		paragraph_2=p2,
-		paragraph_3=p3,
-		theme=theme,
-		main_tech=main_tech,
-		repository_url=repository_url,
-		owner=request.user,
-		is_public=bool(payload.get("is_public", True)),
-	)
+    if tech_names:
+        tech_objs = []
+        for name in tech_names:
+            tech = Technology.objects.filter(name__iexact=name).first()
+            if not tech:
+                tech = Technology.objects.create(name=name)
+            tech_objs.append(tech)
+        project.technologies.set(tech_objs)
 
-	image_file = request.FILES.get("image") or request.FILES.get("cover_image")
-	if image_file:
-		project.image = image_file
+    if tag_names:
+        tag_objs = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+        project.tags.set(tag_objs)
 
-	project.save()
+    collab_names = [u.strip() for u in str(data.get("collaborators", "")).split(",") if u.strip()]
+    if collab_names:
+        users = User.objects.filter(username__in=collab_names).exclude(id=request.user.id)
+        project.collaborators.set(users)
 
-	return JsonResponse({"success": True, "data": _serialize_project(project)}, status=201)
+    return JsonResponse({"success": True, "message": "Proyecto creado exitosamente."})
 
-
-@require_http_methods(["GET", "PUT", "PATCH", "POST", "DELETE"])
+@require_http_methods(["GET", "PUT", "PATCH", "DELETE", "POST"])
 def projects_item_api(request, project_id):
-	try:
-		project = Project.objects.select_related("owner").get(pk=project_id)
-	except Project.DoesNotExist as exc:
-		raise Http404("Project not found") from exc
+    project = get_object_or_404(Project, pk=project_id)
+    if not request.user.is_authenticated or project.owner_id != request.user.id:
+        return JsonResponse({"success": False, "message": "No tienes permisos."}, status=403)
 
-	if request.method == "GET":
-		return JsonResponse({"success": True, "data": _serialize_project(project)})
+    is_multipart = request.content_type.startswith('multipart/form-data')
+    data = request.POST if is_multipart else (_parse_json_body(request) or {})
+    files = request.FILES if is_multipart else {}
 
-	if not request.user.is_authenticated:
-		return JsonResponse(
-			{"success": False, "message": "Autenticacion requerida."},
-			status=401,
-		)
+    valid_text_fields = ["title", "summary", "description", "repository_url", "version", "size", "dependencies"]
+    for field in valid_text_fields:
+        if field in data: setattr(project, field, str(data.get(field)).strip())
 
-	if project.owner_id != request.user.id:
-		return JsonResponse(
-			{"success": False, "message": "No tienes permisos sobre este proyecto."},
-			status=403,
-		)
+    if "technologies" in data:
+        tech_names = [t.strip() for t in str(data.get("technologies", "")).split(",") if t.strip()]
+        tech_objs = []
+        for name in tech_names:
+            tech = Technology.objects.filter(name__iexact=name).first()
+            if not tech:
+                tech = Technology.objects.create(name=name)
+            tech_objs.append(tech)
+        project.technologies.set(tech_objs)
 
-	if request.method == "DELETE":
-		project.delete()
-		return JsonResponse({"success": True, "message": "Proyecto eliminado."})
+    if "tags" in data:
+        tag_names = [t.strip().lower() for t in str(data.get("tags", "")).split(",") if t.strip()]
+        tag_objs = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+        project.tags.set(tag_objs)
 
-	payload = _parse_payload(request)
-	if payload is None:
-		return JsonResponse(
-			{"success": False, "message": "Payload invalido."},
-			status=400,
-		)
+    if "collaborators" in data:
+        usernames = [u.strip() for u in str(data.get("collaborators", "")).split(",") if u.strip()]
+        if usernames:
+            users = User.objects.filter(username__in=usernames).exclude(id=project.owner.id)
+            project.collaborators.set(users)
+        else:
+            project.collaborators.clear()
 
-	if "title" in payload or "name" in payload:
-		title_val = (payload.get("title") or payload.get("name") or "").strip()
-		if title_val:
-			project.title = title_val
-	if "summary" in payload:
-		project.summary = (payload.get("summary") or "").strip()
-	if "description" in payload or "desc" in payload:
-		project.paragraph_1 = (payload.get("description") or payload.get("desc") or "").strip()
-		if not project.summary:
-			project.summary = project.paragraph_1[:255]
-	if "tech_stack" in payload or "main_tech" in payload or "tech" in payload:
-		project.main_tech = (payload.get("tech_stack") or payload.get("main_tech") or payload.get("tech") or "").strip()
-	if "theme" in payload:
-		project.theme = payload.get("theme") or "web"
-	if "repository_url" in payload or "repo_url" in payload:
-		project.repository_url = (payload.get("repository_url") or payload.get("repo_url") or "").strip()
-	if "paragraph_1" in payload or "p1" in payload:
-		project.paragraph_1 = (payload.get("paragraph_1") or payload.get("p1") or "").strip()
-	if "paragraph_2" in payload or "p2" in payload:
-		project.paragraph_2 = (payload.get("paragraph_2") or payload.get("p2") or "").strip()
-	if "paragraph_3" in payload or "p3" in payload:
-		project.paragraph_3 = (payload.get("paragraph_3") or payload.get("p3") or "").strip()
-	if "is_public" in payload:
-		project.is_public = bool(payload.get("is_public"))
+    if "image" in files: project.image = files["image"]
+    if "documentation_file" in files: project.documentation_file = files["documentation_file"]
 
-	image_file = request.FILES.get("image") or request.FILES.get("cover_image")
-	if image_file:
-		project.image = image_file
+    project.save()
 
-	if not project.title:
-		return JsonResponse(
-			{"success": False, "message": "El titulo es obligatorio."},
-			status=400,
-		)
+    if "gallery_images" in files:
+        # Poner nuevas imágenes al final
+        current_count = project.gallery.count()
+        for i, img in enumerate(files.getlist("gallery_images")): 
+            ProjectImage.objects.create(project=project, image=img, order=current_count + i)
+            
+    if "deleted_images" in data:
+        del_ids = [i for i in data.get("deleted_images", "").split(",") if i.isdigit()]
+        ProjectImage.objects.filter(id__in=del_ids, project=project).delete()
 
-	project.save()
-	return JsonResponse({"success": True, "data": _serialize_project(project)})
+    if "image_order" in data:
+        order_ids = [int(i) for i in str(data.get("image_order", "")).split(",") if i.isdigit()]
+        for idx, img_id in enumerate(order_ids):
+            ProjectImage.objects.filter(id=img_id, project=project).update(order=idx)
 
+    return JsonResponse({"success": True, "message": "Proyecto actualizado."})

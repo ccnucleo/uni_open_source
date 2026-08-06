@@ -41,16 +41,22 @@
     margin-bottom: 14px;
     z-index: 1;
     cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
+    background: var(--gray-200);
 }
 
 .profile-pic img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 4px solid white;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: none;
     object-fit: cover;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
-    background: var(--gray-200);
+    box-shadow: none;
+    background: transparent;
+    display: block;
 }
 
 .photo-overlay {
@@ -136,7 +142,7 @@
     margin: 0 10px;
 }
 
-/* Botones de acciÃ³n del perfil */
+/* Botones de acción del perfil */
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -242,7 +248,7 @@
 }
 
 /* ============================================
-   CARD DE INFORMACIÃ“N
+   CARD DE INFORMACIÓN
 ============================================ */
 .card-info {
     background: white;
@@ -291,7 +297,7 @@
 }
 
 /* ============================================
-   SOBRE MÃ
+   SOBRE MÍ
 ============================================ */
 .sobre-mi-display {
     min-height: 110px;
@@ -469,7 +475,7 @@
     display: block;
 }
 
-/* BotÃ³n eliminar tag */
+/* Botón eliminar tag */
 .btn-delete-tag {
     position: absolute;
     top: -7px;
@@ -500,7 +506,7 @@
     display: flex;
 }
 
-/* BotÃ³n aÃ±adir tag */
+/* Botón añadir tag */
 .btn-add-tag {
     min-width: 40px;
     min-height: 40px;
@@ -706,7 +712,7 @@
 
 .project-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
 }
 
@@ -726,8 +732,10 @@
 }
 
 .project-img-top {
-    height: 130px;
+    aspect-ratio: 16 / 9;
+    width: 100%;
     background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-dark) 100%);
+    object-fit: cover;
 }
 
 .project-info {
@@ -748,7 +756,7 @@
 }
 
 /* ============================================
-   SECCIÃ“N PROYECTOS
+   SECCIÓN PROYECTOS
 ============================================ */
 .projects-header {
     background: white;
@@ -919,7 +927,7 @@
     font-size: 0.85rem;
 }
 
-/* --- BOTÃ“N NUEVO PROYECTO --- */
+/* --- BOTÓN NUEVO PROYECTO --- */
 .btn-new-project {
     padding: 10px 20px;
     background: var(--orange-primary);
@@ -943,7 +951,7 @@
     transform: translateY(-2px);
 }
 
-/* --- BÃšSQUEDA --- */
+/* --- BÚSQUEDA --- */
 .search-container {
     position: relative;
     margin-bottom: 14px;
@@ -1038,8 +1046,8 @@
 ============================================ */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
 }
 
 .projects-grid.list-view {
@@ -1069,7 +1077,8 @@
 }
 
 .project-card-img {
-    height: 150px;
+    aspect-ratio: 16 / 9;
+    width: 100%;
     background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-dark) 100%);
     overflow: hidden;
     position: relative;
@@ -1612,8 +1621,9 @@
     }
 
     .projects-grid.list-view .project-card-img {
+        aspect-ratio: 16 / 9;
         width: 100%;
-        height: 150px;
+        max-width: 100%;
     }
 
     .project-grid {
@@ -1726,3 +1736,60 @@
     opacity: 0; transition: opacity 0.25s; font-size: 0.9rem;
 }
 .project-image-preview.has-image:hover::after { opacity: 1; }
+
+/* ============================================
+   NUEVO PROYECTO (ESTILOS FIGMA)
+============================================ */
+.modal-new-project-content { max-width: 650px; }
+.modal-header-gradient {
+    background: linear-gradient(90deg, #0f172a 0%, #047857 100%);
+    border-radius: 12px 12px 0 0; padding: 20px 25px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header-gradient h3 { color: white; font-weight: 600; margin: 0; font-size: 1.1rem; font-family: 'Syne', sans-serif;}
+.text-orange { color: var(--orange-primary); }
+.modal-close-white { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;}
+.modal-close-white:hover { opacity: 1; }
+.new-project-body { padding: 25px; }
+
+.section-title-figma {
+    color: var(--orange-primary); font-size: 0.85rem !important; font-weight: 700 !important; 
+    letter-spacing: 0.5px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px; margin-bottom: 20px !important;
+}
+
+.form-label-figma { font-weight: 600 !important; color: var(--gray-800) !important; display: block; margin-bottom: 5px !important;}
+.text-red { color: #ef4444; }
+
+.input-figma, .textarea-figma, .select-figma {
+    width: 100%; padding: 10px 14px !important; border: 1px solid var(--gray-300) !important; 
+    border-radius: 8px !important; font-family: inherit; font-size: 0.9rem; background: white !important;
+}
+.textarea-figma { min-height: 90px !important; resize: none; line-height: 1.5; }
+.char-counter-right { display: block; text-align: right; font-size: 0.8rem; color: var(--gray-500); margin-top: 4px; }
+
+.mt-15 { margin-top: 15px; } .mt-25 { margin-top: 25px; }
+.flex-gap-15 { display: flex; gap: 15px; } .flex-1 { flex: 1; }
+
+.photo-upload-figma {
+    border: 2px dashed var(--gray-300); border-radius: 12px; padding: 40px 20px; 
+    text-align: center; background: var(--gray-50); cursor: pointer; transition: all 0.2s;
+}
+.photo-upload-figma:hover { border-color: var(--orange-primary); background: var(--orange-light); }
+.icon-gray { color: var(--gray-400); margin-bottom: 12px; }
+.upload-text { font-size: 0.95rem; color: var(--gray-700); margin-bottom: 8px; }
+.photo-hint-figma { font-size: 0.8rem; color: var(--gray-400); }
+
+.modal-footer-figma {
+    padding: 20px 25px; background: var(--gray-50); border-top: 1px solid var(--gray-200); 
+    display: flex; justify-content: space-between; border-radius: 0 0 12px 12px;
+}
+.btn-cancel-figma {
+    background: white !important; border: 1px solid var(--gray-300) !important; padding: 10px 20px !important; 
+    border-radius: 8px !important; font-weight: 600 !important; color: var(--gray-600) !important; cursor: pointer; flex: none !important;
+}
+.btn-cancel-figma:hover { background: var(--gray-100) !important; }
+.btn-save-figma {
+    background: #6ee7b7 !important; color: #065f46 !important; border: none !important; padding: 10px 24px !important; 
+    border-radius: 8px !important; font-weight: 700 !important; cursor: pointer; transition: opacity 0.2s; box-shadow: none !important; flex: none !important;
+}
+.btn-save-figma:hover { opacity: 0.9; transform: translateY(-1px); }

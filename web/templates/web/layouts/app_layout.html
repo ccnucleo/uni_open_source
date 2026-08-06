@@ -57,6 +57,78 @@
     <script src="{% static 'web/js/themes.js' %}"></script>
     <script src="{% static 'web/js/sidebar-collapse.js' %}"></script>
     <script src="{% static 'web/js/loading.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Paleta amplia y variada: cálidos, fríos, sobrios
+            const projectColors = [
+                '#f97316', // Naranja
+                '#eab308', // Amarillo oscuro
+                '#ef4444', // Rojo
+                '#10b981', // Esmeralda
+                '#8b5cf6', // Violeta
+                '#3b82f6', // Azul
+                '#14b8a6', // Teal
+                '#ec4899', // Rosa
+                '#f59e0b', // Ámbar
+                '#6366f1', // Índigo
+                '#84cc16', // Lima
+                '#06b6d4', // Cyan
+                '#d97706', // Naranja oscuro
+                '#7c3aed', // Púrpura
+                '#16a34a', // Verde
+                '#dc2626', // Rojo vivo
+            ];
+
+            // Gradients para el hero del project_detail
+            const heroGradients = [
+                'linear-gradient(135deg, #f97316, #ea580c)', // Naranja
+                'linear-gradient(135deg, #eab308, #ca8a04)', // Amarillo
+                'linear-gradient(135deg, #ef4444, #b91c1c)', // Rojo
+                'linear-gradient(135deg, #10b981, #047857)', // Esmeralda
+                'linear-gradient(135deg, #8b5cf6, #6d28d9)', // Violeta
+                'linear-gradient(135deg, #3b82f6, #1d4ed8)', // Azul
+                'linear-gradient(135deg, #ec4899, #be185d)', // Rosa
+                'linear-gradient(135deg, #f59e0b, #d97706)', // Ámbar
+                'linear-gradient(135deg, #14b8a6, #0f766e)', // Teal
+                'linear-gradient(135deg, #6366f1, #4338ca)', // Índigo
+                'linear-gradient(135deg, #84cc16, #4d7c0f)', // Lima
+                'linear-gradient(135deg, #06b6d4, #0e7490)', // Cyan
+                'linear-gradient(135deg, #d97706, #92400e)', // Naranja oscuro
+                'linear-gradient(135deg, #7c3aed, #4c1d95)', // Púrpura
+                'linear-gradient(135deg, #16a34a, #14532d)', // Verde
+                'linear-gradient(135deg, #dc2626, #991b1b)', // Rojo vivo
+            ];
+
+            const getIndex = (str, len) => {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                return Math.abs(hash) % len;
+            };
+
+            // 1. Colorear miniaturas de tarjetas de proyecto (clase proj-thumb)
+            document.querySelectorAll('.proj-thumb').forEach(el => {
+                const title = el.getAttribute('data-title') || 'Proyecto';
+                el.style.background = projectColors[getIndex(title, projectColors.length)];
+            });
+
+            // 2. Colorear la portada hero del project_detail (clase no-image)
+            document.querySelectorAll('.hero-main-card.no-image').forEach(el => {
+                const title = el.getAttribute('data-title') || 'Proyecto';
+                el.style.background = heroGradients[getIndex(title, heroGradients.length)];
+            });
+
+            // 3. Colorear avatares de iniciales (auto-avatar, autor, colaboradores)
+            const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+            document.querySelectorAll('.auto-avatar, .author-avatar, .avatar-stack-item, .project-card-avatar').forEach(el => {
+                if (el.querySelector('img')) return; // Si tiene foto, no colorear
+                const name = el.getAttribute('data-name') || el.innerText.trim();
+                if (name) {
+                    el.style.backgroundColor = avatarColors[getIndex(name, avatarColors.length)];
+                    el.style.color = '#fff';
+                }
+            });
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

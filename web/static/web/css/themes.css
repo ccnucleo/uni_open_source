@@ -428,13 +428,7 @@ body.theme-dark .project-card-full:hover {
     box-shadow: 0 8px 16px rgba(255, 156, 63, 0.15);
 }
 
-body.theme-dark .project-card-img-placeholder {
-    background: linear-gradient(135deg, rgba(255, 156, 63, 0.05), rgba(255, 156, 63, 0.02));
-}
-
-body.theme-dark .project-card-img {
-    background: linear-gradient(135deg, #2a2a40, #1e1e30);
-}
+/* Removed project card img overrides so it retains original orange gradient */
 
 body.theme-dark .project-card-title {
     color: var(--text-primary);
@@ -442,6 +436,10 @@ body.theme-dark .project-card-title {
 
 body.theme-dark .project-card-desc {
     color: var(--text-secondary);
+}
+
+body.theme-dark .sobre-mi-display {
+    background: var(--bg-main);
 }
 
 body.theme-dark .tag-tech {

@@ -6,187 +6,301 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'web/css/pages/profile.css' %}">
 <link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
+<style>
+    /* ==============================================================
+       LAYOUT GENERAL (Fusión Sidebar + Contenido)
+    ============================================================== */
+    .projects-layout { display: flex; gap: 2rem; margin-top: 1.5rem; align-items: start; }
+    
+    /* ==============================================================
+       SIDEBAR DE FILTROS (Izquierda)
+    ============================================================== */
+    .filters-sidebar { width: 280px; background: var(--bg-card); padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 12px; flex-shrink: 0; box-sizing: border-box; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); position: sticky; top: 90px; max-height: calc(100vh - 110px); overflow-y: auto; color: var(--text-primary); }
+    .filters-sidebar h3 { font-size: 1.2rem; color: var(--text-primary); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border-color); }
+    
+    .filter-group { margin-bottom: 1.5rem; }
+    .filter-group label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .filter-control { width: 100%; box-sizing: border-box; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; color: var(--text-primary); background: var(--bg-main); outline: none; transition: all 0.2s ease; }
+    .filter-control:focus { border-color: var(--orange-primary); box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
+    
+    .input-icon-wrapper { position: relative; width: 100%; }
+    .input-icon-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 0.85rem; }
+    .input-icon-wrapper input { padding-left: 36px; }
+
+    /* ESTILOS PARA DROPDOWN PREDICTIVO CUSTOM */
+    .custom-predictive-wrapper { position: relative; width: 100%; }
+    .custom-dropdown-list {
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 12px; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        max-height: 180px; overflow-y: auto; z-index: 100; display: none;
+    }
+    .custom-dropdown-option {
+        padding: 10px 16px; font-size: 0.85rem; color: var(--text-primary);
+        cursor: pointer; transition: background 0.2s; border-bottom: 1px solid var(--border-color);
+    }
+    .custom-dropdown-option:last-child { border-bottom: none; }
+    .custom-dropdown-option:hover { background: var(--bg-main); color: var(--orange-primary); }
+
+    /* ==============================================================
+       CONTENIDO PRINCIPAL Y BUSCADOR SUPERIOR (Derecha)
+    ============================================================== */
+    .projects-main-content { flex: 1; min-width: 0; width: 100%; }
+    
+    .top-search-bar { display: flex; gap: 12px; margin-bottom: 30px; align-items: center; }
+    .search-main-input { flex: 1; box-sizing: border-box; padding: 14px 20px 14px 44px; border: 1px solid var(--border-color); border-radius: 30px; font-size: 1rem; color: var(--text-primary); background: var(--bg-card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="%236b7280"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>') no-repeat 16px center; outline: none; }
+    .search-main-input:focus { border-color: var(--orange-primary); }
+    
+    .sort-select { padding: 14px 16px; border: 1px solid var(--border-color); border-radius: 30px; background: var(--bg-card); font-size: 0.95rem; color: var(--text-primary); min-width: 170px; outline: none; cursor: pointer; }
+    
+    .btn-buscar-main { background: var(--orange-primary); color: white; padding: 14px 32px; border: none; border-radius: 30px; font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+    .btn-buscar-main:hover { background: #ea580c; }
+
+    /* ==============================================================
+       GRID DE TARJETAS (Optimizado para Escritorio y Celular)
+    ============================================================== */
+    .projects-grid-view { 
+        display: grid; 
+        /* Aquí está el tope dinámico. 280px garantiza que siempre entren al menos 2 tarjetas 
+           en pantallas de laptop, evitando que se colapse a 1 tarjeta gigante. */
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+        gap: 24px; 
+    }
+    
+    .project-showcase-card { text-decoration: none; display: flex; flex-direction: column; background: var(--bg-card); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: all 0.3s ease; border: 1px solid var(--border-color); }
+    .project-showcase-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important; border-color: var(--orange-primary) !important; }
+    
+    /* ==============================================================
+       MEDIA QUERIES (Responsividad Total)
+    ============================================================== */
+    @media (max-width: 900px) {
+        .projects-layout { flex-direction: column; }
+        .filters-sidebar { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 20px; }
+        .filters-sidebar h3 { grid-column: 1 / -1; margin-bottom: 5px; }
+        .filter-group { margin-bottom: 0; }
+    }
+    
+    @media (max-width: 650px) {
+        .top-search-bar { flex-direction: column; align-items: stretch; }
+        .search-main-input, .sort-select, .btn-buscar-main { width: 100%; }
+        /* En pantallas muy chicas, la cuadrícula toma el ancho entero por seguridad */
+        .projects-grid-view { grid-template-columns: 1fr; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<form style="display:none;">{% csrf_token %}</form>
-
-<main class="domain-page" style="max-width: 1200px; margin: 0 auto; padding: 20px 24px;">
-    <!-- ENCABEZADO DE SECCIÓN CON ACCIONES Y BOTÓN DE CREAR -->
-    <section class="domain-header"
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 120px;">
+<main class="domain-page">
+    
+    <section class="domain-header">
         <div>
-            <h1
-                style="font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gray-900); margin: 0 0 6px 0;">
-                Explorar Proyectos</h1>
-            <p style="color: var(--gray-600); font-size: 1rem; margin: 0;">Descubre, filtra y contribuye a los proyectos
-                desarrollados por la comunidad UNI Open Source.</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            {% if request.user.is_authenticated %}
-            <button class="btn-new-project" id="btn-new-project">
-                <i class="fas fa-plus"></i> Nuevo Proyecto
-            </button>
-            {% endif %}
+            <h1 style="color: var(--text-primary); margin-bottom: 5px;">Proyectos Destacados</h1>
+            <p style="color: var(--text-secondary); margin-top: 0;">Explora proyectos de la comunidad y filtra por temas, herramientas y autores.</p>
         </div>
     </section>
 
-    <!-- PANEL DE BÚSQUEDA AVANZADA Y FILTROS -->
-    <section class="projects-header">
-        <div class="projects-title-row">
-            <div class="projects-title">
-                <h3>Proyectos Disponibles <span class="project-count" id="project-count">({{ projects|length }})</span>
-                </h3>
-                <div class="view-toggle">
-                    <button class="view-btn active" id="btn-view-grid" title="Vista cuadrícula">
-                        <i class="fas fa-th-large"></i>
-                    </button>
-                    <button class="view-btn" id="btn-view-list" title="Vista lista">
-                        <i class="fas fa-list"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="projects-actions">
-                <div class="dropdown" id="dropdown-ordenar">
-                    <button class="dropdown-btn">
-                        <i class="fas fa-sort-amount-down"></i> Ordenar por <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="dropdown-content">
-                        <a href="#" data-sort="recent" class="active"><i class="fas fa-clock"></i> Más recientes</a>
-                        <a href="#" data-sort="oldest"><i class="fas fa-history"></i> Más antiguos</a>
-                        <a href="#" data-sort="az"><i class="fas fa-sort-alpha-down"></i> A - Z</a>
-                        <a href="#" data-sort="za"><i class="fas fa-sort-alpha-up"></i> Z - A</a>
+    <!-- Envolvemos Todo en un <form> para enviar los filtros juntos -->
+    <form class="projects-layout" method="GET" action="">
+        
+        <!-- PANEL IZQUIERDO: FILTROS DE BÚSQUEDA PREDICTIVOS -->
+        <aside class="filters-sidebar">
+            <h3>Filtros de Búsqueda</h3>
+            
+            <div class="filter-group">
+                <label>Etiqueta / Tema</label>
+                <div class="custom-predictive-wrapper">
+                    <input type="text" name="theme" class="filter-control custom-search-input" placeholder="Buscar Tema..." value="{{ request.GET.theme }}" autocomplete="off">
+                    <div class="custom-dropdown-list">
+                        {% for tag in all_tags %}
+                            <div class="custom-dropdown-option" data-value="{{ tag }}">{{ tag }}</div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" id="search-project"
-                placeholder="Buscar proyecto por nombre, tecnología o palabra clave...">
-            <button class="search-clear" id="search-clear" title="Limpiar búsqueda">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+            <div class="filter-group">
+                <label>Herramientas</label>
+                <div class="custom-predictive-wrapper">
+                    <input type="text" name="tech" class="filter-control custom-search-input" placeholder="Buscar Tecnología..." value="{{ request.GET.tech }}" autocomplete="off">
+                    <div class="custom-dropdown-list">
+                        {% for tech in all_techs %}
+                            <div class="custom-dropdown-option" data-value="{{ tech }}">{{ tech }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-        <div class="filters-row">
-            <div class="dropdown" id="dropdown-temas">
-                <button class="dropdown-btn filter-btn">
-                    <i class="fas fa-folder"></i> Tema / Área <i class="fas fa-chevron-down"></i>
+            <div class="filter-group">
+                <label>Autor</label>
+                <div class="input-icon-wrapper custom-predictive-wrapper">
+                    <i class="fas fa-search" style="z-index: 10;"></i>
+                    <input type="text" name="author" class="filter-control custom-search-input" placeholder="Buscar Username" value="{{ request.GET.author }}" autocomplete="off">
+                    <div class="custom-dropdown-list">
+                        {% for author in all_authors %}
+                            <div class="custom-dropdown-option" data-value="{{ author }}">{{ author }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label style="margin-bottom: 12px;">Fecha Publicación</label>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="width: 100%;">
+                        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">Desde</label>
+                        <input type="date" name="date_from" class="filter-control" value="{{ request.GET.date_from }}">
+                    </div>
+                    <div style="width: 100%;">
+                        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">Hasta</label>
+                        <input type="date" name="date_to" class="filter-control" value="{{ request.GET.date_to }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button type="submit" style="flex: 1; box-sizing: border-box; background: var(--orange-primary); color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); transition: all 0.2s;">
+                    Filtrar
                 </button>
-                <div class="dropdown-content">
-                    <a href="#" data-theme="all" class="active">Todos los temas</a>
-                    <a href="#" data-theme="web"><i class="fas fa-globe"></i> Desarrollo Web</a>
-                    <a href="#" data-theme="mobile"><i class="fas fa-mobile-alt"></i> Apps Móviles</a>
-                    <a href="#" data-theme="ia"><i class="fas fa-robot"></i> IA / ML</a>
-                    <a href="#" data-theme="data"><i class="fas fa-chart-bar"></i> Data Science</a>
-                    <a href="#" data-theme="iot"><i class="fas fa-microchip"></i> IoT</a>
-                    <a href="#" data-theme="games"><i class="fas fa-gamepad"></i> Videojuegos</a>
-                    <a href="#" data-theme="security"><i class="fas fa-shield-alt"></i> Seguridad</a>
-                    <a href="#" data-theme="api"><i class="fas fa-plug"></i> APIs / Backend</a>
-                    <a href="#" data-theme="devops"><i class="fas fa-server"></i> DevOps</a>
-                    <a href="#" data-theme="research"><i class="fas fa-flask"></i> Investigación</a>
-                </div>
+                <a href="/projects/" style="flex: 1; box-sizing: border-box; text-align: center; background: transparent; border: 1px dashed var(--border-color); color: var(--text-secondary); padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; transition: all 0.2s;">
+                    Limpiar
+                </a>
+            </div>
+        </aside>
+
+        <!-- PANEL DERECHO: BUSCADOR Y GRID -->
+        <section class="projects-main-content">
+            
+            <div class="top-search-bar">
+                <input type="text" name="q" class="search-main-input" placeholder="Buscar proyectos por nombre o palabras clave..." value="{{ request.GET.q }}">
+                
+                <select name="sort" class="sort-select" onchange="this.form.submit()">
+                    <option value="recent" {% if request.GET.sort == 'recent' %}selected{% endif %}>Más recientes</option>
+                    <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Más populares</option>
+                    <option value="views" {% if request.GET.sort == 'views' %}selected{% endif %}>Más vistos</option>
+                    <option value="az" {% if request.GET.sort == 'az' %}selected{% endif %}>Alfabéticamente (A-Z)</option>
+                </select>
+                
+                <button type="submit" class="btn-buscar-main">Buscar</button>
             </div>
 
-            <div class="dropdown" id="dropdown-tecnologias">
-                <button class="dropdown-btn filter-btn">
-                    <i class="fas fa-code"></i> Tecnología <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" data-tech="all" class="active">Todas las tecnologías</a>
-                    <a href="#" data-tech="python"><i class="fab fa-python"></i> Python</a>
-                    <a href="#" data-tech="javascript"><i class="fab fa-js-square"></i> JavaScript</a>
-                    <a href="#" data-tech="java"><i class="fab fa-java"></i> Java</a>
-                    <a href="#" data-tech="react"><i class="fab fa-react"></i> React</a>
-                    <a href="#" data-tech="angular"><i class="fab fa-angular"></i> Angular</a>
-                    <a href="#" data-tech="vue"><i class="fab fa-vuejs"></i> Vue.js</a>
-                    <a href="#" data-tech="node"><i class="fab fa-node-js"></i> Node.js</a>
-                    <a href="#" data-tech="django">Django</a>
-                    <a href="#" data-tech="tensorflow">TensorFlow</a>
-                    <a href="#" data-tech="docker"><i class="fab fa-docker"></i> Docker</a>
-                </div>
+            <div class="projects-grid-view">
+                {% for project in projects %}
+                    <a href="{% url 'projects:detail' project.id %}" class="project-showcase-card">
+                        {% if project.image %}
+                            <div style="height: 160px; background: url('{{ project.image.url }}') center/cover no-repeat; position: relative;">
+                        {% else %}
+                            <div class="proj-thumb" data-title="{{ project.title }}" style="height: 160px; position: relative;">
+                        {% endif %}
+                                <div style="position: absolute; top: 12px; right: 12px; background: var(--bg-card); padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; color: var(--text-primary); display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-heart" style="color: #ef4444;"></i> {{ project.likes.count }}
+                                </div>
+                            </div>
+
+                        <div style="padding: 24px; display: flex; flex-direction: column; flex: 1;">
+                            <h2 style="font-size: 1.25rem; color: var(--text-primary); margin: 0 0 10px 0;">{{ project.title }}</h2>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 20px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ project.summary|default:'Sin descripción breve disponible.' }}
+                            </p>
+                            
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                                {% if project.main_tech %}
+                                    <span style="background: var(--orange-light); color: var(--orange-primary); padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">
+                                        {{ project.main_tech }}
+                                    </span>
+                                {% endif %}
+                                {% for tech in project.technologies.all|slice:":2" %}
+                                    <span style="background: var(--bg-main); color: var(--text-secondary); padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">
+                                        {{ tech.name }}
+                                    </span>
+                                {% endfor %}
+                                {% if project.technologies.count > 2 %}
+                                    <span style="background: var(--bg-main); color: var(--text-secondary); padding: 6px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">
+                                        +{{ project.technologies.count|add:"-2" }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="project-card-avatar" data-name="{{ project.owner.username }}" style="width: 32px; height: 32px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold; overflow: hidden;">
+                                        {% if project.owner.profile.avatar %}
+                                            <img src="{{ project.owner.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            {{ project.owner.username|make_list|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                    <span style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">{{ project.owner.username }}</span>
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-eye"></i> {{ project.views_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; background: var(--bg-card); border-radius: 20px; border: 2px dashed var(--border-color);">
+                        <i class="fas fa-folder-open fa-4x" style="color: var(--text-secondary); margin-bottom: 20px;"></i>
+                        <h2 style="color: var(--text-primary); margin-bottom: 10px;">No se encontraron resultados</h2>
+                        <p style="color: var(--text-secondary); font-size: 1.05rem;">Prueba con otros términos o limpia los filtros.</p>
+                    </div>
+                {% endfor %}
             </div>
 
-            <button class="btn-clear-filters" id="btn-clear-filters">
-                <i class="fas fa-times"></i> Limpiar filtros
-            </button>
-        </div>
-    </section>
-
-    <!-- MENSAJE DE SIN RESULTADOS -->
-    <div id="no-results"
-        style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 1.5px dashed var(--gray-300); margin-bottom: 24px;">
-        <i class="fas fa-search fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
-        <h3 style="color: var(--gray-800); margin-bottom: 6px;">No se encontraron proyectos</h3>
-        <p style="color: var(--gray-500); margin: 0;">No encontramos ningún resultado para "<span
-                id="search-term"></span>". Prueba con otros términos o limpia los filtros.</p>
-    </div>
-
-    <!-- GRILLA DE PROYECTOS -->
-    <section class="projects-grid" id="projects-grid">
-        {% for project in projects %}
-        <article class="project-card-full" data-id="{{ project.id }}" data-name="{{ project.title }}"
-            data-theme="{{ project.theme }}" data-tech="{{ project.main_tech }}"
-            data-date="{{ project.created_at|date:'Y-m-d' }}">
-            {% if request.user == project.owner %}
-            <button class="btn-edit-card-icon" title="Editar Proyecto">
-                <i class="fas fa-pencil-alt"></i>
-            </button>
-            {% endif %}
-
-            <div class="project-card-img">
-                {% if project.image %}
-                <img src="{{ project.image.url }}" alt="{{ project.title }}">
-                {% else %}
-                <div class="project-card-img-placeholder">
-                    <i class="fas fa-folder-open"></i>
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="project-card-body">
-                <div class="project-card-tags">
-                    <span class="tag-theme"><i class="fas fa-folder"></i> {{ project.get_theme_display }}</span>
-                    {% if project.main_tech %}
-                    <span class="tag-tech"><i class="fas fa-code"></i> {{ project.main_tech }}</span>
-                    {% endif %}
-                    {% for tag in project.tags.all %}
-                    <span class="tag-tech" style="background: #f1f5f9; color: #475569;">#{{ tag.name }}</span>
-                    {% endfor %}
-                </div>
-
-                <h4 class="project-card-title">
-                    <a href="{% url 'projects:detail' project.id %}">{{ project.title }}</a>
-                </h4>
-
-                <p class="project-card-desc">{{ project.summary|default:'Sin descripción breve
-                    registrada.'|truncatechars:95 }}</p>
-
-                <div class="project-card-meta">
-                    <span><i class="fas fa-user"></i> @{{ project.owner.username }}</span>
-                    <span><i class="fas fa-calendar"></i> {{ project.created_at|date:"d/m/Y" }}</span>
-                    <a href="{% url 'projects:detail' project.id %}" class="btn-detail-sm">Ver detalle <i
-                            class="fas fa-chevron-right"></i></a>
-                </div>
-            </div>
-        </article>
-        {% empty %}
-        <article
-            style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 1.5px dashed var(--gray-300);">
-            <i class="fas fa-folder-open fa-3x" style="color: var(--gray-300); margin-bottom: 15px;"></i>
-            <h3 style="color: var(--gray-800); margin-bottom: 6px;">No hay proyectos registrados</h3>
-            <p style="color: var(--gray-500);">Sé el primero en crear uno usando el botón de arriba.</p>
-        </article>
-        {% endfor %}
-    </section>
+        </section>
+    </form>
 </main>
 
 {% include 'web/components/project_modals.html' %}
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'web/js/scripts.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const customInputs = document.querySelectorAll('.custom-search-input');
+        
+        customInputs.forEach(input => {
+            const dropdown = input.nextElementSibling;
+            const options = dropdown.querySelectorAll('.custom-dropdown-option');
+
+            // Mostrar dropdown al hacer focus
+            input.addEventListener('focus', () => {
+                if(options.length > 0) dropdown.style.display = 'block';
+            });
+
+            // Ocultar al hacer clic fuera
+            document.addEventListener('click', e => {
+                if(!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Filtrar opciones mientras se escribe
+            input.addEventListener('input', () => {
+                const val = input.value.toLowerCase().trim();
+                let hasMatches = false;
+                
+                options.forEach(opt => {
+                    if(opt.textContent.toLowerCase().includes(val)) {
+                        opt.style.display = 'block';
+                        hasMatches = true;
+                    } else {
+                        opt.style.display = 'none';
+                    }
+                });
+                
+                dropdown.style.display = hasMatches ? 'block' : 'none';
+            });
+
+            // Seleccionar opción y enviar formulario
+            options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    input.value = opt.getAttribute('data-value');
+                    dropdown.style.display = 'none';
+                    input.closest('form').submit(); 
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

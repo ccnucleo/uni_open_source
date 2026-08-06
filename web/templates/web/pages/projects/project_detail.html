@@ -4,358 +4,745 @@
 {% block title %}{{ project.title }} | Detalle{% endblock %}
 
 {% block extra_css %}
+<!-- Editor Rico Quill.js -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<!-- Cropper.js -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'web/css/pages/projects.css' %}">
-<style>
-
-    .project-content-grid {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 24px;
-        align-items: start;
-        width: 100%;
-    }
-
-    .section-edit-btn, .side-edit-btn {
-        display: none; 
-    }
-
-    .edit-mode-active .section-edit-btn,
-    .edit-mode-active .side-edit-btn {
-        display: flex;
-    }
-
-    .section-edit-btn, .side-edit-btn {
-        background: var(--gray-100);
-        border: none;
-        color: var(--gray-600);
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .section-edit-btn:hover, .side-edit-btn:hover {
-        background: var(--orange-light);
-        color: var(--orange-primary);
-    }
-
-    .sidebar-title-accent {
-        border-left: 3px solid var(--orange-primary);
-        padding-left: 10px;
-        color: var(--gray-900);
-        margin-bottom: 15px;
-        font-size: 1.1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .dependency-box {
-        display: flex; justify-content: space-between; align-items: center;
-        background: var(--gray-50); padding: 10px 14px; border-radius: 8px;
-        border: 1px solid var(--gray-200); font-size: 0.85rem; font-weight: 600;
-        color: var(--gray-700); margin-bottom: 8px;
-    }
-    
-    .avatar-stack { display: flex; margin-left: 10px; margin-top: 15px; }
-    .avatar-stack-item {
-        width: 38px; height: 38px; border-radius: 50%; background: var(--orange-primary);
-        color: white; display: flex; align-items: center; justify-content: center;
-        border: 2.5px solid white; margin-left: -12px; font-weight: bold; font-size: 0.85rem;
-    }
-
-    .btn-orange-outline {
-        display: block; width: 100%; text-align: center; background: rgba(255,255,255,0.15);
-        color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px;
-        border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s;
-        margin-bottom: 10px;
-    }
-
-    .paragraph-box { margin-bottom: 20px; }
-    .paragraph-box h4 { color: var(--gray-800); margin-bottom: 8px; font-size: 1rem; }
-    .paragraph-box p { color: var(--gray-600); line-height: 1.6; font-size: 0.95rem; }
-    
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-    .gallery-item { height: 140px; border-radius: 8px; background-size: cover; background-position: center; border: 1px solid var(--gray-200); }
-</style>
 {% endblock %}
 
 {% block content %}
 <main class="content-area project-detail-area">
-            
-    <div class="project-hero" style="position: relative;">
-        <div class="hero-left">
-            <div class="badge-status">
-                <i class="fas fa-circle"></i> 
-                {% if project.is_public %}Público{% else %}Privado{% endif %}
-            </div>
-            
-            <h1 class="hero-title">{{ project.title }}</h1>
-            <p class="hero-desc">{{ project.summary|default:'Sin resumen breve.' }}</p>
-            
-            <div class="hero-tags" style="margin-bottom: 25px;">
-                {% if project.main_tech %}
-                    <span class="tag-hero" style="background: var(--orange-primary); color: white; border-color: var(--orange-primary);">
-                        <i class="fas fa-star"></i> {{ project.main_tech }}
-                    </span>
-                {% endif %}
-                <span class="tag-hero" style="text-transform: capitalize;">
-                    <i class="fas fa-folder"></i> {{ project.get_theme_display }}
-                </span>
-            </div>
-
-            <div class="hero-author-card" style="margin-bottom: 20px; max-width: max-content;">
-                <div class="author-info-group">
-                    <div class="author-avatar avatar-gradient">{{ project.owner.username|make_list|first|upper }}</div>
-                    <div class="author-text">
-                        <strong>{{ project.owner.username }}</strong>
-                        <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                            @{{ project.owner.username }} 
-                            <span>•</span> Publicado {{ project.created_at|timesince }} 
-                            <span>•</span> {{ project.owner.owned_projects.count }} proyectos
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero-action-buttons" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px;">
-                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
-                    <i class="fas fa-heart" style="color: #ef4444;"></i> Me gusta (342)
-                </button>
-                
-                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
-                    <i class="fas fa-download"></i> Descargar
-                </button>
-                
-                <button class="btn-action-social" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
-                    <i class="fas fa-share-alt"></i> Compartir
-                </button>
-
-                {% if request.user == project.owner %}
-                <button id="master-edit-btn" style="background: var(--orange-primary); border: none; color: white; padding: 10px 22px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); margin-left: 10px; transition: transform 0.2s;">
-                    <i class="fas fa-pen"></i> Editar Proyecto
-                </button>
-                {% endif %}
-            </div>
-        </div>
-        
-        <div class="hero-right">
-            <div class="hero-stats-card">
-                <h4>ESTADÍSTICAS</h4>
-                <ul>
-                    <li><span><i class="fas fa-heart"></i> Likes</span> <strong>342</strong></li>
-                    <li><span><i class="fas fa-eye"></i> Vistas</span> <strong>--</strong></li>
-                    <li><span><i class="fas fa-history"></i> Estado</span> <strong>Activo</strong></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
     <div class="project-content-grid">
         <div class="project-main-col">
-            
-            <div class="detail-card">
-                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
-                    <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-orange"><i class="fas fa-align-left"></i></div>
+            <!-- NUEVA PORTADA Y DETALLES -->
+            <div class="hero-main-card {% if project.image %}has-image{% else %}no-image{% endif %}" data-title="{{ project.title }}" style="{% if project.image %}background-image: url('{{ project.image.url }}');{% endif %}">
+                {% if request.user == project.owner %}
+                <button class="btn-edit-banner-float" onclick="openModal('modal-edit-banner')"><i class="fas fa-camera"></i> Cambiar Portada</button>
+                {% endif %}
+
+                <div class="hero-overlay-content">
+                    <div class="hero-overlay-top" style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; gap: 20px;">
                         <div>
-                            <h3>Detalles del Proyecto</h3>
-                            <span>Información completa</span>
+                            <div class="badge-status shadow-badge"><i class="fas fa-circle" style="color: #34d399; font-size: 0.6rem;"></i> Proyecto Activo</div>
+                            <h1 class="hero-title shadow-text" style="margin-bottom: 0;">{{ project.title }}</h1>
+                        </div>
+                        
+                        <div class="hero-action-buttons">
+                            <button class="btn-action-pill shadow-btn like-btn" id="btn-like" data-url="{% url 'projects:api_like' project.id %}">
+                                <i class="fas fa-heart" id="like-icon" {% if request.user in project.likes.all %}style="color: #ef4444;"{% endif %}></i> 
+                                <span id="like-text">Me gusta ({{ project.likes.count }})</span>
+                            </button>
+                            <button class="btn-action-pill shadow-btn share-btn" id="btn-share"><i class="fas fa-share-alt"></i> Compartir</button>
+                            {% if request.user == project.owner %}
+                            <button class="btn-action-pill shadow-btn edit-btn" onclick="openModal('modal-edit-info')"><i class="fas fa-pen"></i> Editar Proyecto</button>
+                            {% endif %}
                         </div>
                     </div>
-                    <button class="section-edit-btn"><i class="fas fa-pen"></i> Editar</button>
+
+                    <div class="hero-overlay-bottom">
+                        <p class="hero-desc shadow-text">{{ project.summary|default:'Descripción breve y atractiva del proyecto.' }}</p>
+                        
+                        <div class="hero-tags-container">
+                            {% for tag in project.tags.all %}
+                                <span class="hero-tag-pill shadow-badge">#{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="hero-author-card" style="margin-bottom: 20px;">
+                            <div class="author-avatar shadow-btn" data-name="{{ project.owner.username }}" style="overflow: hidden;">
+                                {% if project.owner.profile.avatar %}
+                                    <img src="{{ project.owner.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                    {{ project.owner.username|make_list|first|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="author-text shadow-text">
+                                <strong>{{ project.owner.username }}</strong>
+                                <span>@{{ project.owner.username }} • Publicado {{ project.created_at|timesince }}</span>
+                            </div>
+                        </div>
+
+                        <div class="hero-contribution-buttons" style="display: flex; gap: 12px; flex-wrap: wrap; padding-top: 20px;">
+                            <a href="mailto:{{ project.owner.email }}?subject=Bug Report - {{ project.title|urlencode }}" class="btn-action-pill contribution-btn shadow-btn" style="text-decoration: none; color: white;"><i class="fas fa-bug" style="color: #ef4444;"></i> Reportar Bug</a>
+                            <a href="mailto:{{ project.owner.email }}?subject=Sugerencia - {{ project.title|urlencode }}" class="btn-action-pill contribution-btn shadow-btn" style="text-decoration: none; color: white;"><i class="fas fa-lightbulb" style="color: #eab308;"></i> Sugerir Idea</a>
+                            {% if project.repository_url %}
+                                <a href="{{ project.repository_url }}" target="_blank" class="btn-action-pill contribution-btn shadow-btn" style="text-decoration: none; color: white;"><i class="fas fa-code-branch" style="color: #3b82f6;"></i> Contribuir Código</a>
+                            {% else %}
+                                <a href="javascript:void(0)" onclick="showToast('El creador no ha proporcionado un repositorio público.');" class="btn-action-pill contribution-btn shadow-btn" style="text-decoration: none; color: white; opacity: 0.8;"><i class="fas fa-code-branch" style="color: #3b82f6;"></i> Contribuir Código</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESCRIPCIÓN (Rich Text) -->
+            <div class="detail-card">
+                <div class="card-header-icon">
+                    <div class="card-header-icon-left">
+                        <div class="icon-box icon-orange"><i class="fas fa-file-alt"></i></div>
+                        <div><h3>Sobre este proyecto</h3><span>Todo lo que necesitas saber</span></div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    {% if project.paragraph_1 %}
-                        <div class="paragraph-box">
-                            <h4>Contexto y Problema</h4>
-                            <p>{{ project.paragraph_1|linebreaksbr }}</p>
-                        </div>
-                    {% endif %}
-                    
-                    {% if project.paragraph_2 %}
-                        <div class="paragraph-box">
-                            <h4>Funcionalidades Clave</h4>
-                            <p>{{ project.paragraph_2|linebreaksbr }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if project.paragraph_3 %}
-                        <div class="paragraph-box">
-                            <h4>Arquitectura y Beneficios</h4>
-                            <p>{{ project.paragraph_3|linebreaksbr }}</p>
-                        </div>
-                    {% endif %}
-                    
-                    {% if not project.paragraph_1 and not project.paragraph_2 and not project.paragraph_3 %}
-                        <p style="color: var(--gray-400); font-size: 0.9rem;">El creador aún no ha detallado esta información.</p>
+                    <div class="desc-content-box collapsed" id="desc-box">
+                        {% if project.description %}
+                            {{ project.description|safe }}
+                        {% else %}
+                            <p style="color: var(--gray-400); font-style: italic;">El creador aún no ha detallado esta información.</p>
+                        {% endif %}
+                    </div>
+                    {% if project.description %}
+                    <button class="btn-read-more" id="btn-read-more" onclick="toggleDesc()">Ver más...</button>
                     {% endif %}
                 </div>
             </div>
 
+            <!-- TECNOLOGÍAS -->
             <div class="detail-card">
-                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
-                    <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-purple"><i class="fas fa-tags"></i></div>
-                        <div>
-                            <h3>Etiquetas</h3>
-                            <span>Temas secundarios</span>
-                        </div>
+                <div class="card-header-icon">
+                    <div class="card-header-icon-left">
+                        <div class="icon-box icon-purple"><i class="fas fa-layer-group"></i></div>
+                        <div><h3>Tecnologías</h3><span>Stack técnico utilizado</span></div>
                     </div>
-                    <button class="section-edit-btn"><i class="fas fa-plus"></i> Añadir</button>
                 </div>
                 <div class="card-body">
-                    <div class="tech-grid">
-                        {% for tag in project.tags.all %}
-                            <div class="tech-box"><span>#{{ tag.name }}</span></div>
+                    <div class="tech-big-cards-grid">
+                        {% for tech in project.technologies.all %}
+                        <div class="tech-big-card">
+                            {% if tech.icon %}
+                            <img src="{{ tech.icon.url }}" alt="{{ tech.name }}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px;">
+                            {% else %}
+                            <i class="fas fa-code"></i>
+                            {% endif %}
+                            <span>{{ tech.name }}</span>
+                        </div>
                         {% empty %}
-                            <p style="color: var(--gray-400); font-size: 0.9rem;">Sin etiquetas adicionales.</p>
+                            <p style="color: var(--gray-400); font-style: italic;">No especificadas.</p>
                         {% endfor %}
                     </div>
                 </div>
             </div>
 
+            <!-- GALERÍA -->
             <div class="detail-card">
-                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
-                    <div style="display: flex; gap: 15px;">
+                <div class="card-header-icon">
+                    <div class="card-header-icon-left">
                         <div class="icon-box icon-blue"><i class="fas fa-images"></i></div>
-                        <div>
-                            <h3>Galería de Capturas</h3>
-                            <span>Visualiza el proyecto</span>
-                        </div>
+                        <div><h3>Capturas</h3><span>Visualiza el proyecto</span></div>
                     </div>
-                    <button class="section-edit-btn"><i class="fas fa-camera"></i> Subir</button>
+                    {% if request.user == project.owner %}
+                    <button style="background: var(--gray-100); border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; color: var(--gray-700);" onclick="openModal('modal-edit-gallery')">
+                        <i class="fas fa-images"></i> Gestionar Galería
+                    </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <div class="gallery-grid">
                         {% for item in project.gallery.all %}
-                            <div class="gallery-item" style="background-image: url('{{ item.image.url }}');"></div>
+                            <div class="gallery-item" onclick="openLightbox('{{ item.image.url }}')">
+                                <img src="{{ item.image.url }}" loading="lazy" alt="Captura del proyecto">
+                            </div>
                         {% empty %}
-                            <div class="gallery-item" style="grid-column: 1 / -1; background: #fff7ed; display: flex; align-items: center; justify-content: center; border: none;">
-                                <i class="fas fa-image fa-2x" style="color: #ffedd5;"></i>
-                                <span style="color: var(--gray-400); margin-left: 10px; font-weight: 500;">No hay capturas disponibles</span>
+                            <div style="grid-column: 1 / -1; width: 100%; min-width: 100%; flex: 1 1 100%; background: var(--bg-main); padding: 50px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed var(--border-color); border-radius: 20px; text-align: center; box-sizing: border-box;">
+                                <i class="fas fa-image fa-3x" style="color: var(--gray-400); margin-bottom: 15px;"></i>
+                                <span style="color: var(--text-secondary); font-weight: 600; font-size: 1.1rem;">No hay capturas disponibles aún</span>
+                                <p style="color: var(--gray-500); font-size: 0.9rem; margin-top: 8px;">El autor pronto subirá imágenes del proyecto.</p>
                             </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
-
-            <div class="detail-card">
-                <div class="card-header-icon" style="display: flex; justify-content: space-between;">
-                    <div style="display: flex; gap: 15px;">
-                        <div class="icon-box icon-red"><i class="fas fa-users-cog"></i></div>
-                        <div>
-                            <h3>Cómo Contribuir</h3>
-                            <span>Únete al desarrollo</span>
-                        </div>
-                    </div>
-                    <button class="section-edit-btn"><i class="fas fa-tasks"></i> Gestionar Guía</button>
-                </div>
-                <div class="card-body">
-                    <div class="contribute-grid">
-                        <div class="contribute-box">
-                            <i class="fas fa-bug" style="color: #3b82f6;"></i>
-                            <h4>Reportar Bugs</h4>
-                            <p>Encuentra y documenta errores para mejorar la estabilidad.</p>
-                        </div>
-                        <div class="contribute-box">
-                            <i class="fas fa-lightbulb" style="color: #eab308;"></i>
-                            <h4>Sugerir Ideas</h4>
-                            <p>Propón nuevas funcionalidades o mejoras de diseño.</p>
-                        </div>
-                        <div class="contribute-box">
-                            <i class="fas fa-laptop-code" style="color: #4b5563;"></i>
-                            <h4>Contribuir Código</h4>
-                            <p>Envía tus Pull Requests y ayuda a programar el futuro.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div> 
 
+        <!-- BARRA LATERAL -->
         <div class="project-side-col">
-            
-            <div class="detail-card">
-                <h3 class="sidebar-title-accent">
-                    Información
-                    <button class="side-edit-btn"><i class="fas fa-cog"></i></button>
-                </h3>
-                <ul class="side-info-list">
-                    <li><span>Versión</span> <strong style="color: var(--orange-primary);">{{ project.version|default:"v1.0.0" }}</strong></li>
-                    <li><span>Tamaño</span> <strong style="color: var(--orange-primary);">{{ project.size|default:"-" }}</strong></li>
-                    <li><span>Actualizado</span> <strong style="color: var(--orange-primary);">Hace {{ project.updated_at|timesince }}</strong></li>
+            <!-- ESTADÍSTICAS AHORA EN LA BARRA LATERAL -->
+            <div class="hero-stats-card" style="width: 100%;">
+                <h4>ESTADÍSTICAS DEL PROYECTO</h4>
+                <ul>
+                    <li><span><i class="fas fa-heart" style="color: #ef4444;"></i> Me gusta</span> <strong id="stats-likes">{{ project.likes.count }}</strong></li>
+                    <li><span><i class="fas fa-eye" style="color: #3b82f6;"></i> Vistas totales</span> <strong>{{ project.views_count }}</strong></li>
+                    <li><span><i class="fas fa-history" style="color: #10b981;"></i> Última actualización</span> <strong>Hace {{ project.updated_at|timesince }}</strong></li>
                 </ul>
             </div>
 
             <div class="detail-card">
-                <h3 class="sidebar-title-accent">
-                    Dependencias
-                    <button class="side-edit-btn"><i class="fas fa-plus"></i></button>
-                </h3>
+                <h3 class="sidebar-title-accent">Información</h3>
+                <ul class="side-info-list">
+                    <li><span>Versión</span> <strong style="color: var(--orange-primary);">{{ project.version|default:"v1.0.0" }}</strong></li>
+                    <li><span>Tamaño</span> <strong style="color: var(--orange-primary);">{{ project.size|default:"-" }}</strong></li>
+                </ul>
+            </div>
+            
+            <div class="detail-card">
+                <h3 class="sidebar-title-accent">Dependencias</h3>
                 {% if project.dependencies %}
-                    <div class="dependency-box">
-                        <span>📦 {{ project.dependencies }}</span>
-                    </div>
+                    <div class="dependency-box"><span>📦 {{ project.dependencies }}</span></div>
                 {% else %}
-                    <p style="font-size: 0.85rem; color: var(--gray-400);">No especificadas.</p>
+                    <p style="font-size: 0.9rem; color: var(--gray-400); margin: 0; font-style: italic;">No especificadas.</p>
                 {% endif %}
             </div>
-
-            <div class="detail-card" style="background: var(--orange-primary); color: white;">
-                <h3 class="sidebar-title-accent" style="border-left-color: white; color: white;">
-                    Enlaces
-                    <button class="side-edit-btn" style="background: rgba(255,255,255,0.2); color: white;"><i class="fas fa-link"></i></button>
-                </h3>
+            
+            <div class="detail-card">
+                <h3 class="sidebar-title-accent">Enlaces del proyecto</h3>
                 {% if project.repository_url %}
-                    <a href="{{ project.repository_url }}" target="_blank" class="btn-orange-outline"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="{{ project.repository_url }}" target="_blank" class="btn-link-chunky"><i class="fab fa-github"></i> Repositorio</a>
                 {% endif %}
-                <a href="#" class="btn-orange-outline"><i class="fas fa-file-alt"></i> Documentación</a>
+                
+                {% if project.documentation_file %}
+                    <a href="{{ project.documentation_file.url }}" download class="btn-link-chunky" style="background: #ea580c;"><i class="fas fa-file-pdf"></i> Documentación</a>
+                {% else %}
+                    <button class="btn-link-chunky" style="background: var(--gray-300); cursor: not-allowed;" disabled><i class="fas fa-file-excel"></i> Sin Documento</button>
+                {% endif %}
             </div>
 
             <div class="detail-card">
-                <h3 class="sidebar-title-accent">
-                    Colaboradores
-                    <button class="side-edit-btn"><i class="fas fa-user-plus"></i></button>
-                </h3>
+                <h3 class="sidebar-title-accent">Colaboradores</h3>
                 <div class="avatar-stack">
-                    <div class="avatar-stack-item" title="Dueño: {{ project.owner.username }}">
-                        {{ project.owner.username|make_list|first|upper }}
+                    <div class="avatar-stack-item" data-name="{{ project.owner.username }}" title="Dueño: {{ project.owner.username }}" style="overflow: hidden;">
+                        {% if project.owner.profile.avatar %}
+                            <img src="{{ project.owner.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {{ project.owner.username|make_list|first|upper }}
+                        {% endif %}
                     </div>
                     {% for colaborador in project.collaborators.all %}
-                        <div class="avatar-stack-item" title="Colaborador: {{ colaborador.username }}">
-                            {{ colaborador.username|make_list|first|upper }}
+                        <div class="avatar-stack-item" data-name="{{ colaborador.username }}" title="Colaborador: {{ colaborador.username }}" style="overflow: hidden;">
+                            {% if colaborador.profile.avatar %}
+                                <img src="{{ colaborador.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                {{ colaborador.username|make_list|first|upper }}
+                            {% endif %}
                         </div>
                     {% empty %}
-                        <div class="avatar-stack-item" style="background: var(--gray-100); color: var(--gray-400); cursor: default;" title="Sin colaboradores adicionales">+0</div>
+                        <div class="avatar-stack-item" style="background: var(--gray-200); color: var(--gray-500); border-color: white;" title="Sin colaboradores">+0</div>
                     {% endfor %}
                 </div>
             </div>
         </div> 
     </div> 
 </main>
+
+<!-- ==============================================
+     MODALES 
+=============================================== -->
+<!-- MODAL EDITAR BANNER -->
+<div class="modal-overlay" id="modal-edit-banner">
+    <div class="modal-content" style="width: 95%; max-width: 800px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-weight: 800; margin: 0;"><i class="fas fa-image text-orange" style="color: var(--orange-primary);"></i> Cambiar Portada</h3>
+            <button type="button" class="modal-figma-close" onclick="resetBannerCrop()">&times;</button>
+        </div>
+        <form id="form-edit-banner">
+            {% csrf_token %}
+            <div class="modal-body" style="padding: 20px 30px;">
+                <div class="gallery-upload-area" id="banner-upload-area" onclick="document.getElementById('edit-banner-input').click()" style="margin-bottom: 0;">
+                    <i class="fas fa-upload fa-3x" style="color: var(--orange-primary); margin-bottom: 12px;"></i>
+                    <span style="display:block; font-size: 1.1rem; font-weight:800; color: var(--text-primary);">Haz clic para subir portada</span>
+                    <input type="file" id="edit-banner-input" name="image" accept="image/*" hidden>
+                </div>
+                <div id="banner-preview-box" style="display: none; text-align: center;">
+                    <div style="width: 100%; height: 450px; background: #e5e7eb; background-image: linear-gradient(45deg, #d1d5db 25%, transparent 25%), linear-gradient(-45deg, #d1d5db 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d5db 75%), linear-gradient(-45deg, transparent 75%, #d1d5db 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <img id="banner-preview-img" style="max-width: 100%; max-height: 100%;">
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;">
+                        <button type="button" id="btn-zoom-out-edit" style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); transition: all 0.2s;"><i class="fas fa-minus"></i></button>
+                        <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-secondary);">Ajustar Zoom</span>
+                        <button type="button" id="btn-zoom-in-edit" style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); transition: all 0.2s;"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 20px 30px; display: flex; justify-content: center; gap: 15px; background: transparent;">
+                <button type="button" class="figma-btn-cancel" onclick="resetBannerCrop()">Cancelar</button>
+                <button type="submit" class="figma-btn-save">Actualizar Portada</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR INFORMACIÓN PRINCIPAL -->
+<div class="modal-overlay" id="modal-edit-info">
+    <div class="modal-content modal-figma-edit" style="max-width: 750px;">
+        <div class="modal-figma-edit-header">
+            <h3><i class="fas fa-pen text-orange"></i> Editar Proyecto</h3>
+            <button type="button" class="modal-figma-close" onclick="closeModal('modal-edit-info')">&times;</button>
+        </div>
+        <form id="form-edit-info">
+            {% csrf_token %}
+            <div class="modal-figma-body">
+                <div class="figma-section-title">I DATOS PRINCIPALES</div>
+                <label class="figma-label">Título <span class="text-red">*</span></label>
+                <input type="text" name="title" class="figma-input" value="{{ project.title }}" required maxlength="120">
+                
+                <label class="figma-label">Descripción Breve (Hero) <span class="text-red">*</span></label>
+                <textarea name="summary" class="figma-textarea" required maxlength="255">{{ project.summary|default:'' }}</textarea>
+
+                <div class="figma-section-title">II DESCRIPCIÓN COMPLETA</div>
+                <label class="figma-label" style="color:var(--gray-500); font-size:0.85rem; font-weight:normal;">Usa negritas, cursivas o pega emojis de tu teclado.</label>
+                <div id="quill-editor">{{ project.description|safe }}</div>
+                <input type="hidden" name="description" id="hidden-description">
+                
+                <div class="figma-section-title" style="margin-top:20px;">III TECNOLOGÍAS Y ETIQUETAS</div>
+                <label class="figma-label">Tecnologías Utilizadas</label>
+                <div class="predictive-container">
+                    <div class="pills-area" id="pills-tech">
+                        {% for t in project.technologies.all %}
+                        <div class="pill-item tech-pill"><span>&times;</span> {{ t.name }}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="text" class="predictive-input" id="input-tech" placeholder="Escribe y presiona Enter...">
+                    <div class="predictive-dropdown" id="drop-tech"></div>
+                </div>
+                <input type="hidden" name="technologies" id="hidden-techs">
+
+                <label class="figma-label">Etiquetas (Tags para el banner)</label>
+                <div class="predictive-container">
+                    <div class="pills-area" id="pills-tag">
+                        {% for t in project.tags.all %}
+                        <div class="pill-item"><span>&times;</span> {{ t.name }}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="text" class="predictive-input" id="input-tag" placeholder="Buscar o crear tag...">
+                    <div class="predictive-dropdown" id="drop-tag"></div>
+                </div>
+                <input type="hidden" name="tags" id="hidden-tags">
+
+                <div class="figma-section-title">IV BARRA LATERAL Y ARCHIVOS</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div><label class="figma-label">Versión</label><input type="text" name="version" class="figma-input" value="{{ project.version|default:'v1.0.0' }}"></div>
+                    <div><label class="figma-label">Tamaño</label><input type="text" name="size" class="figma-input" value="{{ project.size|default:'' }}" placeholder="Ej: 3.4 MB"></div>
+                </div>
+                <label class="figma-label">Dependencias</label>
+                <input type="text" name="dependencies" class="figma-input" value="{{ project.dependencies|default:'' }}" placeholder="React, Node.js...">
+                
+                <label class="figma-label">Repositorio URL</label>
+                <input type="url" name="repository_url" class="figma-input" value="{{ project.repository_url|default:'' }}" placeholder="https://github.com/usuario/proyecto">
+
+                <!-- COLABORADORES CON BUSCADOR PREDICTIVO -->
+                <label class="figma-label">Colaboradores (Nombres de usuario)</label>
+                <div class="predictive-container">
+                    <div class="pills-area" id="pills-collab">
+                        {% for c in project.collaborators.all %}
+                        <div class="pill-item collab-pill"><span>&times;</span> {{ c.username }}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="text" class="predictive-input" id="input-collab" placeholder="Escribe el usuario y presiona Enter...">
+                    <div class="predictive-dropdown" id="drop-collab"></div>
+                </div>
+                <input type="hidden" name="collaborators" id="hidden-collabs">
+
+                <label class="figma-label">Archivo de Documentación (.pdf, .zip, .docx)</label>
+                <input type="file" name="documentation_file" class="figma-input" style="padding: 10px;">
+            </div>
+            <div class="figma-footer">
+                <button type="button" class="figma-btn-cancel" onclick="closeModal('modal-edit-info')">Cancelar</button>
+                <button type="submit" class="figma-btn-save">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR GALERÍA CON ELIMINACIÓN INTELIGENTE -->
+<div class="modal-overlay" id="modal-edit-gallery">
+    <div class="modal-content modal-figma-edit" style="max-width: 550px;">
+        <div class="modal-figma-edit-header">
+            <h3><i class="fas fa-images text-orange"></i> Gestionar Galería</h3>
+            <button type="button" class="modal-figma-close" onclick="closeModal('modal-edit-gallery')">&times;</button>
+        </div>
+        <form id="form-edit-gallery">
+            {% csrf_token %}
+            <div class="modal-figma-body">
+                <label class="figma-label">Fotos Actuales (Clic en la X para borrar)</label>
+                <div class="multi-preview-container" id="existing-gallery-container" style="margin-bottom: 20px;">
+                    {% for img in project.gallery.all %}
+                        <div class="img-box" id="existing-img-{{ img.id }}" data-id="{{ img.id }}" style="cursor: grab;">
+                            <img src="{{ img.image.url }}">
+                            <span class="delete-btn" onclick="markDeleteGallery({{ img.id }})">&times;</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="deleted_images" id="hidden-deleted-images">
+                <input type="hidden" name="image_order" id="hidden-image-order">
+
+                <div class="gallery-upload-area" onclick="document.getElementById('edit-gallery-input').click()">
+                    <i class="fas fa-plus-circle fa-3x" style="color: #3b82f6; margin-bottom: 12px;"></i>
+                    <span style="display:block; font-size: 1.1rem; font-weight:800; color: var(--text-primary);">Añadir nuevas capturas</span>
+                    <input type="file" id="edit-gallery-input" name="gallery_images" accept="image/*" multiple hidden>
+                </div>
+                <!-- Previsualización dinámica de NUEVAS fotos con botón de borrar -->
+                <div class="multi-preview-container" id="gallery-multi-preview"></div>
+            </div>
+            <div class="figma-footer">
+                <button type="button" class="figma-btn-cancel" onclick="closeModal('modal-edit-gallery')">Cancelar</button>
+                <button type="submit" class="figma-btn-save">Guardar Galería</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox-overlay">
+    <button id="lightbox-close">&times;</button>
+    <img id="lightbox-img" src="" alt="Ampliada">
+</div>
+
+<!-- MODAL COMPARTIR (Estilo YouTube) -->
+<div class="modal-overlay" id="modal-share">
+    <div class="modal-content" style="max-width: 500px; background: var(--bg-card); border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">Compartir este proyecto</h3>
+            <button type="button" onclick="closeModal('modal-share')" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; transition: color 0.2s;">&times;</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+            <a href="https://api.whatsapp.com/send?text={{ project.title|urlencode }}%20{{ request.build_absolute_uri }}" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(37,211,102,0.3);"><i class="fab fa-whatsapp"></i></div>
+                <span style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">WhatsApp</span>
+            </a>
+            
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: #1877F2; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(24,119,242,0.3);"><i class="fab fa-facebook-f"></i></div>
+                <span style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Facebook</span>
+            </a>
+
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ project.title|urlencode }}" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: #000000; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid var(--border-color);"><span style="font-family: sans-serif; font-weight: 900; font-size: 1.6rem; font-style: normal; line-height: 1;">X</span></div>
+                <span style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">X</span>
+            </a>
+
+            <a href="mailto:?subject={{ project.title|urlencode }}&body=Mira este proyecto: {{ request.build_absolute_uri }}" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gray-700); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"><i class="fas fa-envelope"></i></div>
+                <span style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Correo</span>
+            </a>
+        </div>
+
+        <div style="display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; gap: 10px;">
+            <input type="text" id="share-url-input" value="{{ request.build_absolute_uri }}" readonly style="flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-size: 0.95rem; padding-left: 10px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <button type="button" id="btn-copy-share" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); font-weight: 700; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s;">Copiar</button>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    
+    // Lightbox Logic
+    let currentScale = 1;
+    let isDragging = false;
+    let startX, startY, translateX = 0, translateY = 0;
+    
+    window.openLightbox = function(url) {
+        const overlay = document.getElementById('lightbox-overlay');
+        const img = document.getElementById('lightbox-img');
+        img.src = url;
+        currentScale = 1; translateX = 0; translateY = 0;
+        img.style.transform = `translate(0px, 0px) scale(1)`;
+        overlay.style.display = 'flex';
+    };
+    document.getElementById('lightbox-close').addEventListener('click', () => { document.getElementById('lightbox-overlay').style.display = 'none'; });
+    document.getElementById('lightbox-overlay').addEventListener('click', (e) => { if(e.target === e.currentTarget) e.target.style.display = 'none'; });
+    
+    const lbImg = document.getElementById('lightbox-img');
+    if (lbImg) {
+        lbImg.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            currentScale += e.deltaY * -0.001;
+            currentScale = Math.min(Math.max(.5, currentScale), 4);
+            lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+        });
+        lbImg.addEventListener('mousedown', (e) => {
+            isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY;
+            lbImg.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mousemove', (e) => {
+            if(!isDragging) return;
+            translateX = e.clientX - startX; translateY = e.clientY - startY;
+            lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; lbImg.style.cursor = 'grab'; });
+    }
+    
+    function toggleDesc() {
+        const box = document.getElementById('desc-box'); const btn = document.getElementById('btn-read-more');
+        if(box.classList.contains('collapsed')){ box.classList.remove('collapsed'); btn.innerText = "Ver menos"; } 
+        else { box.classList.add('collapsed'); btn.innerText = "Ver más..."; }
+    }
+    window.onload = function() {
+        const box = document.getElementById('desc-box');
+        if(box && box.scrollHeight <= 180) { document.getElementById('btn-read-more').style.display = 'none'; box.classList.remove('collapsed'); }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        const masterEditBtn = document.getElementById('master-edit-btn');
-        if (masterEditBtn) {
-            masterEditBtn.addEventListener('click', function() {
-                document.querySelector('.project-detail-area').classList.toggle('edit-mode-active');
-                this.classList.toggle('active');
-                if(this.classList.contains('active')) {
-                    this.style.background = 'var(--orange-primary)';
-                    this.style.color = 'white';
+        const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+        const projectId = "{{ project.id }}";
+        
+            // 1. REPARACIÓN DEL BOTÓN LIKE
+            const btnLike = document.getElementById('btn-like');
+            if (btnLike) {
+                btnLike.addEventListener('click', function(e) {
+                    e.preventDefault(); 
+                    fetch(this.getAttribute('data-url'), {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('like-text').textContent = `Me gusta (${data.likes_count})`;
+                            document.getElementById('stats-likes').textContent = data.likes_count;
+                            document.getElementById('like-icon').style.color = data.liked ? '#ef4444' : '';
+                        } else { alert(data.message); }
+                    }).catch(err => console.error("Error en like:", err));
+                });
+            }
+
+            // MODAL COMPARTIR
+            const btnShare = document.getElementById('btn-share');
+            if (btnShare) {
+                btnShare.addEventListener('click', function() {
+                    openModal('modal-share');
+                });
+            }
+
+            const btnCopyShare = document.getElementById('btn-copy-share');
+            if (btnCopyShare) {
+                btnCopyShare.addEventListener('click', function() {
+                    const shareInput = document.getElementById('share-url-input');
+                    shareInput.select();
+                    shareInput.setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(shareInput.value).then(() => {
+                        const origText = this.innerText;
+                        this.innerText = '¡Copiado!';
+                        this.style.background = 'var(--bg-main)';
+                        setTimeout(() => {
+                            this.innerText = origText;
+                            this.style.background = 'var(--bg-card)';
+                        }, 2000);
+                    });
+                });
+            }
+
+        // 2. Quill Editor
+        var quill = new Quill('#quill-editor', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{'list': 'ordered'}, {'list': 'bullet'}], ['clean']] } });
+
+        // 3. Predictivo (Tags/Techs/Colaboradores)
+        const allTags = JSON.parse('{{ all_tags|safe|default:"[]" }}');
+        const allTechs = JSON.parse('{{ all_techs|safe|default:"[]" }}');
+        const allUsers = JSON.parse('{{ all_users|safe|default:"[]" }}');
+
+        function initPredictive(inputId, dropId, pillsId, hiddenId, sourceList) {
+            const input = document.getElementById(inputId); const drop = document.getElementById(dropId); const pillsArea = document.getElementById(pillsId); const hidden = document.getElementById(hiddenId);
+            let selectedList = Array.from(pillsArea.children).map(c => c.innerText.replace('×', '').trim());
+            updateHidden();
+
+            function updateHidden() { hidden.value = selectedList.join(','); }
+            function renderPill(text) {
+                const div = document.createElement('div'); 
+                div.className = inputId.includes('tech') ? 'pill-item tech-pill' : inputId.includes('collab') ? 'pill-item collab-pill' : 'pill-item'; 
+                div.innerHTML = `<span>&times;</span> ${text}`;
+                div.querySelector('span').onclick = function() { div.remove(); selectedList = selectedList.filter(i => i !== text); updateHidden(); };
+                pillsArea.appendChild(div); selectedList.push(text); updateHidden();
+            }
+            Array.from(pillsArea.children).forEach(pill => { pill.querySelector('span').onclick = function() { pill.remove(); selectedList = selectedList.filter(i => i !== pill.innerText.replace('×', '').trim()); updateHidden(); }});
+
+            input.addEventListener('keyup', function(e) {
+                const val = this.value.toLowerCase().trim(); drop.innerHTML = '';
+                if(val === '') { drop.style.display = 'none'; return; }
+                let matches = sourceList.filter(i => i.toLowerCase().includes(val) && !selectedList.includes(i));
+                if (e.key === 'Enter') { e.preventDefault(); if(val !== '' && !selectedList.includes(val)) { renderPill(this.value.trim()); this.value = ''; drop.style.display = 'none'; } return; }
+                if(matches.length > 0) {
+                    matches.forEach(m => { let div = document.createElement('div'); div.className = 'predictive-item'; div.innerText = m; div.onclick = function() { renderPill(m); input.value = ''; drop.style.display = 'none'; }; drop.appendChild(div); });
                 } else {
-                    this.style.background = '';
-                    this.style.color = '';
+                    let div = document.createElement('div'); div.className = 'predictive-item'; div.innerHTML = `"${this.value}" <span class="predictive-hint">Enter para añadir</span>`;
+                    div.onclick = function() { renderPill(input.value.trim()); input.value = ''; drop.style.display = 'none'; }; drop.appendChild(div);
+                }
+                drop.style.display = 'block';
+            });
+            input.addEventListener('keydown', e => { if(e.key === 'Enter') e.preventDefault(); });
+            document.addEventListener('click', e => { if(e.target !== input) drop.style.display = 'none'; });
+        }
+        initPredictive('input-tech', 'drop-tech', 'pills-tech', 'hidden-techs', allTechs);
+        initPredictive('input-tag', 'drop-tag', 'pills-tag', 'hidden-tags', allTags);
+        initPredictive('input-collab', 'drop-collab', 'pills-collab', 'hidden-collabs', allUsers);
+
+        // 4. PREVIEW BANNER CON CROPPER.JS
+        let bannerCropper = null;
+        document.getElementById('edit-banner-input')?.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { 
+                    const previewImg = document.getElementById('banner-preview-img');
+                    previewImg.src = e.target.result; 
+                    const previewBox = document.getElementById('banner-preview-box');
+                    const uploadArea = document.getElementById('banner-upload-area');
+                    uploadArea.style.display = 'none';
+                    previewBox.style.display = 'block';
+                    
+                    if (bannerCropper) {
+                        bannerCropper.destroy();
+                    }
+                    
+                    setTimeout(() => {
+                        bannerCropper = new Cropper(previewImg, {
+                            aspectRatio: 16 / 9,
+                            viewMode: 0,
+                            autoCropArea: 1,
+                            dragMode: 'move',
+                        });
+                    }, 100);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        window.resetBannerCrop = function() {
+            document.getElementById('edit-banner-input').value = '';
+            document.getElementById('banner-preview-box').style.display = 'none';
+            document.getElementById('banner-upload-area').style.display = 'block';
+            if (bannerCropper) {
+                bannerCropper.destroy();
+                bannerCropper = null;
+            }
+            closeModal('modal-edit-banner');
+        }
+
+        document.getElementById('btn-zoom-in-edit')?.addEventListener('click', () => {
+            if (bannerCropper) bannerCropper.zoom(0.1);
+        });
+        document.getElementById('btn-zoom-out-edit')?.addEventListener('click', () => {
+            if (bannerCropper) bannerCropper.zoom(-0.1);
+        });
+
+        // 5. GESTIÓN AVANZADA DE GALERÍA
+        let deletedImages = [];
+        window.markDeleteGallery = function(id) {
+            document.getElementById('existing-img-' + id).style.display = 'none';
+            deletedImages.push(id); document.getElementById('hidden-deleted-images').value = deletedImages.join(',');
+        }
+
+        const galleryInput = document.getElementById('edit-gallery-input');
+        const multiPreview = document.getElementById('gallery-multi-preview');
+        let dataTransfer = new DataTransfer(); 
+
+        galleryInput?.addEventListener('change', function() {
+            Array.from(this.files).forEach(file => dataTransfer.items.add(file));
+            this.files = dataTransfer.files; 
+            renderNewPreviews();
+        });
+
+        function renderNewPreviews() {
+            multiPreview.innerHTML = ''; 
+            Array.from(dataTransfer.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = e => { 
+                    const box = document.createElement('div'); box.className = 'img-box';
+                    box.innerHTML = `<img src="${e.target.result}"><span class="delete-btn" data-index="${index}">&times;</span>`;
+                    
+                    box.querySelector('.delete-btn').onclick = function() {
+                        const idx = parseInt(this.getAttribute('data-index'));
+                        const dt = new DataTransfer(); 
+                        Array.from(dataTransfer.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+                        dataTransfer = dt;
+                        galleryInput.files = dataTransfer.files;
+                        renderNewPreviews(); 
+                    };
+                    multiPreview.appendChild(box); 
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // TOAST DE ERROR
+        function showToast(message) {
+            let toast = document.getElementById('figma-toast');
+            if(!toast) {
+                toast = document.createElement('div');
+                toast.id = 'figma-toast';
+                toast.style.cssText = 'position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ef4444; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); z-index: 999999; font-weight: bold; font-size: 0.95rem; font-family: "DM Sans", sans-serif; opacity: 0; transition: opacity 0.3s; display: flex; align-items: center; gap: 10px;';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span>${message}</span>`;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+        }
+
+        // 6. ENVÍOS POST
+        function attachSubmit(formId, prepDataFn = null) {
+            const form = document.getElementById(formId);
+            if(!form) return;
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if(prepDataFn) prepDataFn(); 
+                const btn = form.querySelector('.figma-btn-save'); btn.innerHTML = 'Guardando...'; btn.disabled = true;
+                
+                fetch(`/projects/api/projects/${projectId}/`, { method: 'POST', headers: { 'X-CSRFToken': csrfToken }, body: new FormData(this) })
+                .then(res => res.json())
+                .then(data => { if (data.success) window.location.reload(); else { showToast(data.message); btn.innerHTML = 'Guardar'; btn.disabled = false; } })
+                .catch(() => { showToast("Error de conexión"); btn.innerHTML = 'Guardar'; btn.disabled = false; });
+            });
+        }
+
+        // Para el banner, interceptamos el submit para enviar la imagen cropeada
+        const formBanner = document.getElementById('form-edit-banner');
+        if (formBanner) {
+            formBanner.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = formBanner.querySelector('.figma-btn-save');
+                btn.innerHTML = 'Guardando...'; btn.disabled = true;
+                
+                const formData = new FormData(this);
+                
+                const submitForm = () => {
+                    fetch(`/projects/api/projects/${projectId}/`, { method: 'POST', headers: { 'X-CSRFToken': csrfToken }, body: formData })
+                    .then(res => res.json())
+                    .then(data => { if (data.success) window.location.reload(); else { showToast(data.message); btn.innerHTML = 'Actualizar Portada'; btn.disabled = false; } })
+                    .catch(() => { showToast("Error de conexión"); btn.innerHTML = 'Actualizar Portada'; btn.disabled = false; });
+                };
+
+                if (bannerCropper) {
+                    bannerCropper.getCroppedCanvas({
+                        width: 1920,
+                        height: 1080,
+                        fillColor: '#ffffff'
+                    }).toBlob(blob => {
+                        formData.set('image', blob, 'banner.jpg');
+                        submitForm();
+                    }, 'image/jpeg', 0.9);
+                } else {
+                    submitForm();
                 }
             });
         }
+
+        attachSubmit('form-edit-info', () => { document.getElementById('hidden-description').value = quill.root.innerHTML; });
+        
+        const existingGalleryContainer = document.getElementById('existing-gallery-container');
+        if (existingGalleryContainer && typeof Sortable !== 'undefined') {
+            new Sortable(existingGalleryContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost'
+            });
+        }
+        
+        attachSubmit('form-edit-gallery', () => {
+            if(existingGalleryContainer) {
+                const order = Array.from(existingGalleryContainer.children)
+                    .filter(el => el.style.display !== 'none')
+                    .map(el => el.getAttribute('data-id'))
+                    .filter(id => id);
+                document.getElementById('hidden-image-order').value = order.join(',');
+            }
+        });
     });
 </script>
 {% endblock %}
