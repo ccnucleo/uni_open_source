@@ -41,6 +41,16 @@
                         <label for="select-project-tech">Tecnología Principal</label>
                         <input type="text" id="select-project-tech" placeholder="Ej. Python, React, Node.js">
                     </div>
+
+                    <div class="form-group">
+                        <label for="input-project-collaborators">Colaboradores (opcional)</label>
+                        <div class="predictive-container">
+                            <div class="pills-area" id="new-collab-pills"></div>
+                            <input type="text" id="input-new-collab" class="predictive-input" placeholder="Buscar por @usuario..." autocomplete="off">
+                            <div class="predictive-dropdown" id="new-collab-dropdown"></div>
+                        </div>
+                        <input type="hidden" id="hidden-new-collaborators" name="collaborators">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -126,6 +136,17 @@
                         <label for="edit-project-tech">Tecnología Principal</label>
                         <input type="text" id="edit-project-tech" placeholder="Ej. Python, React, Node.js">
                     </div>
+
+                    <div class="form-group">
+                        <label for="input-edit-collab">Colaboradores (opcional)</label>
+                        <div class="predictive-container">
+                            <div class="pills-area" id="edit-collab-pills"></div>
+                            <input type="text" id="input-edit-collab" class="predictive-input" placeholder="Buscar por @usuario..." autocomplete="off">
+                            <div class="predictive-dropdown" id="edit-collab-dropdown"></div>
+                        </div>
+                        <input type="hidden" id="hidden-edit-collaborators" name="collaborators">
+                    </div>  
+
                 </div>
             </div>
 

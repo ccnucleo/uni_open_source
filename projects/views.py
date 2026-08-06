@@ -58,6 +58,9 @@ def projects_page(request):
     all_techs = list(Technology.objects.values_list('name', flat=True))
     all_authors = list(User.objects.filter(owned_projects__isnull=False).values_list('username', flat=True).distinct())
 
+    # Obtenemos a todos los usuarios de la base de datos
+    all_users = list(User.objects.values_list('username', flat=True))
+
     return render(
         request, 
         "web/pages/projects/projects_page.html", 
@@ -67,6 +70,7 @@ def projects_page(request):
             "all_tags": all_tags,
             "all_techs": all_techs,
             "all_authors": all_authors,
+            "all_users": json.dumps(all_users),
         }
     )
 
