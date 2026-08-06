@@ -1,26 +1,64 @@
 import json
+from django.core.paginator import Paginator
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from .models import Course, Category, Tag
 
 
-from django.shortcuts import render
-from .models import Course, Category  # <-- Asegúrate de importar Category
+COURSES_PER_PAGE = 9
 
+
+@login_required(login_url="accounts:login")
 def courses_page(request):
-    courses = Course.objects.all()
+    query = request.GET.get('q', '').strip()
+    category_id = request.GET.get('categoria', '').strip()
+    selected_levels = request.GET.getlist('nivel')
+    selected_tag_ids = request.GET.getlist('tag')
+
+    courses = Course.objects.select_related('category').prefetch_related('tags').all()
+
+    if query:
+        courses = courses.filter(title__icontains=query)
+
+    if category_id:
+        courses = courses.filter(category_id=category_id)
+
+    if selected_levels:
+        courses = courses.filter(level__in=selected_levels)
+
+    if selected_tag_ids:
+        courses = courses.filter(tags__id__in=selected_tag_ids).distinct()
+
+    paginator = Paginator(courses, COURSES_PER_PAGE)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Querystring sin el parámetro "page", para poder pegarle &page=N
+    # a cada link de paginación sin perder los filtros activos.
+    querystring = request.GET.copy()
+    querystring.pop('page', None)
+
     categories = Category.objects.all().order_by('name')
     tags = Tag.objects.filter(course__isnull=False).distinct().order_by('name') # <-- Traemos solo las usadas
-    
+
     context = {
-        'courses': courses,
+        'page_obj': page_obj,
+        'courses': page_obj.object_list,
         'categories': categories,
-        'tags': tags,  # <-- Las enviamos al HTML
+        'tags': tags,
+        'levels': Course.LEVEL_CHOICES,
+        'query': query,
+        'selected_category_id': category_id,
+        'selected_levels': selected_levels,
+        'selected_tag_ids': selected_tag_ids,
+        'querystring': querystring.urlencode(),
     }
     return render(request, 'web/pages/courses/courses_page.html', context)
 
 
+@login_required(login_url="accounts:login")
 def course_detail_page(request, course_id):
 	course = get_object_or_404(Course.objects.select_related("owner"), pk=course_id)
 	return render(
@@ -56,6 +94,7 @@ def _serialize_course(course):
 	}
 
 
+@login_required(login_url="accounts:login")
 @require_http_methods(["GET", "POST"])
 def courses_collection_api(request):
 	if request.method == "GET":
@@ -94,6 +133,7 @@ def courses_collection_api(request):
 	return JsonResponse({"success": True, "data": _serialize_course(course)}, status=201)
 
 
+@login_required(login_url="accounts:login")
 @require_http_methods(["GET", "PUT", "PATCH", "DELETE"])
 def courses_item_api(request, course_id):
 	try:

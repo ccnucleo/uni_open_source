@@ -1,0 +1,40 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Política de Privacidad - UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/static.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <div class="static-header">
+        <h1>Política de Privacidad</h1>
+        <p class="subtitle">Uni Open Source — Centro Cultural Núcleo</p>
+    </div>
+
+    <div class="static-content">
+        <h2>1. Datos que recopilamos</h2>
+        <p>Nombre, correo institucional, y la información de perfil que decidas compartir (foto, biografía, proyectos).
+        </p>
+
+        <h2>2. Uso de tus datos</h2>
+        <p>Se utilizan únicamente para el funcionamiento de la plataforma: autenticación, visualización de tu perfil y
+            comunicación relacionada con Uni Open Source.</p>
+
+        <h2>3. No compartimos tus datos</h2>
+        <p>No compartimos tu información con terceros ni la usamos con fines comerciales.</p>
+
+        <h2>4. Seguridad</h2>
+        <p>Tomamos medidas razonables para proteger tu información dentro de la plataforma.</p>
+
+        <h2>5. Tus derechos</h2>
+        <p>Puedes solicitar la actualización o eliminación de tus datos escribiendo a ccnucleo.fiis@uni.edu.pe.</p>
+
+        <div class="contact-block">
+            <span><i class="fas fa-envelope"></i>ccnucleo.fiis@uni.edu.pe</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

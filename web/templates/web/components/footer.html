@@ -1,37 +1,42 @@
+{% load static %}
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-brand">
             <div class="footer-logo"><i class="fas fa-circle-nodes"></i> <strong>UNI Open Source</strong></div>
             <p>Plataforma oficial de proyectos open source de la UNI.</p>
             <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.facebook.com/CentroCulturalNucleo/" target="_blank" rel="noopener"><i
+                        class="fab fa-facebook"></i></a>
+                <a href="http://www.instagram.com/ccnucleo_oficial/" target="_blank" rel="noopener"><i
+                        class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/centro-cultural-nucleo/" target="_blank" rel="noopener"><i
+                        class="fab fa-linkedin"></i></a>
+                <a href="https://www.youtube.com/@nucleotube6807" target="_blank" rel="noopener"><i
+                        class="fab fa-youtube"></i></a>
             </div>
         </div>
         <div class="footer-col">
             <h4>Centro Cultural Núcleo</h4>
             <ul>
-                <li><a href="#">Inicio</a></li>
-                <li><a href="#">¿Quiénes Somos?</a></li>
-                <li><a href="#">Proyectos Destacados</a></li>
+                <li><a href="{% url 'index' %}">Inicio</a></li>
+                <li><a href="{% url 'quienes_somos' %}">¿Quiénes Somos?</a></li>
+                <li><a href="{% url 'projects:list' %}">Proyectos Destacados</a></li>
             </ul>
         </div>
         <div class="footer-col">
             <h4>Legal</h4>
             <ul>
-                <li><a href="#">Términos de uso</a></li>
-                <li><a href="#">Política de privacidad</a></li>
-                <li><a href="#">Aliados</a></li>
+                <li><a href="{% url 'terminos' %}">Términos de uso</a></li>
+                <li><a href="{% url 'privacidad' %}">Política de privacidad</a></li>
             </ul>
         </div>
         <div class="footer-col">
             <h4>Contacto</h4>
             <ul class="contact-data">
-                <li><i class="fas fa-location-arrow"></i> Av. Túpac Amaru 280</li>
-                <li><i class="fas fa-phone"></i> 00000000</li>
-                <li><i class="fas fa-envelope"></i> 00000@gmail.com</li>
+                <li><i class="fas fa-location-arrow"></i> UNI &ndash; Facultad de Ingeniería Industrial y de Sistemas
+                </li>
+                <li><i class="fas fa-phone"></i> 927 723 495</li>
+                <li><i class="fas fa-envelope"></i> ccnucleo.fiis@uni.edu.pe</li>
             </ul>
         </div>
     </div>

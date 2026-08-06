@@ -103,6 +103,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Auth Guard: a dónde redirigir a los visitantes anónimos que intentan
+# acceder a una vista protegida con @login_required.
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'index'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
