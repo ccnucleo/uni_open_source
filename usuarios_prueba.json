@@ -1,0 +1,1320 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$MY3bDDRCJUmHnQHCwhh8Xq$jGYt1Aq2bqhWQrUmAB+VvzEztlwsB6PgM4GrmWkpMbU=",
+    "last_login": "2026-03-22T23:55:26.592Z",
+    "is_superuser": false,
+    "username": "angel",
+    "first_name": "",
+    "last_name": "",
+    "email": "gato0206@yopmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-21T07:27:58.927Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$VLyw7jIm7i1OghTKXISMPK$oprziyDJMoJA7OalAI9ZnnteXum+Fc3ZeeXvK3E3oMI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "angel2",
+    "first_name": "",
+    "last_name": "",
+    "email": "gato0207@yopmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-22T16:37:35.037Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$doF8mMPMo25bjIQ7sT4hCU$gytnSuJbedxWqFmRd3r4GRCGsy2g/gyJ+4hUL5Gj1RI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "gatos",
+    "first_name": "",
+    "last_name": "",
+    "email": "gato0205@yopmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-22T17:37:46.173Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7iHgrfbCtAxQ3KGSyHpMrK$ixHl2sztsPNxXiuUU0+m/J5A7l0+kPb3ThxcxJPFcg8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "angelito",
+    "first_name": "",
+    "last_name": "",
+    "email": "gato0203@yopmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-22T17:52:30.440Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$OwtvXQnebO4qUge4RlS9MW$FcDyn2EJfLeDhunLVvQOtPPPIwFTBwM8mQgTfAwm23M=",
+    "last_login": "2026-03-23T06:24:38.342Z",
+    "is_superuser": false,
+    "username": "Fabio",
+    "first_name": "",
+    "last_name": "",
+    "email": "fabioycar1234@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-23T06:24:30.979Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$z5JuEABPHRhcIPhAbjraZ4$ag+p3g3f8TVs1dwGcSTnLcTX9CbJz6jgY9wPlatt4AY=",
+    "last_login": "2026-08-02T22:32:09.055Z",
+    "is_superuser": false,
+    "username": "Jose Rojas",
+    "first_name": "",
+    "last_name": "",
+    "email": "rojassanchezjosemartin@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-26T21:24:39.829Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$y5IX6GMnKK6Tc9BucCKa6V$mIrzJ3sS/Dpa8pvWjst7cY9FGd/2d+kV3HrzWVnfT5w=",
+    "last_login": "2026-04-05T17:06:22.460Z",
+    "is_superuser": false,
+    "username": "diegox123",
+    "first_name": "",
+    "last_name": "",
+    "email": "meuqueusseddoyu-9525@yopmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-31T04:09:41.704Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$tbrOquDLvvIfkxEa71N8Jn$8oiCTCO+FKnernpQNAKwTFxXi/sG7TuCFJ8N4uq6x0w=",
+    "last_login": "2026-08-02T23:22:50.344Z",
+    "is_superuser": true,
+    "username": "nucleo",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-31T04:32:41.799Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$SWSWGCanSOS13okqXrUAh1$/HiWngM4r4Hw35jURp6HWS+3xsGFYg46mRi12BOOB4E=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "maria_garcia",
+    "first_name": "María",
+    "last_name": "García",
+    "email": "maria_garcia@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:17.369Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$ixEoY8ofFxxX8Hy4U6fUE8$t+0w4tm0ACGYFnslwRS2Q8Kc66/clxo5IXaXB0QkCAU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "carlos_mendoza",
+    "first_name": "Carlos",
+    "last_name": "Mendoza",
+    "email": "carlos_mendoza@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:18.925Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Sge0htgckkZzMe0fk97csp$TZSYp638jxrlmUn2rC2KYv6X/m7GDSogENAqAN89V5M=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "lucia_torres",
+    "first_name": "Lucía",
+    "last_name": "Torres",
+    "email": "lucia_torres@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:20.451Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$c6Fl0Zoz9tFylebESlxxgr$1ICDP8uGDS28KvV/3K5pw5vTQzgT1FPQjM6EQv3nq9g=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "diego_rodriguez",
+    "first_name": "Diego",
+    "last_name": "Rodríguez",
+    "email": "diego_rodriguez@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:21.954Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7wjj0JdjajtmzNNqjsmTff$4gIdzqyEQeqTcCtYtmnF1yEmkNmSe8PGByDADUnWj28=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ana_martinez",
+    "first_name": "Ana",
+    "last_name": "Martínez",
+    "email": "ana_martinez@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:23.456Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$dwnhIztTAbG13Ubh0uR5cO$j9F05hOoPbOChFEgFR7BLITxfhp+bT1F8WXNpa5+Yxg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mateo_silva",
+    "first_name": "Mateo",
+    "last_name": "Silva",
+    "email": "mateo_silva@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:24.943Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$qbg7xDmpuuutzOnt8usj8f$+zAEyfXNqh8kRjamEDZueU/9ypEXrrtYdML7aUuNeD0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sofia_ramirez",
+    "first_name": "Sofía",
+    "last_name": "Ramírez",
+    "email": "sofia_ramirez@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:26.445Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$5znY74mCIIlUcUdyWsnMp5$cgR60LotCOGEDUndpAVbyz+Kei/A0lIRi3kPHFJRLsE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "javier_lopez",
+    "first_name": "Javier",
+    "last_name": "López",
+    "email": "javier_lopez@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:27.954Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$ozEU2UKi0umG0tQpqI8lwH$vx0c/us7BCcXZ/tvERomWrrY8QufawZfeQRANqVdtKA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "valentina_gomez",
+    "first_name": "Valentina",
+    "last_name": "Gómez",
+    "email": "valentina_gomez@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:29.447Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WmE8x0bRURtqyhDWqdmHjH$5sc+walEJAva72PfzDlCf/Wj4DTvaKWz8MNUlHPSrzg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "gabriel_castro",
+    "first_name": "Gabriel",
+    "last_name": "Castro",
+    "email": "gabriel_castro@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:30.934Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 19,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$3MYWjvGOT2yw0soh64Gm8p$eUdQIFThErxOkQKPkaboqDAjUJ0n3mbxYMRb5p90AiI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "camila_morales",
+    "first_name": "Camila",
+    "last_name": "Morales",
+    "email": "camila_morales@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:32.451Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 20,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$L1FHByCk04WLtntfsTThFI$c+KhhFv+A8YcfnYcL5mq+IJF310MX9pV5YT9pRMEpx4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "andres_vargas",
+    "first_name": "Andrés",
+    "last_name": "Vargas",
+    "email": "andres_vargas@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:33.957Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 21,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$1mEBbBc78iBZ8VYdHq1YXG$z95CfBxd1EvuR27sbELdzkrzQHvd+IbQ1jjxcvtvRPg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "isabella_rios",
+    "first_name": "Isabella",
+    "last_name": "Ríos",
+    "email": "isabella_rios@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:35.501Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 22,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$zJd2su4dnPHN5xvLjqTLTJ$4UjJb27eLQsfWlIIZMXKnGdJDu82b71uBNUNglaR3KM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "fernando_herrera",
+    "first_name": "Fernando",
+    "last_name": "Herrera",
+    "email": "fernando_herrera@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:37.019Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 23,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$igYKB4X0S2d05MZfWDeE9v$o58KXjS/mWuPowHDoMYGBuR/kjgZLhSLnTvDD/gNJIQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "elena_flores",
+    "first_name": "Elena",
+    "last_name": "Flores",
+    "email": "elena_flores@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:38.520Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 24,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$jNlYXRumqyGwqWzNpDBdAn$MNzsITC1WPPCvaIgzech2pEz5t5vKAFNQ85ipWMXuIw=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "lucas_paredes",
+    "first_name": "Lucas",
+    "last_name": "Paredes",
+    "email": "lucas_paredes@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:40.058Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 25,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$hBdjTLveO83tHA1mnfCIKw$BUEU4OG/thtbv0wbtytIxrnfbAKtISFLa+FkS0ieenA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "carolina_rojas",
+    "first_name": "Carolina",
+    "last_name": "Rojas",
+    "email": "carolina_rojas@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:41.570Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 26,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$dPO483h65zTXA2qw53zn9h$JBvuJMe19rIeIKsWQt+kiU5Ljv+iAGfhTMHsnL2OVV0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sebastian_reyes",
+    "first_name": "Sebastián",
+    "last_name": "Reyes",
+    "email": "sebastian_reyes@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:43.085Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 27,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UfBFMxGAi6jZdbwdcNAEK7$Smp6/CEER+pwtoya238Lcjkown/+L32Qj2AVW/EfXFM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mariana_cruz",
+    "first_name": "Mariana",
+    "last_name": "Cruz",
+    "email": "mariana_cruz@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:44.614Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 28,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "rodrigo_aguilar",
+    "first_name": "Rodrigo",
+    "last_name": "Aguilar",
+    "email": "rodrigo_aguilar@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:36:46.115Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 29,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$eseDtWB9EyO6pWWwNXeTAx$bzTCH8I0V/AqA/h/vnBF0BcAc4g8A2g8XZA+tY60O4w=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "paula_navarro",
+    "first_name": "Paula",
+    "last_name": "Navarro",
+    "email": "paula_navarro@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:37:00.559Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 30,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$n8yeZW3zhr4zJk970uXtcx$rIIj3o7+R4FYJJjNO4kVUuim0bZjri5NtXBpJ/vAqho=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "adrian_vega",
+    "first_name": "Adrián",
+    "last_name": "Vega",
+    "email": "adrian_vega@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:37:02.063Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 31,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7Sd7oVIOr9QNMZeIJvu6Pf$o4rpxrnHN8ehx8ejkky+o1333Gt/gKfh8W20ghT2Lgg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "daniela_campos",
+    "first_name": "Daniela",
+    "last_name": "Campos",
+    "email": "daniela_campos@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:37:03.559Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 32,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$hoqnD7Lm5hUfIrejhA5ift$T1lt7Nqr71pM+dtt3bJTbMdeg2/cqKkC+jhYQJ2Sy20=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "joaquin_medina",
+    "first_name": "Joaquín",
+    "last_name": "Medina",
+    "email": "joaquin_medina@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:37:05.080Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 33,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$anUmgJNJZTsN53G2IqoiNC$R5IKSGqXg/wNwoy5naZ6jciWsULYLo0gRftadKk4q9w=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "fabiola_guerrero",
+    "first_name": "Fabiola",
+    "last_name": "Guerrero",
+    "email": "fabiola_guerrero@uni.edu.pe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-06T05:37:06.576Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 4,
+  "fields": {
+    "user": 4,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 5,
+  "fields": {
+    "user": 5,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 6,
+  "fields": {
+    "user": 6,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 7,
+  "fields": {
+    "user": 7,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 8,
+  "fields": {
+    "user": 8,
+    "bio": null,
+    "avatar": "default.jpg",
+    "linkedin": null,
+    "github": null,
+    "contact_email": null,
+    "tecnologias": [],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 9,
+  "fields": {
+    "user": 9,
+    "bio": "Apasionada del desarrollo web con React y Django. Me encanta colaborar en proyectos open source.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/maria_garcia",
+    "github": "https://github.com/maria_garcia",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 10,
+  "fields": {
+    "user": 10,
+    "bio": "Estudiante de ciencias de la computación, enfocado en backend e infraestructura cloud.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/carlos_mendoza",
+    "github": "https://github.com/carlos_mendoza",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      8,
+      9,
+      10
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 11,
+  "fields": {
+    "user": 11,
+    "bio": "Desarrolladora frontend creativa. Experta en diseño UI/UX y TypeScript.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/lucia_torres",
+    "github": "https://github.com/lucia_torres",
+    "contact_email": null,
+    "tecnologias": [
+      2,
+      3,
+      6,
+      7
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 12,
+  "fields": {
+    "user": 12,
+    "bio": "Entusiasta de la inteligencia artificial y machine learning con Python.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/diego_rodriguez",
+    "github": "https://github.com/diego_rodriguez",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      8,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 13,
+  "fields": {
+    "user": 13,
+    "bio": "Desarrolladora full stack enfocada en aplicaciones móviles y web.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/ana_martinez",
+    "github": "https://github.com/ana_martinez",
+    "contact_email": null,
+    "tecnologias": [
+      3,
+      5,
+      6,
+      11
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 14,
+  "fields": {
+    "user": 14,
+    "bio": "Fan del desarrollo en C++ y algoritmos competitivos.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/mateo_silva",
+    "github": "https://github.com/mateo_silva",
+    "contact_email": null,
+    "tecnologias": [
+      13,
+      14,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 15,
+  "fields": {
+    "user": 15,
+    "bio": "Ingeniera de software en formación, apasionada por DevOps y automatización.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/sofia_ramirez",
+    "github": "https://github.com/sofia_ramirez",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      9,
+      10,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 16,
+  "fields": {
+    "user": 16,
+    "bio": "Desarrollador backend con Django y PostgreSQL. Contribuidor activo de software libre.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/javier_lopez",
+    "github": "https://github.com/javier_lopez",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      4,
+      8
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 17,
+  "fields": {
+    "user": 17,
+    "bio": "Diseñadora y desarrolladora web apasionada por Vue.js y CSS.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/valentina_gomez",
+    "github": "https://github.com/valentina_gomez",
+    "contact_email": null,
+    "tecnologias": [
+      2,
+      7,
+      12
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 18,
+  "fields": {
+    "user": 18,
+    "bio": "Desarrollador móvil apasionado por soluciones multiplataforma con Flutter.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/gabriel_castro",
+    "github": "https://github.com/gabriel_castro",
+    "contact_email": null,
+    "tecnologias": [
+      11,
+      13
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 19,
+  "fields": {
+    "user": 19,
+    "bio": "Desarrolladora Java y sistemas distribuidos.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/camila_morales",
+    "github": "https://github.com/camila_morales",
+    "contact_email": null,
+    "tecnologias": [
+      8,
+      9,
+      13
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 20,
+  "fields": {
+    "user": 20,
+    "bio": "Frontend developer enfocado en accesibilidad web y UI.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/andres_vargas",
+    "github": "https://github.com/andres_vargas",
+    "contact_email": null,
+    "tecnologias": [
+      2,
+      3,
+      7
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 21,
+  "fields": {
+    "user": 21,
+    "bio": "Investigadora en ciencia de datos y apasionada por Python.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/isabella_rios",
+    "github": "https://github.com/isabella_rios",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      8
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 22,
+  "fields": {
+    "user": 22,
+    "bio": "Desarrollador Full Stack Jr. Aprendiendo arquitecturas modernas.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/fernando_herrera",
+    "github": "https://github.com/fernando_herrera",
+    "contact_email": null,
+    "tecnologias": [
+      3,
+      5,
+      6,
+      9
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 23,
+  "fields": {
+    "user": 23,
+    "bio": "Desarrolladora Python / Django creando APIs REST eficientes.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/elena_flores",
+    "github": "https://github.com/elena_flores",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      4,
+      8,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 24,
+  "fields": {
+    "user": 24,
+    "bio": "Entusiasta del desarrollo cloud native y microservicios.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/lucas_paredes",
+    "github": "https://github.com/lucas_paredes",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      5,
+      9,
+      10
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 25,
+  "fields": {
+    "user": 25,
+    "bio": "Especialista en frontend interactivo y animaciones CSS.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/carolina_rojas",
+    "github": "https://github.com/carolina_rojas",
+    "contact_email": null,
+    "tecnologias": [
+      2,
+      7,
+      12
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 26,
+  "fields": {
+    "user": 26,
+    "bio": "Desarrollador C++ y amante de los videojuegos.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/sebastian_reyes",
+    "github": "https://github.com/sebastian_reyes",
+    "contact_email": null,
+    "tecnologias": [
+      13,
+      14,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 27,
+  "fields": {
+    "user": 27,
+    "bio": "Estudiante de ingeniería de sistemas interesada en ciberseguridad.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/mariana_cruz",
+    "github": "https://github.com/mariana_cruz",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      9,
+      15
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 28,
+  "fields": {
+    "user": 28,
+    "bio": "Desarrollador web enfocado en Django y Node.js.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/rodrigo_aguilar",
+    "github": "https://github.com/rodrigo_aguilar",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 29,
+  "fields": {
+    "user": 29,
+    "bio": "Desarrolladora React y Flutter interesada en UX/UI.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/paula_navarro",
+    "github": "https://github.com/paula_navarro",
+    "contact_email": null,
+    "tecnologias": [
+      3,
+      6,
+      11
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 30,
+  "fields": {
+    "user": 30,
+    "bio": "DevOps en aprendizaje y apasionado por la nube.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/adrian_vega",
+    "github": "https://github.com/adrian_vega",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      9,
+      10
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 31,
+  "fields": {
+    "user": 31,
+    "bio": "Desarrolladora Full Stack con inclinación al backend.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/daniela_campos",
+    "github": "https://github.com/daniela_campos",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      3,
+      4,
+      8
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 32,
+  "fields": {
+    "user": 32,
+    "bio": "Frontend Developer apasionado por React y TypeScript.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/joaquin_medina",
+    "github": "https://github.com/joaquin_medina",
+    "contact_email": null,
+    "tecnologias": [
+      2,
+      3,
+      6
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 33,
+  "fields": {
+    "user": 33,
+    "bio": "Desarrolladora de software con interés en IA y datos.",
+    "avatar": "",
+    "linkedin": "https://linkedin.com/in/fabiola_guerrero",
+    "github": "https://github.com/fabiola_guerrero",
+    "contact_email": null,
+    "tecnologias": [
+      1,
+      8,
+      13
+    ],
+    "intereses": []
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 1,
+  "fields": {
+    "nombre": "Python"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 2,
+  "fields": {
+    "nombre": "JavaScript"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 3,
+  "fields": {
+    "nombre": "React"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 4,
+  "fields": {
+    "nombre": "Django"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 5,
+  "fields": {
+    "nombre": "Node.js"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 6,
+  "fields": {
+    "nombre": "TypeScript"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 7,
+  "fields": {
+    "nombre": "HTML/CSS"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 8,
+  "fields": {
+    "nombre": "PostgreSQL"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 9,
+  "fields": {
+    "nombre": "Docker"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 10,
+  "fields": {
+    "nombre": "AWS"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 11,
+  "fields": {
+    "nombre": "Flutter"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 12,
+  "fields": {
+    "nombre": "Vue.js"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 13,
+  "fields": {
+    "nombre": "Java"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 14,
+  "fields": {
+    "nombre": "C++"
+  }
+},
+{
+  "model": "accounts.technology",
+  "pk": 15,
+  "fields": {
+    "nombre": "Git"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 1,
+  "fields": {
+    "nombre": "Desarrollo Web"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 2,
+  "fields": {
+    "nombre": "Inteligencia Artificial"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 3,
+  "fields": {
+    "nombre": "Ciencia de Datos"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 4,
+  "fields": {
+    "nombre": "Desarrollo Móvil"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 5,
+  "fields": {
+    "nombre": "Ciberseguridad"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 6,
+  "fields": {
+    "nombre": "DevOps"
+  }
+},
+{
+  "model": "accounts.interest",
+  "pk": 7,
+  "fields": {
+    "nombre": "Open Source"
+  }
+}
+]
