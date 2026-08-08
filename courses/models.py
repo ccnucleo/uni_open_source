@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify # <-- Importación nueva para generar URLs amigables
 
 class Category(models.Model):
     name = models.CharField(max_length=80, verbose_name="Nombre de la Categoría")
-    
+
     class Meta:
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
@@ -34,6 +35,7 @@ class Course(models.Model):
     BEGINNER = "beginner"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
+    
     LEVEL_CHOICES = [
         ("beginner", "Principiante"),
         ("intermediate", "Intermedio"),
@@ -46,6 +48,7 @@ class Course(models.Model):
     YOUTUBE = "youtube"
     PLATFORM = "platform"
     DOCS = "docs"
+
     RESOURCE_CHOICES = [
         (YOUTUBE, "Lista de YouTube"),
         (PLATFORM, "Plataforma Web"),
@@ -53,10 +56,13 @@ class Course(models.Model):
     ]
 
     title = models.CharField(max_length=120, verbose_name="Título del Curso")
+    
+    # NUEVO CAMPO: Slug para URLs dinámicas amigables (SEO)
+    slug = models.SlugField(max_length=150, unique=True, blank=True, null=True, verbose_name="Slug (URL dinámica)")
+    
     short_description = models.CharField(max_length=255, blank=True, verbose_name="Descripción Corta")
     description = models.TextField(blank=True, verbose_name="Descripción Detallada")
     
-    # RELACIONES MEJORADAS PARA FILTROS
     category = models.ForeignKey(
         Category, 
         on_delete=models.SET_NULL, 
@@ -65,7 +71,6 @@ class Course(models.Model):
         verbose_name="Categoría Temática"
     )
     tags = models.ManyToManyField(Tag, blank=True, verbose_name="Tecnologías")
-    
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default=BEGINNER, verbose_name="Nivel")
     url = models.URLField(max_length=500, blank=True, verbose_name="Enlace al curso gratuito")
     image = models.ImageField(upload_to="courses/thumbnails/", blank=True, null=True, verbose_name="Imagen del curso")
@@ -87,7 +92,15 @@ class Course(models.Model):
         verbose_name_plural = "Cursos"
 
     def __str__(self):
-        # Forma más segura de manejar las categorías vacías
         if self.category:
             return f"{self.title} ({self.category.name})"
         return f"{self.title} (Sin categoría)"
+
+    def save(self, *args, **kwargs):
+        """
+        Sobrescribe el método save para generar automáticamente 
+        el slug a partir del título si este no existe.
+        """
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)

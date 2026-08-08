@@ -8,13 +8,14 @@
 {% endblock %}
 
 {% block content %}
-<main class="domain-page" style="max-width: 850px;"> 
+<main class="domain-page" style="max-width: 1000px;"> 
     <div style="margin-bottom: 2rem;">
         <a href="{% url 'courses:list' %}" style="color: var(--primary-orange); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
             <span style="font-size: 1.2rem;">&larr;</span> Volver al catálogo
         </a>
     </div>
 
+    <!-- Cabecera del Curso -->
     <section class="domain-header" style="text-align: left; margin-bottom: 2rem;">
         <div class="course-tags" style="margin-bottom: 1rem;">
             {% if course.category %}
@@ -33,44 +34,67 @@
         </div>
     </section>
 
-    <section class="domain-content" style="background: var(--bg-card); padding: 2.5rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <!-- Estructura de 2 Columnas -->
+    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: start;">
         
-        {% if course.image %}
-            <img src="{{ course.image.url }}" alt="{{ course.title }}" style="width: 100%; border-radius: 8px; margin-bottom: 2.5rem; object-fit: cover; max-height: 400px;">
-        {% endif %}
+        <!-- COLUMNA PRINCIPAL (Izquierda) -->
+        <div class="domain-content" style="background: var(--bg-card); padding: 2.5rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+            {% if course.image %}
+                <img src="{{ course.image.url }}" alt="Portada de {{ course.title }}" style="width: 100%; border-radius: 8px; margin-bottom: 2.5rem; object-fit: cover; max-height: 400px;">
+            {% endif %}
 
-        <!-- Corrección: Se cambió el color fijo del borde inferior por la variable dinámica -->
-        <h3 style="font-size: 1.5rem; color: var(--dark-slate); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">Acerca de este recurso</h3>
-        
-        <div style="line-height: 1.8; color: var(--text-muted); font-size: 1.05rem; white-space: pre-line;">
-            {{ course.description|default:course.short_description }}
-        </div>
-
-        {% if course.tags.all %}
-        <div style="margin-top: 2rem;">
-            <h4 style="color: var(--dark-slate); margin-bottom: 0.8rem;">Tecnologías clave:</h4>
-            <div class="course-tags">
-                {% for tag in course.tags.all %}
-                    <span class="tag-pill" style="font-size: 0.9rem;">#{{ tag.name }}</span>
-                {% endfor %}
+            <h3 style="font-size: 1.5rem; color: var(--dark-slate); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">Acerca de este recurso</h3>
+            
+            <div style="line-height: 1.8; color: var(--text-muted); font-size: 1.05rem; white-space: pre-line;">
+                {{ course.description|default:course.short_description }}
             </div>
-        </div>
-        {% endif %}
 
-        <!-- Corrección: Fondo con rgba para que herede y borde dinámico -->
-        <div style="margin-top: 3rem; background: rgba(128, 128, 128, 0.1); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <strong style="display: block; color: var(--dark-slate); font-size: 1.1rem;">¿Listo para empezar?</strong>
-                <span style="color: var(--text-muted); font-size: 0.95rem;">Accede al contenido oficial de forma gratuita.</span>
+            {% if course.tags.all %}
+            <div style="margin-top: 2rem;">
+                <h4 style="color: var(--dark-slate); margin-bottom: 0.8rem;">Tecnologías clave:</h4>
+                <div class="course-tags">
+                    {% for tag in course.tags.all %}
+                        <span class="tag-pill" style="font-size: 0.9rem;">#{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
             </div>
-            {% if course.url %}
-                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
-                    Ir al recurso oficial &nearr;
-                </a>
-            {% else %}
-                <p style="color: #ef4444; font-weight: 500;">Enlace no disponible por el momento.</p>
             {% endif %}
         </div>
+
+        <!-- COLUMNA SIDEBAR (Derecha) -->
+        <aside style="position: sticky; top: 2rem; background: var(--bg-card); padding: 2rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Info del Instructor -->
+            <div>
+                <h4 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Aportado por</h4>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--primary-orange); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: bold;">
+                        {{ course.owner.username|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <strong style="display: block; font-size: 1.1rem; color: var(--dark-slate);">@{{ course.owner.username }}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Comunidad UNI Open Source</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color);">
+
+            <!-- CTA / Botón de Acción -->
+            <div style="text-align: center;">
+                <strong style="display: block; color: var(--dark-slate); font-size: 1.1rem; margin-bottom: 0.8rem;">¿Listo para empezar?</strong>
+                
+                {% if course.url %}
+                    <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange" style="display: block; width: 100%; padding: 1rem; font-size: 1.1rem; text-align: center;">
+                        Ir al recurso oficial &nearr;
+                    </a>
+                    <span style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Serás redirigido a una plataforma externa.</span>
+                {% else %}
+                    <p style="color: #ef4444; font-weight: 500; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">Enlace no disponible por el momento.</p>
+                {% endif %}
+            </div>
+        </aside>
+        
     </section>
 </main>
 {% endblock %}

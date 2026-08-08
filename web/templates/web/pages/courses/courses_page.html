@@ -93,7 +93,7 @@
                 
                 <!-- Tarjeta de Curso: Wrapper interactivo (Full-card click) -->
                 <article class="domain-card" 
-                         onclick="window.location.href='{% url 'courses:detail' course.id %}'" 
+                         onclick="window.location.href='{% url 'courses:detail' course.slug %}'" 
                          style="cursor: pointer; transition: transform 0.2s ease-in-out;" 
                          onmouseover="this.style.transform='translateY(-5px)'" 
                          onmouseout="this.style.transform='translateY(0)'">
@@ -149,7 +149,7 @@
                                 Ir al recurso
                             </a>
                         {% endif %}
-                        <a href="{% url 'courses:detail' course.id %}" class="btn btn-dark" onclick="event.stopPropagation();">
+                        <a href="{% url 'courses:detail' course.slug %}" class="btn btn-dark" onclick="event.stopPropagation();">
                             Detalles
                         </a>
                     </div>
