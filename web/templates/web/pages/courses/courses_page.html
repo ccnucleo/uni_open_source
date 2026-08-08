@@ -9,143 +9,179 @@
 
 {% block content %}
 <main class="domain-page">
+    <!-- ==========================================
+         CABECERA DEL CATÁLOGO
+    =========================================== -->
     <section class="domain-header">
         <h1>Ruta de Aprendizaje</h1>
         <p>Los mejores recursos gratuitos seleccionados para potenciar tus habilidades en Desarrollo de Software.</p>
     </section>
 
     <div class="catalog-container">
-
+        
+        <!-- ==========================================
+             SIDEBAR: Filtros de Búsqueda
+        =========================================== -->
         <aside class="filters-sidebar">
             <form method="get" id="filtersForm">
                 <h3>Filtrar Recursos</h3>
 
+                <!-- Búsqueda por texto -->
                 <div class="filter-group">
                     <label for="searchInput">Buscar por nombre del curso</label>
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" id="searchInput" name="q" value="{{ query }}"
-                            placeholder="Ej. Python, React, SQL...">
+                        <input type="text" id="searchInput" name="q" value="{{ query }}" placeholder="Ej. Python, React, SQL...">
                         <button type="submit" class="btn btn-dark" style="white-space: nowrap;">Buscar</button>
                     </div>
                 </div>
 
+                <!-- Filtro de Categorías -->
                 <div class="filter-group">
                     <label for="categorySelect">Categoría Principal</label>
-                    <select id="categorySelect" name="categoria"
-                        onchange="document.getElementById('filtersForm').submit()">
+                    <select id="categorySelect" name="categoria" onchange="document.getElementById('filtersForm').submit()">
                         <option value="">Todas las categorías</option>
                         {% for category in categories %}
-                        <option value="{{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+                            <option value="{{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
 
+                <!-- Filtro de Niveles -->
                 <div class="filter-group">
                     <label>Nivel de Dificultad</label>
                     <div class="checkbox-group">
                         {% for level_code, level_label in levels %}
-                        <label>
-                            <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if level_code in selected_levels %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
-                            {{ level_label }}
-                        </label>
+                            <label>
+                                <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if level_code in selected_levels %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
+                                {{ level_label }}
+                            </label>
                         {% endfor %}
                     </div>
                 </div>
 
+                <!-- Filtro de Tecnologías (Tags) -->
                 <div class="filter-group">
                     <label>Tecnologías (Tags)</label>
                     <div class="tag-container-box">
                         {% for tag in tags %}
-                        <label style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                            <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
-                            <span style="margin-left: 8px;">{{ tag.name }}</span>
-                        </label>
+                            <label style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                                <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
+                                <span style="margin-left: 8px;">{{ tag.name }}</span>
+                            </label>
                         {% empty %}
-                        <p style="font-size: 0.8rem; color: var(--text-secondary);">No hay tags disponibles.</p>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">No hay tags disponibles.</p>
                         {% endfor %}
                     </div>
                 </div>
 
+                <!-- Botón de Limpiar (Visible solo si hay filtros activos) -->
                 {% if query or selected_category_id or selected_levels or selected_tag_ids %}
-                <a href="{% url 'courses:list' %}" class="btn btn-dark"
-                    style="display: block; text-align: center; margin-top: 10px;">Limpiar filtros</a>
+                    <a href="{% url 'courses:list' %}" class="btn btn-dark" style="display: block; text-align: center; margin-top: 10px;">
+                        Limpiar filtros
+                    </a>
                 {% endif %}
             </form>
         </aside>
 
+        <!-- ==========================================
+             GRILLA DE CURSOS (Resultados)
+        =========================================== -->
         <section class="domain-grid" id="coursesGrid">
             {% for course in courses %}
-            <article class="domain-card">
+                
+                <!-- Tarjeta de Curso: Wrapper interactivo (Full-card click) -->
+                <article class="domain-card" 
+                         onclick="window.location.href='{% url 'courses:detail' course.id %}'" 
+                         style="cursor: pointer; transition: transform 0.2s ease-in-out;" 
+                         onmouseover="this.style.transform='translateY(-5px)'" 
+                         onmouseout="this.style.transform='translateY(0)'">
 
-                {% if course.image %}
-                <div class="course-img-wrapper">
-                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="course-card-img">
-                </div>
-                {% else %}
-                <div class="course-img-wrapper empty-img">
-                    <span>&lt;/&gt;</span>
-                </div>
-                {% endif %}
-
-                <div class="card-content">
-
-                    {% if course.category %}
-                    <span class="category-label">{{ course.category.name }}</span>
+                    <!-- Renderizado de Portada -->
+                    {% if course.image %}
+                        <div class="course-img-wrapper">
+                            <img src="{{ course.image.url }}" alt="Portada de {{ course.title }}" class="course-card-img" style="height: 200px; width: 100%; object-fit: cover; display: block;">
+                        </div>
                     {% else %}
-                    <span class="category-label">General</span>
+                        <!-- Fallback visual para cursos sin imagen -->
+                        <div class="course-img-wrapper empty-img" style="height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border-bottom: 1px solid var(--border-color);">
+                            <span style="font-size: 2.5rem; font-weight: bold; color: var(--text-muted);">&lt;/&gt;</span>
+                        </div>
                     {% endif %}
 
-                    <h2>{{ course.title }}</h2>
+                    <div class="card-content">
+                        <!-- Categoría Principal -->
+                        <span class="category-label">{{ course.category.name|default:'General' }}</span>
 
-                    <div class="course-badges">
-                        <span class="badge badge-level">{{ course.get_level_display }}</span>
-                        <span class="badge badge-type">{{ course.get_resource_type_display }}</span>
-                        {% if course.has_certification %}
-                        <span class="badge cert-badge">🏆 Certificado</span>
+                        <!-- Título truncado (Evita deformar la grilla con textos largos) -->
+                        <h2 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-bottom: 10px;" title="{{ course.title }}">
+                            {{ course.title }}
+                        </h2>
+
+                        <!-- Metadatos (Badges) -->
+                        <div class="course-badges">
+                            <span class="badge badge-level">{{ course.get_level_display }}</span>
+                            <span class="badge badge-type">{{ course.get_resource_type_display }}</span>
+                            {% if course.has_certification %}
+                                <span class="badge cert-badge">🏆 Certificado</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Descripción corta (Máximo 2 líneas) -->
+                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}
+                        </p>
+
+                        <!-- Etiquetas secundarias -->
+                        <div class="course-tags">
+                            {% for tag in course.tags.all %}
+                                <span class="tag-pill">#{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="course-actions">
+                        {% if course.url %}
+                            <!-- event.stopPropagation() evita disparar el click global de la tarjeta -->
+                            <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange" onclick="event.stopPropagation();">
+                                Ir al recurso
+                            </a>
                         {% endif %}
+                        <a href="{% url 'courses:detail' course.id %}" class="btn btn-dark" onclick="event.stopPropagation();">
+                            Detalles
+                        </a>
                     </div>
-
-                    <p>{{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}</p>
-
-                    <div class="course-tags">
-                        {% for tag in course.tags.all %}
-                        <span class="tag-pill">#{{ tag.name }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="course-actions">
-                    {% if course.url %}
-                    <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange">Ir al
-                        recurso</a>
-                    {% endif %}
-                    <a href="{% url 'courses:detail' course.id %}" class="btn btn-dark">Detalles</a>
-                </div>
-            </article>
+                </article>
+            
             {% empty %}
-            <div class="domain-card-empty" style="grid-column: 1 / -1;">
-                <h2>Sin coincidencias</h2>
-                <p>No encontramos cursos que coincidan con esos filtros. ¡Prueba otra combinación!</p>
-            </div>
+                <!-- Estado vacío: Búsqueda sin resultados -->
+                <div class="domain-card-empty" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <h2>Sin coincidencias</h2>
+                    <p>No encontramos cursos que coincidan con esos filtros. ¡Prueba otra combinación!</p>
+                </div>
             {% endfor %}
         </section>
     </div>
 
+    <!-- ==========================================
+         PAGINACIÓN
+    =========================================== -->
     {% if page_obj.paginator.num_pages > 1 %}
-    <nav class="pagination"
-        style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 2.5rem;">
-        {% if page_obj.has_previous %}
-        <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="btn btn-dark">&larr; Anterior</a>
-        {% endif %}
+        <nav class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 2.5rem;">
+            {% if page_obj.has_previous %}
+                <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="btn btn-dark">&larr; Anterior</a>
+            {% endif %}
 
-        <span style="color: var(--text-secondary);">
-            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-        </span>
+            <span style="color: var(--text-secondary);">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
 
-        {% if page_obj.has_next %}
-        <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="btn btn-dark">Siguiente &rarr;</a>
-        {% endif %}
-    </nav>
+            {% if page_obj.has_next %}
+                <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="btn btn-dark">Siguiente &rarr;</a>
+            {% endif %}
+        </nav>
     {% endif %}
 </main>
 {% endblock %}
