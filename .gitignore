@@ -13,3 +13,7 @@ media/profile_pics/
 # Local environment files
 .env
 .env.*
+
+# SQLite databases (local only, never tracked)
+db.sqlite3
+*.sqlite3
