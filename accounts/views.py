@@ -113,10 +113,15 @@ def login_view(request):
 @login_required(login_url="accounts:login")
 @never_cache
 def profile_view(request):
+    from projects.models import Project
+    from django.db.models import Q
+    
     # Extraemos TODOS los datos (en uso y pre-creados) para el autocompletado del modal
     all_tags = list(ProjectTag.objects.values_list('name', flat=True))
     all_techs = list(ProjectTechnology.objects.values_list('name', flat=True))
     all_users = list(User.objects.exclude(username=request.user.username).values_list('username', flat=True))
+    
+    my_projects = Project.objects.filter(Q(owner=request.user) | Q(collaborators=request.user)).distinct().order_by('-created_at')
 
     return render(
         request,
@@ -128,6 +133,7 @@ def profile_view(request):
             "all_tags": json.dumps(all_tags),
             "all_techs": json.dumps(all_techs),
             "all_users": json.dumps(all_users),
+            "my_projects": my_projects,
         },
     )
 
@@ -141,6 +147,16 @@ def register_view(request):
         username = request.POST.get("username")
         email = request.POST.get("email").lower()
         password = request.POST.get("password")
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+
+        if not first_name or len(first_name) < 3 or not all(c.isalpha() or c.isspace() for c in first_name):
+            messages.error(request, "El nombre debe tener al menos 3 letras y no contener números.")
+            return redirect("accounts:register")
+            
+        if not last_name or len(last_name) < 3 or not all(c.isalpha() or c.isspace() for c in last_name):
+            messages.error(request, "El apellido debe tener al menos 3 letras y no contener números.")
+            return redirect("accounts:register")
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "El usuario ya existe")
@@ -156,7 +172,9 @@ def register_view(request):
         UnverifiedUser.objects.create(
             username=username,
             email=email,
-            password=password, 
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
             verification_code=codigo_verificacion
         )
 
@@ -214,7 +232,9 @@ def verify_code_api(request):
                 new_user = User(
                     username=temp_user.username,
                     email=temp_user.email,
-                    password=temp_user.password 
+                    password=temp_user.password,
+                    first_name=temp_user.first_name,
+                    last_name=temp_user.last_name,
                 )
                 new_user.save()
                 
@@ -384,8 +404,11 @@ def update_profile_api(request):
                     return JsonResponse({'success': False, 'error': 'La URL de GitHub no es válida.'})
                     
                 try:
-                    if contact_email: validate_email(contact_email)
-                    profile.contact_email = contact_email
+                    if contact_email: 
+                        validate_email(contact_email)
+                        profile.contact_email = contact_email
+                    else:
+                        profile.contact_email = user.email
                 except ValidationError:
                     return JsonResponse({'success': False, 'error': 'El correo de contacto no es válido.'})
                 

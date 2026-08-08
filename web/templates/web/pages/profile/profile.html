@@ -172,17 +172,21 @@
 {% endblock %}
 
 {% block content %}
-{% static 'web/img/avatar.jpg' as default_avatar %}
 <form style="display:none;">{% csrf_token %}</form>
 
 <div class="profile-float-card">
-    <div class="profile-pic" id="profile-pic-container" style="overflow: hidden;">
+    <div class="profile-pic" id="profile-pic-container" style="overflow: hidden; cursor: pointer;">
         {% if request.user.profile.avatar %}
-        <img src="{{ request.user.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_avatar }}';"
-            alt="Usuario" id="profile-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+        <img src="{{ request.user.profile.avatar.url }}" alt="Usuario" id="profile-avatar"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;">
         {% else %}
-        <img src="{{ default_avatar }}" alt="Usuario" id="profile-avatar"
-            style="width: 100%; height: 100%; object-fit: cover;">
+        <div id="profile-avatar" class="profile-initials-avatar"
+            data-nombre="{{ request.user.first_name|default:'' }}"
+            data-apellido="{{ request.user.last_name|default:'' }}"
+            data-username="{{ request.user.username }}"
+            style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: white; letter-spacing: 0.02em;">
+            {% if request.user.first_name %}{{ request.user.first_name|make_list|first|upper }}{{ request.user.last_name|make_list|first|upper }}{% else %}{{ request.user.username|make_list|first|upper }}{% endif %}
+        </div>
         {% endif %}
         <div class="photo-overlay"><i class="fas fa-camera"></i><span>Cambiar</span></div>
     </div>
@@ -195,7 +199,7 @@
     <p class="username">@{{ request.user.username }}</p>
 
     <div class="stats-row">
-        <div class="stat-item"><strong id="stat-proyectos">{{ request.user.owned_projects.count|default:"0"}}</strong>
+        <div class="stat-item"><strong id="stat-proyectos">{{ my_projects.count|default:"0"}}</strong>
             <span>Proyectos</span>
         </div>
         <div class="stat-divider"></div>
@@ -223,8 +227,7 @@
                     <div class="sobre-mi-display" id="display-sobre-mi">
                         {% if request.user.profile.bio %}
                         <div class="user-text"
-                            style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">
-                            {{ request.user.profile.bio }}</div>
+                            style="white-space: pre-wrap; word-break: break-word; padding: 10px 0; color: var(--gray-700); line-height: 1.6; max-height: 120px; overflow: hidden; transition: max-height 0.3s ease;">{{ request.user.profile.bio }}</div>
                         {% else %}
                         <div class="placeholder-text">Aquí va tu descripción detallada</div>
                         {% endif %}
@@ -301,9 +304,9 @@
                     <div class="contact-item" data-type="email">
                         <i class="fas fa-envelope"></i>
                         <span class="contact-display"
-                            id="display-email">{{request.user.profile.contact_email|default:"tucorreo@ejemplo.com"}}</span>
+                            id="display-email">{{request.user.profile.contact_email|default:request.user.email}}</span>
                         <input type="email" class="contact-input" id="input-email"
-                            value="{{ request.user.profile.contact_email|default:'' }}"
+                            value="{{ request.user.profile.contact_email|default:request.user.email }}"
                             placeholder="tucorreo@ejemplo.com">
                     </div>
                 </div>
@@ -323,7 +326,7 @@
         <section class="top-projects-section">
             <h3 class="section-title">Proyectos Top <i class="fas fa-star" style="color:#f59e0b;"></i></h3>
             <div class="project-grid">
-                {% for project in request.user.owned_projects.all|slice:":2" %}
+                {% for project in my_projects|slice:":2" %}
                 <div class="project-card" style="position: relative;">
                     <a href="{% url 'projects:detail' project.id %}" class="stretched-link"></a>
                     {% if project.image %}
@@ -351,7 +354,7 @@
             <div class="projects-title-row">
                 <div class="projects-title">
                     <h3>Todos los Proyectos <span class="project-count"
-                            id="project-count">({{request.user.owned_projects.count}})</span></h3>
+                            id="project-count">({{ my_projects.count }})</span></h3>
                     <div class="view-toggle">
                         <button class="view-btn active" id="btn-view-grid" title="Vista cuadrícula"><i
                                 class="fas fa-th-large"></i></button>
@@ -383,7 +386,7 @@
         </div>
 
         <div class="projects-grid" id="projects-grid">
-            {% for project in request.user.owned_projects.all %}
+            {% for project in my_projects %}
             <a href="{% url 'projects:detail' project.id %}" class="project-showcase-card"
                 style="text-decoration: none; display: flex; flex-direction: column; background: var(--bg-card); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: all 0.3s ease; border: 1px solid var(--border-color);">
                 {% if project.image %}
@@ -399,8 +402,7 @@
                     </div>
 
                     <div style="padding: 24px; display: flex; flex-direction: column; flex: 1;">
-                        <h2 style="font-size: 1.25rem; color: var(--text-primary); margin: 0 0 10px 0;">{{ project.title
-                            }}</h2>
+                        <h2 style="font-size: 1.25rem; color: var(--text-primary); margin: 0 0 10px 0;">{{ project.title }}</h2>
                         <p
                             style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 20px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                             {{ project.summary|default:'Sin descripción breve disponible.' }}
@@ -427,8 +429,7 @@
                                     {{ project.owner.username|make_list|first|upper }}
                                     {% endif %}
                                 </div>
-                                <span style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">{{
-                                    project.owner.username }}</span>
+                                <span style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">{{ project.owner.username }}</span>
                             </div>
                             <div
                                 style="font-size: 0.9rem; color: var(--text-secondary); font-weight: bold; display: flex; align-items: center; gap: 6px;">
@@ -459,9 +460,18 @@
             <div class="edit-section">
                 <h4><i class="fas fa-camera"></i> Foto de Perfil</h4>
                 <div class="photo-upload-container">
-                    <div class="photo-preview">
-                        <img src="{% if request.user.profile.avatar %}{{ request.user.profile.avatar.url }}{% else %}{% static 'web/img/avatar.jpg' %}{% endif %}"
-                            alt="Preview" id="photo-preview-img" data-default="{% static 'web/img/avatar.jpg' %}">
+                    <div class="photo-preview" id="modal-photo-preview">
+                        {% if request.user.profile.avatar %}
+                        <img src="{{ request.user.profile.avatar.url }}" alt="Preview" id="photo-preview-img">
+                        {% else %}
+                        <div id="photo-preview-img" class="profile-initials-avatar"
+                            data-nombre="{{ request.user.first_name|default:'' }}"
+                            data-apellido="{{ request.user.last_name|default:'' }}"
+                            data-username="{{ request.user.username }}"
+                            style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: white; letter-spacing: 0.02em;">
+                            {% if request.user.first_name %}{{ request.user.first_name|make_list|first|upper }}{{ request.user.last_name|make_list|first|upper }}{% else %}{{ request.user.username|make_list|first|upper }}{% endif %}
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="photo-upload-actions">
                         <label for="input-photo" class="btn-upload-photo">

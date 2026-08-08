@@ -58,7 +58,7 @@ main.content-area.project-detail-area { padding-top: 0; padding-left: 0; padding
 .hero-tag-pill { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.35); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; backdrop-filter: blur(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
 
 .hero-author-card { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; }
-.author-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.author-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; background: var(--gray-200); color: white; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0; }
 .author-text { display: flex; flex-direction: column; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
 .author-text strong { font-size: 1.15rem; font-weight: 800; color: white; }
 .author-text span { font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
@@ -150,13 +150,13 @@ input[type="file"].figma-input::file-selector-button { background: var(--orange-
 input[type="file"].figma-input::file-selector-button:hover { transform: translateY(-2px); }
 .figma-textarea { resize: vertical !important; min-height: 100px !important; line-height: 1.6 !important; }
 
-.figma-footer { display: flex; justify-content: space-between; padding: 20px 30px; background: transparent; border-top: 1px solid var(--border-color); position: sticky; bottom: 0; border-radius: 0 0 24px 24px;}
+.figma-footer { display: flex; justify-content: space-between; padding: 20px 30px; background: var(--bg-card); border-top: 1px solid var(--border-color); position: sticky; bottom: 0; border-radius: 0 0 24px 24px;}
 .figma-btn-cancel { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 12px 26px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
 .figma-btn-cancel:hover { background: var(--bg-main); }
 .figma-btn-save { background: var(--orange-primary); color: white; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);}
 
 /* INPUT PREDICTIVO */
-.predictive-container { border: 1px solid var(--border-color); border-radius: 12px; padding: 8px; background: var(--bg-main); margin-bottom: 20px; position: relative; }
+.predictive-container { border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; background: var(--bg-main); margin-bottom: 20px; position: relative; display: flex; flex-direction: column; gap: 8px; }
 .predictive-container:focus-within { border-color: var(--orange-primary); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1); }
 .pills-area { display: flex; flex-wrap: wrap; gap: 6px; }
 .pill-item { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
@@ -164,7 +164,7 @@ input[type="file"].figma-input::file-selector-button:hover { transform: translat
 .pill-item.collab-pill { background: var(--bg-card); color: var(--text-primary); }
 .pill-item span { cursor: pointer; font-weight: 900; color: var(--text-secondary); }
 .pill-item span:hover { color: var(--orange-primary); }
-.predictive-input { border: none; outline: none; flex: 1; min-width: 120px; padding: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: transparent; color: var(--text-primary); }
+.predictive-input { border: none; outline: none; width: 100%; box-sizing: border-box; padding: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: transparent; color: var(--text-primary); }
 .predictive-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-height: 150px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px;}
 .predictive-item { padding: 10px 14px; font-size: 0.9rem; cursor: pointer; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
 .predictive-item:hover { background: var(--bg-main); color: var(--orange-primary); font-weight: bold;}
@@ -181,5 +181,19 @@ input[type="file"].figma-input::file-selector-button:hover { transform: translat
 .gallery-upload-area:hover { border-color: var(--orange-primary); background: var(--orange-light); }
 .multi-preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
 .img-box { position: relative; width: 80px; height: 80px; border-radius: 12px; border: 1px solid var(--border-color); }
-.img-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.gallery-preview-img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+/* =======================================
+   REFINAMIENTOS UX (Scroll y Modales)
+======================================= */
+body.modal-open { overflow: hidden; }
+
+.modal-body::-webkit-scrollbar, 
+.modal-figma-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-track, 
+.modal-figma-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb, 
+.modal-figma-body::-webkit-scrollbar-thumb { background-color: var(--gray-300); border-radius: 10px; }
+.modal-body::-webkit-scrollbar-thumb:hover, 
+.modal-figma-body::-webkit-scrollbar-thumb:hover { background-color: var(--gray-400); }
 .img-box .delete-btn { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }

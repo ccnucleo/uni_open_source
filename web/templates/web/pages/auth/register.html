@@ -28,8 +28,18 @@
 
             <form method="POST" id="register-form">
                 {% csrf_token %}
+                <div class="input-group">
+                    <label for="first_name">Nombre</label>
+                    <input type="text" id="first_name" name="first_name" placeholder="Tu nombre" required autocomplete="given-name" minlength="3" pattern="^[A-Za-zÀ-ÿ\s]{3,}$" title="Solo letras y espacios, mínimo 3 caracteres" value="{{ first_name_digitado|default:'' }}">
+                </div>
+                
+                <div class="input-group">
+                    <label for="last_name">Apellido</label>
+                    <input type="text" id="last_name" name="last_name" placeholder="Tu apellido" required autocomplete="family-name" minlength="3" pattern="^[A-Za-zÀ-ÿ\s]{3,}$" title="Solo letras y espacios, mínimo 3 caracteres" value="{{ last_name_digitado|default:'' }}">
+                </div>
+
                 <div class="input-group" style="position: relative;">
-                    <label for="username">Nombre</label>
+                    <label for="username">Nombre de usuario</label>
                     <input type="text" id="username" name="username" placeholder="lucy_uni" required autocomplete="off" value="{{ username_digitado|default:'' }}">
                     
                     <div id="username-status" class="username-tooltip">

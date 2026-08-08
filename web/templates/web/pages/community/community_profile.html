@@ -8,39 +8,45 @@
 {% endblock %}
 
 {% block content %}
-    {% static 'web/img/avatar.jpg' as default_avatar %}
     <div class="profile-float-card">
         <div class="profile-pic" id="profile-pic-container" style="overflow: hidden;">
             {% if public_user.profile.avatar %}
-                <img src="{{ public_user.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_avatar }}';" alt="{{ public_user.username }}" id="profile-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ public_user.profile.avatar.url }}" alt="{{ public_user.username }}" id="profile-avatar" style="width: 100%; height: 100%; object-fit: cover; display: block;">
             {% else %}
-                <img src="{{ default_avatar }}" alt="{{ public_user.username }}" id="profile-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                <div id="profile-avatar" class="profile-initials-avatar"
+                    data-username="{{ public_user.username }}"
+                    style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: white; letter-spacing: 0.02em;">
+                    {% if public_user.first_name %}{{ public_user.first_name|make_list|first|upper }}{{ public_user.last_name|make_list|first|upper }}{% else %}{{ public_user.username|make_list|first|upper }}{% endif %}
+                </div>
             {% endif %}
         </div>
-        
-        <h2 class="full-name" id="profile-fullname">
-            {% if public_user.first_name %}
-                {{ public_user.first_name }}<br>{{ public_user.last_name }}
-            {% else %}
-                {{ public_user.username }}
-            {% endif %}
-        </h2>
-        <p class="username">@{{ public_user.username }}</p>
+        <div class="profile-card-content">
+            <h2 class="full-name" id="profile-fullname" style="text-align: center;">
+                {% if public_user.first_name %}
+                    {{ public_user.first_name }} {{ public_user.last_name }}
+                {% else %}
+                    {{ public_user.username }}
+                {% endif %}
+            </h2>
+            <p class="username" style="text-align: center;">@{{ public_user.username }}</p>
+        </div>
 
-        <div class="stats-row">
-            <div class="stat-item">
-                <strong id="stat-proyectos">{{ public_projects.count|default:"0" }}</strong>
-                <span>Proyectos</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-                <strong>0</strong>
-                <span>Seguidores</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-                <strong>0</strong>
-                <span>Vistas</span>
+        <div class="profile-card-actions">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <strong id="stat-proyectos">{{ public_projects.count|default:"0" }}</strong>
+                    <span>Proyectos</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <strong>0</strong>
+                    <span>Seguidores</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <strong>0</strong>
+                    <span>Vistas</span>
+                </div>
             </div>
         </div>
     </div>
@@ -65,9 +71,7 @@
                     <h3><span class="section-dot"></span>Sobre mí</h3>
                     <div class="sobre-mi-container">
                         <div class="sobre-mi-display">
-                            <span class="user-text">
-                                {{ public_user.profile.bio }}
-                            </span>
+                            <span class="user-text" style="white-space: pre-wrap; word-break: break-word;">{{ public_user.profile.bio }}</span>
                         </div>
                     </div>
                 </div>
@@ -122,7 +126,7 @@
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
                             <span class="contact-display">
-                                <a href="mailto:{{ public_user.email }}" style="color: inherit; text-decoration: none;">{{ public_user.email }}</a>
+                                <a href="mailto:{{ public_user.profile.contact_email|default:public_user.email }}" style="color: inherit; text-decoration: none;">{{ public_user.profile.contact_email|default:public_user.email }}</a>
                             </span>
                         </div>
                     </div>

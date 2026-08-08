@@ -3,9 +3,13 @@ from django.urls import path, include
 from accounts import views as accounts_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Favicon (evita el 404 en /favicon.ico)
+    path('favicon.ico', RedirectView.as_view(url='/static/web/favicon.ico', permanent=True)),
     
     # La página de inicio (raíz de la web)
     path('', accounts_views.index_view, name='index'),

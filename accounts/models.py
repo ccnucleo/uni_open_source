@@ -46,7 +46,9 @@ def save_user_profile(sender, instance, **kwargs):
 class UnverifiedUser(models.Model):
     username = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128) 
+    password = models.CharField(max_length=128)
+    first_name = models.CharField(max_length=150, blank=True, default='')
+    last_name = models.CharField(max_length=150, blank=True, default='')
     verification_code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
 

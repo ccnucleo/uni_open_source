@@ -26,7 +26,10 @@
                 {% if user.profile.avatar %}
                     <img src="{{ user.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_topbar_avatar }}';" alt="Avatar de perfil" style="width: 100%; height: 100%; object-fit: cover;">
                 {% else %}
-                    <img src="{{ default_topbar_avatar }}" alt="Avatar de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="auto-avatar" data-name="{{ user.username }}"
+                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; color: white;">
+                        {% if user.first_name %}{{ user.first_name|make_list|first|upper }}{{ user.last_name|make_list|first|upper }}{% else %}{{ user.username|make_list|first|upper }}{% endif %}
+                    </div>
                 {% endif %}
             </a>
             {% else %}

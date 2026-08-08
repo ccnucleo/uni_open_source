@@ -1,9 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from projects.models import Project
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 
 @login_required(login_url="accounts:login")
 def community_list_view(request):
@@ -15,7 +15,8 @@ def community_list_view(request):
     developers = User.objects.filter(
         is_active=True, 
         is_superuser=False
-    ).exclude(id=request.user.id).select_related('profile').prefetch_related('profile__tecnologias', 'owned_projects')
+    ).exclude(id=request.user.id).select_related('profile').prefetch_related('profile__tecnologias')\
+    .annotate(total_projects=Count('owned_projects', distinct=True) + Count('collaborated_projects', distinct=True))
 
     if search_query:
         developers = developers.filter(
@@ -51,6 +52,9 @@ from django.db.models import Q
 
 @login_required(login_url="accounts:login")
 def community_profile_view(request, username):
+    if request.user.username == username:
+        return redirect('accounts:profile')
+        
     # Buscamos al usuario por su nombre exacto, si no existe da error 404
     public_user = get_object_or_404(User, username=username)
     

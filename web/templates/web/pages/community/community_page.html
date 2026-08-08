@@ -8,7 +8,6 @@
 {% endblock %}
 
 {% block content %}
-{% static 'web/img/avatar.jpg' as default_avatar %}
 <div class="community-wrapper">
 
     <aside class="community-sidebar">
@@ -61,14 +60,16 @@
 
                 <div class="dev-card-body">
                     {% if dev.profile.avatar %}
-                    <img src="{{ dev.profile.avatar.url }}" onerror="this.onerror=null;this.src='{{ default_avatar }}';" alt="{{ dev.username }}" class="dev-avatar">
+                    <img src="{{ dev.profile.avatar.url }}" alt="{{ dev.username }}" class="dev-avatar" style="object-fit: cover; margin: 0 auto; display: block;">
                     {% else %}
-                    <img src="{{ default_avatar }}" alt="Avatar" class="dev-avatar">
+                    <div class="dev-avatar auto-avatar" data-name="{{ dev.username }}" style="display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; color: white; margin: 0 auto;">
+                        {% if dev.first_name %}{{ dev.first_name|make_list|first|upper }}{{ dev.last_name|make_list|first|upper }}{% else %}{{ dev.username|make_list|first|upper }}{% endif %}
+                    </div>
                     {% endif %}
 
-                    <h3 class="dev-name">{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{
+                    <h3 class="dev-name" style="text-align: center;">{% if dev.first_name %}{{ dev.first_name }} {{ dev.last_name }}{% else %}{{
                         dev.username }}{% endif %}</h3>
-                    <p class="dev-username">@{{ dev.username }}</p>
+                    <p class="dev-username" style="text-align: center;">@{{ dev.username }}</p>
 
                     <div class="dev-social-links">
                         {% if dev.profile.github %}
@@ -94,7 +95,7 @@
                     <div class="dev-stats">
                         <span title="Proyectos">
                             <i class="fas fa-folder-open" style="color: var(--orange-primary);"></i>
-                            {{ dev.owned_projects.count|default:"0" }} Proyectos
+                            {{ dev.total_projects|default:"0" }} Proyectos
                         </span>
                     </div>
 

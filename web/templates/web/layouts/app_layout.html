@@ -123,11 +123,11 @@
                 el.style.background = heroGradients[getIndex(title, heroGradients.length)];
             });
 
-            // 3. Colorear avatares de iniciales (auto-avatar, autor, colaboradores)
+            // 3. Colorear avatares de iniciales (auto-avatar, autor, colaboradores, perfil)
             const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
-            document.querySelectorAll('.auto-avatar, .author-avatar, .avatar-stack-item, .project-card-avatar').forEach(el => {
+            document.querySelectorAll('.auto-avatar, .author-avatar, .avatar-stack-item, .project-card-avatar, .profile-initials-avatar').forEach(el => {
                 if (el.querySelector('img')) return; // Si tiene foto, no colorear
-                const name = el.getAttribute('data-name') || el.innerText.trim();
+                const name = el.getAttribute('data-name') || el.getAttribute('data-username') || el.innerText.trim();
                 if (name) {
                     el.style.backgroundColor = avatarColors[getIndex(name, avatarColors.length)];
                     el.style.color = '#fff';

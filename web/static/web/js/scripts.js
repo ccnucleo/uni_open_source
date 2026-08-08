@@ -152,14 +152,26 @@ document.addEventListener('DOMContentLoaded', function () {
         btnEditProfile.addEventListener('click', function () {
             if (inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
             if (inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
-            if (photoPreviewImg) {
-                if (profileAvatar && profileAvatar.tagName === 'IMG') {
-                    photoPreviewImg.src = profileAvatar.src;
+
+            // Clonar el avatar real de la página para restaurar la previsualización al abrir
+            const currentAvatar = document.getElementById('profile-avatar');
+            const previewContainer = document.getElementById('modal-photo-preview');
+            const btnRemovePhoto = document.getElementById('btn-remove-photo');
+            
+            if (currentAvatar && previewContainer) {
+                const clonedAvatar = currentAvatar.cloneNode(true);
+                clonedAvatar.id = 'photo-preview-img';
+                
+                // Si es un div de iniciales, asegurar el font-size correcto para el modal
+                if (clonedAvatar.tagName === 'DIV') {
+                    clonedAvatar.style.fontSize = '2rem';
+                    if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
                 } else {
-                    // No hay foto: mostrar preview vacío/default
-                    photoPreviewImg.src = '';
-                    photoPreviewImg.style.display = 'none';
+                    if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-flex';
                 }
+                
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(clonedAvatar);
             }
 
             selectedPhotoFile = null;
@@ -241,10 +253,22 @@ document.addEventListener('DOMContentLoaded', function () {
             if (avatarCropper) {
                 avatarCropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
                     croppedAvatarBlob = blob;
-                    if (photoPreviewImg) {
-                        photoPreviewImg.src = avatarCropper.getCroppedCanvas().toDataURL();
-                        photoPreviewImg.style.maxHeight = 'none';
-                        photoPreviewImg.style.display = 'block';
+                    const previewEl = document.getElementById('photo-preview-img');
+                    const newSrc = avatarCropper.getCroppedCanvas().toDataURL();
+                    if (previewEl) {
+                        if (previewEl.tagName === 'IMG') {
+                            previewEl.src = newSrc;
+                            previewEl.style.maxHeight = 'none';
+                            previewEl.style.display = 'block';
+                        } else {
+                            // Era un div de iniciales; reemplazarlo por img
+                            const img = document.createElement('img');
+                            img.id = 'photo-preview-img';
+                            img.src = newSrc;
+                            img.alt = 'Preview';
+                            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;';
+                            previewEl.replaceWith(img);
+                        }
                     }
                     const btnRm = document.getElementById('btn-remove-photo');
                     if (btnRm) btnRm.style.display = 'inline-flex';
@@ -258,8 +282,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnRemovePhoto = document.getElementById('btn-remove-photo');
     if (btnRemovePhoto) {
         btnRemovePhoto.addEventListener('click', function () {
-            if (photoPreviewImg) {
-                photoPreviewImg.src = photoPreviewImg.dataset.default;
+            // Actualizar preview del modal a iniciales
+            const previewContainer = document.getElementById('modal-photo-preview');
+            const oldPreview = document.getElementById('photo-preview-img');
+            if (oldPreview && previewContainer) {
+                const nombre = inputNombre ? inputNombre.value.trim() : '';
+                const apellido = inputApellido ? inputApellido.value.trim() : '';
+                const username = document.querySelector('.username')?.textContent?.replace('@', '').trim() || '';
+                const initials = (() => {
+                    if (nombre && apellido) return (nombre[0] + apellido[0]).toUpperCase();
+                    return (username[0] || '?').toUpperCase();
+                })();
+                const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+                const getIdx = (str, len) => { let h = 0; for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h); return Math.abs(h) % len; };
+                const bgColor = avatarColors[getIdx(username, avatarColors.length)];
+                const div = document.createElement('div');
+                div.id = 'photo-preview-img';
+                div.className = 'profile-initials-avatar';
+                div.style.cssText = `width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;background:${bgColor};`;
+                div.textContent = initials;
+                oldPreview.replaceWith(div);
             }
             selectedPhotoFile = null;
             croppedAvatarBlob = null;
@@ -310,41 +352,37 @@ document.addEventListener('DOMContentLoaded', function () {
                             if (newUsername && userSpan) userSpan.textContent = '@' + newUsername;
 
                             if (croppedAvatarBlob || isAvatarRemoved) {
-                                const container = document.getElementById('profile-pic-container');
+                                const avatarColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+                                const getIdx = (str, len) => { let h = 0; for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h); return Math.abs(h) % len; };
                                 const username = document.querySelector('.username')?.textContent?.replace('@', '').trim() || '';
-                                const firstLetter = username.charAt(0).toUpperCase();
+                                const initials = (() => {
+                                    const fn = (nombre || '').trim();
+                                    const ln = (apellido || '').trim();
+                                    if (fn && ln) return (fn[0] + ln[0]).toUpperCase();
+                                    return (username[0] || '?').toUpperCase();
+                                })();
+                                const bgColor = avatarColors[getIdx(username, avatarColors.length)];
 
                                 if (isAvatarRemoved) {
-                                    // Remover foto -> mostrar la imagen por defecto avatar.jpg
-                                    const defaultAvatarUrl = '/static/web/img/avatar.jpg';
+                                    // Quitar foto -> mostrar div con iniciales
                                     const oldEl = document.getElementById('profile-avatar');
                                     if (oldEl) {
-                                        if (oldEl.tagName === 'IMG') {
-                                            oldEl.src = defaultAvatarUrl;
-                                        } else {
-                                            const img = document.createElement('img');
-                                            img.src = defaultAvatarUrl;
-                                            img.alt = 'Usuario';
-                                            img.id = 'profile-avatar';
-                                            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                                            oldEl.replaceWith(img);
-                                        }
+                                        const div = document.createElement('div');
+                                        div.id = 'profile-avatar';
+                                        div.className = 'profile-initials-avatar';
+                                        div.setAttribute('data-username', username);
+                                        div.style.cssText = `width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;background:${bgColor};letter-spacing:0.02em;`;
+                                        div.textContent = initials;
+                                        oldEl.replaceWith(div);
                                     }
                                     const topbarAv = document.querySelector('.topbar-avatar');
                                     if (topbarAv) {
-                                        let topbarImg = topbarAv.querySelector('img');
-                                        if (!topbarImg) {
-                                            topbarImg = document.createElement('img');
-                                            topbarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-                                            topbarImg.alt = 'Avatar de perfil';
-                                            topbarAv.innerHTML = '';
-                                            topbarAv.appendChild(topbarImg);
-                                        }
-                                        topbarImg.src = defaultAvatarUrl;
+                                        topbarAv.innerHTML = `<div class="auto-avatar" data-name="${username}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800;color:white;background:${bgColor};">${initials}</div>`;
                                     }
                                 } else if (croppedAvatarBlob) {
                                     // Subir foto nueva -> mostrar img
-                                    const newSrc = photoPreviewImg.src;
+                                    const previewEl = document.getElementById('photo-preview-img');
+                                    const newSrc = previewEl && previewEl.tagName === 'IMG' ? previewEl.src : '';
                                     const oldEl = document.getElementById('profile-avatar');
                                     if (oldEl && oldEl.tagName === 'IMG') {
                                         oldEl.src = newSrc;
