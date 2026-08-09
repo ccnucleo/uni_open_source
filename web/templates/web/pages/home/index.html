@@ -13,9 +13,10 @@
 <div class="index-container">
 
     <section class="hero-banner">
-        <img class="hero-bg" src="{% static 'web/img/backgroundHero.jpg' %}" alt="Hero background">
+        <img class="hero-bg" src="{% static 'web/img/backgroundHero.png' %}" alt="Hero background">
         <div class="hero-content">
-            <h1><span class="dynamic-word-wrapper"><span class="dynamic-word" id="dynamicWord">Construye</span></span> el mundo del <span class="highlight">Software</span></h1>
+            <h1><span class="dynamic-word-wrapper"><span class="dynamic-word" id="dynamicWord">Construye</span></span>
+                el mundo del <span class="highlight">Software</span></h1>
             <h2>El espacio donde los estudiantes de la UNI colaboran, crean e innovan.</h2>
             <div class="hero-buttons">
                 {% if not user.is_authenticated %}
@@ -199,35 +200,35 @@
 {% block extra_js %}
 <script src="{% static 'web/js/scripts.js' %}"></script>
 <script>
-(function() {
-    function initDynamicWord() {
-        const dynamicWordEl = document.getElementById('dynamicWord');
-        if (!dynamicWordEl) return;
+    (function () {
+        function initDynamicWord() {
+            const dynamicWordEl = document.getElementById('dynamicWord');
+            if (!dynamicWordEl) return;
 
-        const words = ['Construye', 'Transforma', 'Impulsa', 'Crea', 'Desarrolla'];
-        let wordIdx = 0;
-        const animationDuration = 250;
+            const words = ['Construye', 'Transforma', 'Impulsa', 'Desarrolla'];
+            let wordIdx = 0;
+            const animationDuration = 250;
 
-        setInterval(() => {
-            dynamicWordEl.classList.remove('slide-in');
-            dynamicWordEl.classList.add('slide-out');
+            setInterval(() => {
+                dynamicWordEl.classList.remove('slide-in');
+                dynamicWordEl.classList.add('slide-out');
 
-            setTimeout(() => {
-                wordIdx = (wordIdx + 1) % words.length;
-                dynamicWordEl.textContent = words[wordIdx];
-                dynamicWordEl.classList.remove('slide-out');
-                // Forzar reflow en el DOM para reiniciar la animación CSS limpiamente
-                void dynamicWordEl.offsetWidth;
-                dynamicWordEl.classList.add('slide-in');
-            }, animationDuration);
-        }, 2600);
-    }
+                setTimeout(() => {
+                    wordIdx = (wordIdx + 1) % words.length;
+                    dynamicWordEl.textContent = words[wordIdx];
+                    dynamicWordEl.classList.remove('slide-out');
+                    // Forzar reflow en el DOM para reiniciar la animación CSS limpiamente
+                    void dynamicWordEl.offsetWidth;
+                    dynamicWordEl.classList.add('slide-in');
+                }, animationDuration);
+            }, 2600);
+        }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDynamicWord);
-    } else {
-        initDynamicWord();
-    }
-})();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDynamicWord);
+        } else {
+            initDynamicWord();
+        }
+    })();
 </script>
 {% endblock %}
