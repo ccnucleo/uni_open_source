@@ -89,86 +89,61 @@
                     <h3><i class="fas fa-star"></i> Proyectos Destacados</h3>
                     <p>Desliza para explorar los desarrollos más innovadores de la comunidad.</p>
                 </div>
-                <a href="#" class="view-all-link">Ver todos <i class="fas fa-arrow-right"></i></a>
+                <a href="{% url 'projects:list' %}" class="view-all-link">Ver todos <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
         </div>
 
-        <div class="carousel-track">
-            <div class="carousel-item project-card-full">
-                <div class="project-card-img">
-                    <div class="project-card-img-placeholder"></div>
-                </div>
-                <div class="project-card-body">
-                    <h4 class="project-card-title">Sistema de Reconocimiento Facial</h4>
-                    <p class="project-card-desc">Aplicación de IA para reconocimiento facial en tiempo real usando
-                        OpenCV.</p>
-                    <div class="project-card-tags">
-                        <span class="tag-tech">Python</span>
-                        <span class="tag-theme">IA</span>
+        {% if proyectos_destacados %}
+        <div class="carousel-wrapper">
+            <button type="button" class="carousel-arrow carousel-arrow-left" aria-label="Anterior"
+                data-target="featuredProjectsTrack">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="carousel-track" id="featuredProjectsTrack">
+                {% for project in proyectos_destacados %}
+                <a href="{% url 'projects:detail' project.id %}" class="carousel-item project-card-full">
+                    <div class="project-card-img">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-card-img-real">
+                        {% else %}
+                        <div class="project-card-img-placeholder proj-thumb" data-title="{{ project.title }}">
+                            <span class="proj-thumb-initial">{{ project.title|make_list|first|upper }}</span>
+                        </div>
+                        {% endif %}
                     </div>
-                    <div class="project-card-meta">
-                        <span><i class="fas fa-eye"></i> 150</span>
-                        <span><i class="fas fa-users"></i> 3</span>
+                    <div class="project-card-body">
+                        <h4 class="project-card-title">{{ project.title }}</h4>
+                        <p class="project-card-desc">{{ project.summary }}</p>
+                        <div class="project-card-tags">
+                            {% for tech in project.technologies.all|slice:":1" %}
+                            <span class="tag-tech">{{ tech.name }}</span>
+                            {% endfor %}
+                            {% for tag in project.tags.all|slice:":1" %}
+                            <span class="tag-theme">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="project-card-meta">
+                            <span><i class="fas fa-eye"></i> {{ project.views_count }}</span>
+                            <span><i class="fas fa-heart"></i> {{ project.likes_count }}</span>
+                        </div>
                     </div>
-                </div>
+                </a>
+                {% endfor %}
             </div>
 
-            <div class="carousel-item project-card-full">
-                <div class="project-card-img">
-                    <div class="project-card-img-placeholder"></div>
-                </div>
-                <div class="project-card-body">
-                    <h4 class="project-card-title">E-commerce React</h4>
-                    <p class="project-card-desc">Tienda online completa con carrito de compras y panel de
-                        administración.</p>
-                    <div class="project-card-tags">
-                        <span class="tag-tech">React</span>
-                        <span class="tag-theme">Web</span>
-                    </div>
-                    <div class="project-card-meta">
-                        <span><i class="fas fa-eye"></i> 230</span>
-                        <span><i class="fas fa-users"></i> 5</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="carousel-item project-card-full">
-                <div class="project-card-img">
-                    <div class="project-card-img-placeholder"></div>
-                </div>
-                <div class="project-card-body">
-                    <h4 class="project-card-title">App Móvil Fitness</h4>
-                    <p class="project-card-desc">Aplicación móvil para seguimiento de ejercicios y rutinas
-                        personalizadas.</p>
-                    <div class="project-card-tags">
-                        <span class="tag-tech">React Native</span>
-                        <span class="tag-theme">Móvil</span>
-                    </div>
-                    <div class="project-card-meta">
-                        <span><i class="fas fa-eye"></i> 320</span>
-                        <span><i class="fas fa-users"></i> 4</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="carousel-item project-card-full">
-                <div class="project-card-img">
-                    <div class="project-card-img-placeholder"></div>
-                </div>
-                <div class="project-card-body">
-                    <h4 class="project-card-title">API REST UNI</h4>
-                    <p class="project-card-desc">API pública para consumir datos abiertos de la universidad.</p>
-                    <div class="project-card-tags">
-                        <span class="tag-tech">Django</span>
-                        <span class="tag-theme">API</span>
-                    </div>
-                    <div class="project-card-meta">
-                        <span><i class="fas fa-eye"></i> 410</span>
-                        <span><i class="fas fa-users"></i> 8</span>
-                    </div>
-                </div>
-            </div>
+            <button type="button" class="carousel-arrow carousel-arrow-right" aria-label="Siguiente"
+                data-target="featuredProjectsTrack">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
+        {% else %}
+        <div class="carousel-empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>Todavía no hay proyectos publicados. ¡Sé el primero en compartir el tuyo!</p>
+        </div>
+        {% endif %}
     </section>
 
     <section class="section-block allies-section">
