@@ -150,6 +150,7 @@
     transform: translateY(0);
     opacity: 1;
   }
+
   100% {
     transform: translateY(-100%);
     opacity: 0;
@@ -161,6 +162,7 @@
     transform: translateY(100%);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -360,6 +362,13 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--orange-primary) var(--gray-50);
+  cursor: grab;
+}
+
+.index-container .carousel-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
 }
 
 .index-container .carousel-track::-webkit-scrollbar {
@@ -392,6 +401,8 @@
   transition: all 0.3s ease;
   border: 1px solid var(--gray-200);
   height: 100%;
+  color: inherit;
+  text-decoration: none;
 }
 
 .index-container .project-card-full:hover {
@@ -410,6 +421,23 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(234, 88, 12, 0.7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.index-container .project-card-img-real {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.index-container .proj-thumb-initial {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .index-container .project-card-body {
@@ -475,6 +503,63 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+.index-container .carousel-wrapper {
+  position: relative;
+}
+
+.index-container .carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  color: var(--gray-900);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.index-container .carousel-arrow:hover {
+  background: var(--orange-primary);
+  color: var(--white);
+  border-color: var(--orange-primary);
+}
+
+.index-container .carousel-arrow-left {
+  left: -8px;
+}
+
+.index-container .carousel-arrow-right {
+  right: -8px;
+}
+
+.index-container .carousel-empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: var(--gray-50);
+  border-radius: 16px;
+  border: 2px dashed var(--gray-200);
+  color: var(--gray-500);
+}
+
+.index-container .carousel-empty-state i {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--gray-300, var(--gray-200));
+}
+
+.index-container .carousel-empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .index-container .allies-section {
@@ -598,6 +683,10 @@
 
   .index-container .carousel-item {
     width: 240px;
+  }
+
+  .index-container .carousel-arrow {
+    display: none;
   }
 
   .index-container .allies-track .carousel-item {
