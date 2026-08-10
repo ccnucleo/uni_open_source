@@ -28,6 +28,7 @@ from projects.models import Tag as ProjectTag, Technology as ProjectTechnology
 
 from projects.models import Project
 from django.conf import settings
+from django.db.models import Count
 
 
 @never_cache
@@ -44,6 +45,14 @@ def index_view(request):
     total_proyectos = Project.objects.count()
     total_usuarios = User.objects.count()
 
+    proyectos_destacados = (
+        Project.objects.filter(is_public=True)
+        .select_related("owner")
+        .prefetch_related("technologies", "tags")
+        .annotate(likes_count=Count("likes", distinct=True))
+        .order_by("-likes_count", "-created_at")[:6]
+    )
+
     return render(
         request,
         "web/pages/home/index.html",
@@ -53,6 +62,7 @@ def index_view(request):
             "colaboradores": colaboradores,
             "total_proyectos": total_proyectos,
             "total_usuarios": total_usuarios,
+            "proyectos_destacados": proyectos_destacados,
         },
     )
 
