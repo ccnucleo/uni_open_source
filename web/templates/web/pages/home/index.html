@@ -206,4 +206,68 @@
         }
     })();
 </script>
+<script>
+    (function () {
+        function initFeaturedCarousel() {
+            const track = document.getElementById('featuredProjectsTrack');
+            if (!track) return;
+
+            const leftArrow = document.querySelector('.carousel-arrow-left');
+            const rightArrow = document.querySelector('.carousel-arrow-right');
+
+            function scrollByCard(direction) {
+                const card = track.querySelector('.carousel-item');
+                if (!card) return;
+                const cardWidth = card.getBoundingClientRect().width;
+                const gap = parseFloat(getComputedStyle(track).gap) || 24;
+                track.scrollBy({ left: direction * (cardWidth + gap), behavior: 'smooth' });
+            }
+
+            if (leftArrow) leftArrow.addEventListener('click', () => scrollByCard(-1));
+            if (rightArrow) rightArrow.addEventListener('click', () => scrollByCard(1));
+
+            // Drag-to-scroll con el mouse (desktop). El touch de móvil no dispara
+            // mousedown, así que no interfiere con el swipe nativo.
+            let isDragging = false;
+            let dragMoved = false;
+            let startX = 0;
+            let startScrollLeft = 0;
+
+            track.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragMoved = false;
+                startX = e.pageX;
+                startScrollLeft = track.scrollLeft;
+                track.classList.add('is-dragging');
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                track.classList.remove('is-dragging');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const delta = e.pageX - startX;
+                if (Math.abs(delta) > 5) dragMoved = true;
+                track.scrollLeft = startScrollLeft - delta;
+            });
+
+            // Si el usuario arrastró (no solo hizo click), evita que el <a> navegue
+            track.addEventListener('click', (e) => {
+                if (dragMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initFeaturedCarousel);
+        } else {
+            initFeaturedCarousel();
+        }
+    })();
+</script>
 {% endblock %}
