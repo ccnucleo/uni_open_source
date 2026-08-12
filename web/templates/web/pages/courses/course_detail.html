@@ -23,7 +23,14 @@
             {% endif %}
         </div>
         
-        <h1 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem;">{{ course.title }}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+            <h1 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem;">{{ course.title }}</h1>
+            {% if request.user == course.owner or request.user.is_staff %}
+                <button type="button" class="btn btn-dark" id="btn-edit-course-trigger" style="padding: 8px 16px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-edit"></i> Editar Curso
+                </button>
+            {% endif %}
+        </div>
         
         <div class="course-badges" style="gap: 0.8rem;">
             <span class="badge badge-level" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">{{ course.get_level_display }}</span>
@@ -97,4 +104,112 @@
         
     </section>
 </main>
+
+{% if request.user == course.owner or request.user.is_staff %}
+<!-- MODAL EDITAR CURSO -->
+<div class="modal-overlay" id="modal-edit-course" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div class="modal-content" style="max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0; color: var(--text-primary); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-edit" style="color: var(--primary-orange, #f97316);"></i> Editar Curso
+            </h3>
+            <button type="button" id="btn-close-edit-course" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-edit-course" data-course-id="{{ course.id }}" enctype="multipart/form-data" style="padding: 25px;">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Título del Curso <span style="color:#ef4444;">*</span></label>
+                <input type="text" name="title" value="{{ course.title }}" required maxlength="120" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Categoría Principal</label>
+                    <select name="category" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        <option value="">Sin categoría</option>
+                        {% for cat in categories|default:'' %}
+                            <option value="{{ cat.id }}" {% if course.category and course.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                        {% if course.category and not categories %}
+                            <option value="{{ course.category.id }}" selected>{{ course.category.name }}</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Nivel de Dificultad</label>
+                    <select name="level" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        <option value="beginner" {% if course.level == 'beginner' %}selected{% endif %}>Principiante</option>
+                        <option value="intermediate" {% if course.level == 'intermediate' %}selected{% endif %}>Intermedio</option>
+                        <option value="advanced" {% if course.level == 'advanced' %}selected{% endif %}>Avanzado</option>
+                        <option value="beg_int" {% if course.level == 'beg_int' %}selected{% endif %}>Principiante a Intermedio</option>
+                        <option value="int_adv" {% if course.level == 'int_adv' %}selected{% endif %}>Intermedio a Avanzado</option>
+                        <option value="all" {% if course.level == 'all' %}selected{% endif %}>Todos los niveles</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tipo de Recurso</label>
+                    <select name="resource_type" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        <option value="youtube" {% if course.resource_type == 'youtube' %}selected{% endif %}>Lista de YouTube</option>
+                        <option value="platform" {% if course.resource_type == 'platform' %}selected{% endif %}>Plataforma Web</option>
+                        <option value="docs" {% if course.resource_type == 'docs' %}selected{% endif %}>Documentación / Lectura</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: center; padding-top: 24px;">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="has_certification" value="true" {% if course.has_certification %}checked{% endif %} style="width: 18px; height: 18px;">
+                        ¿Incluye Certificado?
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Enlace Oficial al Curso (URL) <span style="color:#ef4444;">*</span></label>
+                <input type="url" name="url" value="{{ course.url }}" required placeholder="https://..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Corta</label>
+                <input type="text" name="short_description" value="{{ course.short_description }}" maxlength="255" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Detallada</label>
+                <textarea name="description" rows="4" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">{{ course.description }}</textarea>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Cambiar Imagen de Portada</label>
+                <div id="edit-course-drop-area" style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; background: var(--bg-main);">
+                    <i class="fas fa-image fa-2x" style="color: var(--text-secondary); margin-bottom: 8px;"></i>
+                    <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Haz clic para cambiar imagen</div>
+                    <input type="file" id="edit-course-file-input" name="image" accept="image/*" hidden>
+                </div>
+                <div id="edit-course-preview-container" style="{% if course.image %}display: block;{% else %}display: none;{% endif %} text-align: center; margin-top: 10px;">
+                    <img id="edit-course-preview-img" src="{% if course.image %}{{ course.image.url }}{% endif %}" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <button type="button" id="edit-course-btn-remove-img" style="display: block; margin: 8px auto 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; font-weight: bold;">Quitar Imagen</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tecnologías / Etiquetas (separadas por comas)</label>
+                <input type="text" name="tags" value="{% for tag in course.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}" placeholder="ej. python, django, api" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button type="button" id="btn-cancel-edit-course" class="btn btn-dark" style="padding: 10px 20px;">Cancelar</button>
+                <button type="submit" class="btn btn-orange" style="padding: 10px 24px; font-weight: bold;"><i class="fas fa-save"></i> Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% block extra_js %}
+<script src="{% static 'web/js/courses.js' %}"></script>
+{% endblock %}
 {% endblock %}

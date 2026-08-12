@@ -84,16 +84,34 @@ def _parse_json_body(request):
     except (json.JSONDecodeError, UnicodeDecodeError):
         return None
 
+def _resolve_category(cat_val):
+    if not cat_val:
+        return None
+    if isinstance(cat_val, int) or (isinstance(cat_val, str) and cat_val.isdigit()):
+        return Category.objects.filter(pk=int(cat_val)).first()
+    if isinstance(cat_val, str) and cat_val.strip():
+        cat_obj, _ = Category.objects.get_or_create(name=cat_val.strip())
+        return cat_obj
+    return None
+
 def _serialize_course(course):
     return {
         "id": course.id,
         "title": course.title,
+        "slug": course.slug,
         "short_description": course.short_description,
         "description": course.description,
         "category": course.category.name if course.category else None,
+        "category_id": course.category.id if course.category else None,
         "level": course.level,
+        "level_display": course.get_level_display(),
+        "url": course.url,
+        "resource_type": course.resource_type,
+        "has_certification": course.has_certification,
+        "image_url": course.image.url if course.image else None,
         "owner": course.owner.username,
         "is_published": course.is_published,
+        "tags": [t.name for t in course.tags.all()],
         "created_at": course.created_at.isoformat(),
         "updated_at": course.updated_at.isoformat(),
     }
@@ -102,36 +120,64 @@ def _serialize_course(course):
 @require_http_methods(["GET", "POST"])
 def courses_collection_api(request):
     if request.method == "GET":
-        items = [_serialize_course(c) for c in Course.objects.select_related("owner").all()]
+        items = [_serialize_course(c) for c in Course.objects.select_related("owner", "category").prefetch_related("tags").all()]
         return JsonResponse({"success": True, "data": items})
 
     if not request.user.is_authenticated:
         return JsonResponse({"success": False, "message": "Autenticación requerida."}, status=401)
 
-    payload = _parse_json_body(request)
-    if payload is None:
-        return JsonResponse({"success": False, "message": "JSON inválido."}, status=400)
+    is_multipart = request.content_type.startswith('multipart/form-data')
+    data = request.POST if is_multipart else (_parse_json_body(request) or {})
+    files = request.FILES if is_multipart else {}
 
-    title = (payload.get("title") or "").strip()
+    title = str(data.get("title", "")).strip()
     if not title:
         return JsonResponse({"success": False, "message": "El título es obligatorio."}, status=400)
 
+    cat_obj = _resolve_category(data.get("category"))
+    level = str(data.get("level", Course.BEGINNER)).strip() or Course.BEGINNER
+    if level not in {choice[0] for choice in Course.LEVEL_CHOICES}:
+        level = Course.BEGINNER
+
+    res_type = str(data.get("resource_type", Course.YOUTUBE)).strip() or Course.YOUTUBE
+    if res_type not in {choice[0] for choice in Course.RESOURCE_CHOICES}:
+        res_type = Course.YOUTUBE
+
+    has_cert = str(data.get("has_certification", "")).lower() in ("true", "1", "on", "yes")
+
     course = Course.objects.create(
         title=title,
-        short_description=(payload.get("short_description") or "").strip(),
-        description=(payload.get("description") or "").strip(),
-        category=(payload.get("category") or "").strip(),
-        level=(payload.get("level") or Course.BEGINNER).strip() or Course.BEGINNER,
+        short_description=str(data.get("short_description", "")).strip(),
+        description=str(data.get("description", "")).strip(),
+        category=cat_obj,
+        level=level,
+        url=str(data.get("url", "")).strip(),
+        resource_type=res_type,
+        has_certification=has_cert,
         owner=request.user,
-        is_published=bool(payload.get("is_published", False)),
+        is_published=str(data.get("is_published", "true")).lower() in ("true", "1", "on", "yes"),
     )
-    return JsonResponse({"success": True, "data": _serialize_course(course)}, status=201)
+
+    if "image" in files:
+        course.image = files["image"]
+        course.save()
+
+    tag_str = str(data.get("tags", "")).strip()
+    if tag_str:
+        tag_names = [t.strip() for t in tag_str.split(",") if t.strip()]
+        tag_objs = []
+        for name in tag_names:
+            tag_obj, _ = Tag.objects.get_or_create(name=name.lower())
+            tag_objs.append(tag_obj)
+        course.tags.set(tag_objs)
+
+    return JsonResponse({"success": True, "message": "Curso creado exitosamente.", "data": _serialize_course(course)}, status=201)
 
 @login_required(login_url="accounts:login")
-@require_http_methods(["GET", "PUT", "PATCH", "DELETE"])
+@require_http_methods(["GET", "PUT", "PATCH", "DELETE", "POST"])
 def courses_item_api(request, course_id):
     try:
-        course = Course.objects.select_related("owner").get(pk=course_id)
+        course = Course.objects.select_related("owner", "category").prefetch_related("tags").get(pk=course_id)
     except Course.DoesNotExist as exc:
         raise Http404("Course not found") from exc
 
@@ -141,24 +187,33 @@ def courses_item_api(request, course_id):
     if not request.user.is_authenticated:
         return JsonResponse({"success": False, "message": "Autenticación requerida."}, status=401)
 
-    if course.owner_id != request.user.id:
+    if course.owner_id != request.user.id and not request.user.is_staff:
         return JsonResponse({"success": False, "message": "No tienes permisos sobre este curso."}, status=403)
 
     if request.method == "DELETE":
         course.delete()
         return JsonResponse({"success": True, "message": "Curso eliminado."})
 
-    payload = _parse_json_body(request)
-    if payload is None:
-        return JsonResponse({"success": False, "message": "JSON inválido."}, status=400)
+    is_multipart = request.content_type.startswith('multipart/form-data')
+    data = request.POST if is_multipart else (_parse_json_body(request) or {})
+    files = request.FILES if is_multipart else {}
 
-    for field in ["title", "short_description", "description", "category", "level"]:
-        if field in payload:
-            value = payload.get(field)
-            setattr(course, field, (value or "").strip() if isinstance(value, str) else value)
+    valid_text_fields = ["title", "short_description", "description", "url", "level", "resource_type"]
+    for field in valid_text_fields:
+        if field in data:
+            setattr(course, field, str(data.get(field)).strip())
 
-    if "is_published" in payload:
-        course.is_published = bool(payload.get("is_published"))
+    if "category" in data:
+        course.category = _resolve_category(data.get("category"))
+
+    if "has_certification" in data:
+        course.has_certification = str(data.get("has_certification", "")).lower() in ("true", "1", "on", "yes")
+
+    if "is_published" in data:
+        course.is_published = str(data.get("is_published", "")).lower() in ("true", "1", "on", "yes")
+
+    if "image" in files:
+        course.image = files["image"]
 
     if course.level not in {choice[0] for choice in Course.LEVEL_CHOICES}:
         return JsonResponse({"success": False, "message": "Nivel no válido."}, status=400)
@@ -166,5 +221,21 @@ def courses_item_api(request, course_id):
     if not course.title:
         return JsonResponse({"success": False, "message": "El título es obligatorio."}, status=400)
 
+    from django.utils.text import slugify
+    new_slug = slugify(course.title)
+    if new_slug and Course.objects.filter(slug=new_slug).exclude(pk=course.pk).exists():
+        new_slug = f"{new_slug}-{course.pk}"
+    course.slug = new_slug
+
     course.save()
-    return JsonResponse({"success": True, "data": _serialize_course(course)})
+
+    if "tags" in data:
+        tag_str = str(data.get("tags", "")).strip()
+        tag_objs = []
+        if tag_str:
+            for name in [t.strip() for t in tag_str.split(",") if t.strip()]:
+                tag_obj, _ = Tag.objects.get_or_create(name=name.lower())
+                tag_objs.append(tag_obj)
+        course.tags.set(tag_objs)
+
+    return JsonResponse({"success": True, "message": "Curso actualizado.", "data": _serialize_course(course)})

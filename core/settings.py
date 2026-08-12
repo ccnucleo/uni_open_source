@@ -137,14 +137,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # Correo desde el que se enviarán los mensajes
-EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
-
-# Clave de 16 letras que te dio Google
-EMAIL_HOST_PASSWORD = 'zxkr rcvi chqo ixgv'
-
-# Cuando sea definitivo, guardar en .env para no revelar contraseña:
-#EMAIL_HOST_USER = os.getenv('EMAIL_USER') 
-#EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', os.getenv('EMAIL_USER', 'angelhuamanivarg0206@gmail.com'))
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', os.getenv('EMAIL_PASSWORD', 'zxkr rcvi chqo ixgv'))
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Carpeta donde se guardarán los archivos subidos (en la raíz de tu proyecto)
 MEDIA_URL = '/media/'

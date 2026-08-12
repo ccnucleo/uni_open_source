@@ -39,14 +39,29 @@
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <strong>0</strong>
+                    <strong id="stat-followers">{{ followers_count|default:"0" }}</strong>
                     <span>Seguidores</span>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <strong>0</strong>
+                    <strong>{{ total_views|default:"0" }}</strong>
                     <span>Vistas</span>
                 </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; width: 100%;">
+                {% if is_following %}
+                    <button type="button" class="btn btn-dark" id="btn-toggle-follow" data-user-id="{{ public_user.id }}" style="flex: 1; font-weight: bold; border-radius: 12px; padding: 10px 15px;">
+                        <i class="fas fa-check"></i> Siguiendo
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-orange" id="btn-toggle-follow" data-user-id="{{ public_user.id }}" style="flex: 1; font-weight: bold; border-radius: 12px; padding: 10px 15px;">
+                        <i class="fas fa-user-plus"></i> Seguir
+                    </button>
+                {% endif %}
+                <button type="button" class="btn btn-dark" id="btn-open-message-modal" style="flex: 1; font-weight: bold; border-radius: 12px; padding: 10px 15px;">
+                    <i class="fas fa-paper-plane"></i> Mensaje
+                </button>
             </div>
         </div>
     </div>
@@ -197,6 +212,37 @@
             </div>
         </div>
     </section>
+
+<!-- MODAL ENVIAR MENSAJE -->
+<div class="modal-overlay" id="modal-send-message" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div class="modal-content" style="max-width: 500px; width: 100%; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0; color: var(--text-primary); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-paper-plane" style="color: var(--primary-orange, #f97316);"></i> Contactar a @{{ public_user.username }}
+            </h3>
+            <button type="button" id="btn-close-message-modal" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-send-message" data-user-id="{{ public_user.id }}" style="padding: 25px;">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Asunto (opcional)</label>
+                <input type="text" name="subject" placeholder="Ej. Propuesta de colaboración en proyecto" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Mensaje <span style="color:#ef4444;">*</span></label>
+                <textarea name="body" rows="5" required placeholder="Escribe tu mensaje..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button type="button" id="btn-cancel-message-modal" class="btn btn-dark" style="padding: 10px 20px;">Cancelar</button>
+                <button type="submit" class="btn btn-orange" style="padding: 10px 24px; font-weight: bold;"><i class="fas fa-paper-plane"></i> Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

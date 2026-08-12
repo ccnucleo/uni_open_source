@@ -16,6 +16,10 @@ class Technology(models.Model):
     
     def __str__(self): return self.name
 
+    @property
+    def nombre(self):
+        return self.name
+
     def clean(self):
         if Technology.objects.filter(name__iexact=self.name).exclude(pk=self.pk).exists():
             raise ValidationError({'name': 'Esta tecnología ya existe.'})

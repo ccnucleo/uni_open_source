@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const profileAvatar = document.getElementById('profile-avatar');
+    const profilePicContainer = document.getElementById('profile-pic-container');
     const profileFullname = document.getElementById('profile-fullname');
     const photoPreviewImg = document.getElementById('photo-preview-img');
     const inputPhoto = document.getElementById('input-photo');
@@ -148,45 +149,45 @@ document.addEventListener('DOMContentLoaded', function () {
     let avatarCropper = null;
     let croppedAvatarBlob = null;
 
-    if (btnEditProfile && modal) {
-        btnEditProfile.addEventListener('click', function () {
-            if (inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
-            if (inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
+    const openBasicModal = function () {
+        if (!modal) return;
+        if (inputNombre && profileFullname) inputNombre.value = profileFullname.dataset.nombre || '';
+        if (inputApellido && profileFullname) inputApellido.value = profileFullname.dataset.apellido || '';
 
-            // Clonar el avatar real de la página para restaurar la previsualización al abrir
-            const currentAvatar = document.getElementById('profile-avatar');
-            const previewContainer = document.getElementById('modal-photo-preview');
-            const btnRemovePhoto = document.getElementById('btn-remove-photo');
+        const currentAvatar = document.getElementById('profile-avatar');
+        const previewContainer = document.getElementById('modal-photo-preview');
+        const btnRemovePhoto = document.getElementById('btn-remove-photo');
+        
+        if (currentAvatar && previewContainer) {
+            const clonedAvatar = currentAvatar.cloneNode(true);
+            clonedAvatar.id = 'photo-preview-img';
             
-            if (currentAvatar && previewContainer) {
-                const clonedAvatar = currentAvatar.cloneNode(true);
-                clonedAvatar.id = 'photo-preview-img';
-                
-                // Si es un div de iniciales, asegurar el font-size correcto para el modal
-                if (clonedAvatar.tagName === 'DIV') {
-                    clonedAvatar.style.fontSize = '2rem';
-                    if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
-                } else {
-                    if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-flex';
-                }
-                
-                previewContainer.innerHTML = '';
-                previewContainer.appendChild(clonedAvatar);
+            if (clonedAvatar.tagName === 'DIV') {
+                clonedAvatar.style.fontSize = '2rem';
+                if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
+            } else {
+                if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-flex';
             }
+            
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(clonedAvatar);
+        }
 
-            selectedPhotoFile = null;
-            isAvatarRemoved = false;
-            croppedAvatarBlob = null;
-            if (avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
+        selectedPhotoFile = null;
+        isAvatarRemoved = false;
+        croppedAvatarBlob = null;
+        if (avatarCropper) { avatarCropper.destroy(); avatarCropper = null; }
 
-            const userSpan = document.querySelector('.username');
-            const inputUsername = document.getElementById('input-username');
-            if (userSpan && inputUsername) {
-                inputUsername.value = userSpan.textContent.replace('@', '').trim();
-            }
-            modal.classList.add('active');
-        });
-    }
+        const userSpan = document.querySelector('.username');
+        const inputUsername = document.getElementById('input-username');
+        if (userSpan && inputUsername) {
+            inputUsername.value = userSpan.textContent.replace('@', '').trim();
+        }
+        modal.classList.add('active');
+    };
+
+    if (btnEditProfile) btnEditProfile.addEventListener('click', openBasicModal);
+    if (profilePicContainer) profilePicContainer.addEventListener('click', openBasicModal);
 
     const closeModal = function () { if (modal) modal.classList.remove('active'); };
     if (btnCancelModal) btnCancelModal.addEventListener('click', closeModal);
@@ -921,20 +922,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyFilters() {
-        const cards = document.querySelectorAll('.project-card-full');
+        const cards = document.querySelectorAll('.project-card-full, .project-showcase-card');
         let visibleCount = 0;
 
         cards.forEach(card => {
-            const name = card.dataset.name ? card.dataset.name.toLowerCase() : '';
+            const titleEl = card.querySelector('h2, h3, h4');
+            const name = (card.dataset.name || (titleEl ? titleEl.textContent : '')).toLowerCase();
             const theme = card.dataset.theme;
             const tech = card.dataset.tech;
             let show = true;
 
             if (currentFilters.search && !name.includes(currentFilters.search)) show = false;
-            if (currentFilters.theme !== 'all' && theme !== currentFilters.theme) show = false;
-            if (currentFilters.tech !== 'all' && (!tech || !tech.includes(currentFilters.tech))) show = false;
+            if (theme && currentFilters.theme !== 'all' && theme !== currentFilters.theme) show = false;
+            if (tech && currentFilters.tech !== 'all' && (!tech || !tech.includes(currentFilters.tech))) show = false;
 
-            card.style.display = show ? '' : 'none';
+            card.style.display = show ? 'flex' : 'none';
             if (show) visibleCount++;
         });
 
@@ -956,14 +958,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function sortProjects() {
         if (!projectsGrid) return;
-        const cards = Array.from(projectsGrid.querySelectorAll('.project-card-full'));
+        const cards = Array.from(projectsGrid.querySelectorAll('.project-card-full, .project-showcase-card'));
 
         cards.sort((a, b) => {
+            const titleA = (a.dataset.name || a.querySelector('h2, h3, h4')?.textContent || '').trim().toLowerCase();
+            const titleB = (b.dataset.name || b.querySelector('h2, h3, h4')?.textContent || '').trim().toLowerCase();
             switch (currentFilters.sort) {
                 case 'recent': return new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0);
                 case 'oldest': return new Date(a.dataset.date || 0) - new Date(b.dataset.date || 0);
-                case 'az': return (a.dataset.name || '').localeCompare(b.dataset.name || '');
-                case 'za': return (b.dataset.name || '').localeCompare(a.dataset.name || '');
+                case 'az': return titleA.localeCompare(titleB);
+                case 'za': return titleB.localeCompare(titleA);
                 case 'views': return parseInt(b.dataset.views || 0) - parseInt(a.dataset.views || 0);
                 case 'collaborators': return parseInt(b.dataset.collaborators || 0) - parseInt(a.dataset.collaborators || 0);
                 default: return 0;
@@ -974,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateProjectCount() {
-        const allCards = document.querySelectorAll('.project-card-full');
+        const allCards = document.querySelectorAll('.project-card-full, .project-showcase-card');
         const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
         if (projectCount) projectCount.textContent = `(${visibleCards.length})`;
         const statProyectos = document.getElementById('stat-proyectos');
@@ -1001,11 +1005,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================
     // MODAL NUEVO PROYECTO (DISEÑO FIGMA / ANTI-SPAM)
     // ============================================
-    const modalNewProject = document.getElementById('modal-new-project');
-    const btnNewProjectTrigger = document.getElementById('btn-new-project');
-    const btnCloseNew = document.getElementById('btn-close-new-project');
-    const btnCancelNew = document.getElementById('btn-cancel-new-project');
-    const formNewProject = document.getElementById('form-new-project');
+    const modalNewProject = document.getElementById('modal-real-new-project') || document.getElementById('modal-new-project');
+    const btnNewProjectTrigger = document.getElementById('btn-new-project-trigger') || document.getElementById('btn-new-project');
+    const btnCloseNew = document.getElementById('btn-close-real-new') || document.getElementById('btn-close-new-project');
+    const btnCancelNew = document.getElementById('btn-cancel-real-new') || document.getElementById('btn-cancel-new-project');
+    const formNewProject = document.getElementById('form-real-new') || document.getElementById('form-new-project');
 
     if (btnNewProjectTrigger && modalNewProject) {
         btnNewProjectTrigger.addEventListener('click', () => {

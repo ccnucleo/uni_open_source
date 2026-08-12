@@ -160,12 +160,12 @@ def register_view(request):
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
 
-        if not first_name or len(first_name) < 3 or not all(c.isalpha() or c.isspace() for c in first_name):
-            messages.error(request, "El nombre debe tener al menos 3 letras y no contener números.")
+        if first_name and (len(first_name) < 2 or not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', first_name)):
+            messages.error(request, "El nombre debe ser válido y sin caracteres especiales ni números.")
             return redirect("accounts:register")
             
-        if not last_name or len(last_name) < 3 or not all(c.isalpha() or c.isspace() for c in last_name):
-            messages.error(request, "El apellido debe tener al menos 3 letras y no contener números.")
+        if last_name and (len(last_name) < 2 or not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', last_name)):
+            messages.error(request, "El apellido debe ser válido y sin caracteres especiales ni números.")
             return redirect("accounts:register")
 
         if User.objects.filter(username=username).exists():
@@ -189,10 +189,11 @@ def register_view(request):
         )
 
         try:
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
             send_mail(
                 "Código de Verificación - UNI Open Source",
                 f"Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.",
-                os.getenv("EMAIL_USER"),
+                from_email,
                 [email],
                 fail_silently=False,
             )
@@ -275,10 +276,11 @@ def resend_code_api(request):
             temp_user.created_at = timezone.now()
             temp_user.save()
 
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
             send_mail(
                 "Nuevo Código de Verificación - UNI Open Source",
                 f"Tu nuevo código de verificación es: {nuevo_codigo}\n\nBienvenido a la plataforma.",
-                os.getenv("EMAIL_USER"),
+                from_email,
                 [temp_user.email],
                 fail_silently=False,
             )
@@ -305,10 +307,11 @@ def reset_password_request_view(request):
             link = f"http://{dominio}/accounts/reset/{uid}/{token}/"
 
             try:
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
                 send_mail(
                     "Recupera tu contraseña - UNI Open Source",
                     f"Hola,\n\nHemos recibido una solicitud para cambiar tu contraseña.\n\nHaz clic en el siguiente enlace para crear una nueva:\n{link}\n\nSi no fuiste tú, simplemente ignora este mensaje.",
-                    os.getenv("EMAIL_USER"),
+                    from_email,
                     [email],
                     fail_silently=False,
                 )
@@ -418,7 +421,7 @@ def update_profile_api(request):
                         validate_email(contact_email)
                         profile.contact_email = contact_email
                     else:
-                        profile.contact_email = user.email
+                        profile.contact_email = None
                 except ValidationError:
                     return JsonResponse({'success': False, 'error': 'El correo de contacto no es válido.'})
                 

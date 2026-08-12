@@ -12,9 +12,16 @@
     <!-- ==========================================
          CABECERA DEL CATÁLOGO
     =========================================== -->
-    <section class="domain-header">
-        <h1>Ruta de Aprendizaje</h1>
-        <p>Los mejores recursos gratuitos seleccionados para potenciar tus habilidades en Desarrollo de Software.</p>
+    <section class="domain-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1>Ruta de Aprendizaje</h1>
+            <p>Los mejores recursos gratuitos seleccionados para potenciar tus habilidades en Desarrollo de Software.</p>
+        </div>
+        {% if request.user.is_authenticated %}
+            <button type="button" class="btn btn-orange" id="btn-new-course-trigger" style="padding: 10px 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Publicar Curso / Recurso
+            </button>
+        {% endif %}
     </section>
 
     <div class="catalog-container">
@@ -184,4 +191,108 @@
         </nav>
     {% endif %}
 </main>
+
+<!-- MODAL PUBLICAR CURSO -->
+<div class="modal-overlay" id="modal-new-course" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div class="modal-content" style="max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0; color: var(--text-primary); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-graduation-cap" style="color: var(--primary-orange, #f97316);"></i> Publicar Nuevo Curso / Recurso
+            </h3>
+            <button type="button" id="btn-close-new-course" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-new-course" enctype="multipart/form-data" style="padding: 25px;">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Título del Curso <span style="color:#ef4444;">*</span></label>
+                <input type="text" name="title" required maxlength="120" placeholder="Ej. Curso Completo de Python 3" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Categoría Principal</label>
+                    <select name="category" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        <option value="">Selecciona una categoría</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Nivel de Dificultad</label>
+                    <select name="level" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        {% for level_code, level_label in levels %}
+                            <option value="{{ level_code }}">{{ level_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tipo de Recurso</label>
+                    <select name="resource_type" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                        <option value="youtube">Lista de YouTube</option>
+                        <option value="platform">Plataforma Web</option>
+                        <option value="docs">Documentación / Lectura</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: center; padding-top: 24px;">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="has_certification" value="true" style="width: 18px; height: 18px;">
+                        ¿Incluye Certificado?
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Enlace Oficial al Curso (URL) <span style="color:#ef4444;">*</span></label>
+                <input type="url" name="url" required placeholder="https://..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Corta</label>
+                <input type="text" name="short_description" maxlength="255" placeholder="Resumen breve para la tarjeta..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Detallada</label>
+                <textarea name="description" rows="4" placeholder="Detalles sobre lo que aprenderán en este curso..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Imagen de Portada (Miniatura)</label>
+                <div id="course-drop-area" style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; background: var(--bg-main);">
+                    <i class="fas fa-image fa-2x" style="color: var(--text-secondary); margin-bottom: 8px;"></i>
+                    <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Haz clic para seleccionar una imagen</div>
+                    <input type="file" id="course-file-input" name="image" accept="image/*" hidden>
+                </div>
+                <div id="course-preview-container" style="display: none; text-align: center; margin-top: 10px;">
+                    <img id="course-preview-img" src="" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <button type="button" id="course-btn-remove-img" style="display: block; margin: 8px auto 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; font-weight: bold;">Eliminar Imagen</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tecnologías / Etiquetas (Tags)</label>
+                <div style="border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 12px; background: var(--bg-main);">
+                    <div id="pills-course-tag" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;"></div>
+                    <input type="text" id="input-course-tag" placeholder="Escribe un tag y presiona Enter..." style="border: none; background: transparent; color: var(--text-primary); outline: none; width: 100%; font-size: 0.9rem;">
+                </div>
+                <input type="hidden" id="hidden-course-tags" name="tags">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button type="button" id="btn-cancel-new-course" class="btn btn-dark" style="padding: 10px 20px;">Cancelar</button>
+                <button type="submit" class="btn btn-orange" style="padding: 10px 24px; font-weight: bold;"><i class="fas fa-save"></i> Publicar Curso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="{% static 'web/js/courses.js' %}"></script>
+{% endblock %}
 {% endblock %}

@@ -23,12 +23,9 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        if Tag.objects.filter(name__iexact=self.name).exclude(pk=self.pk).exists():
-            raise ValidationError({'name': 'Esta tecnología ya existe.'})
-
     def save(self, *args, **kwargs):
-        self.clean()
+        if self.name:
+            self.name = self.name.strip().lower()
         super().save(*args, **kwargs)
 
 class Course(models.Model):
