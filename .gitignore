@@ -1,20 +1,42 @@
+# Python & Django caches
 *.pyc
+*~
 __pycache__/
-.vscode/
-.venv/
+*.pyo
+*.pyd
+.Python
+env/
 venv/
-media/profile_pics/
+.venv/
+ENV/
 
-# Python tooling caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Local environment files
+# Local Environment Variables
 .env
 .env.*
+!.env.example
 
-# SQLite databases (local only, never tracked)
+# Database (SQLite local only)
 db.sqlite3
 *.sqlite3
 db.sqlite3.bak
+
+# Static & Media files (Collected at build time / user uploads)
+staticfiles/
+media/*
+!media/.gitkeep
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Logs & Caches
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

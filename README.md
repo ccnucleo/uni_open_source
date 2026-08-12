@@ -281,3 +281,62 @@ Antes de abrir PR, verificar:
 
 Si vas a crear una nueva linea de negocio, sigue el flujo de las secciones 6 a 10 como plantilla base.
 
+## 14) Despliegue en Render Host
+
+El proyecto está preconfigurado para un despliegue directo en [Render.com](https://render.com/).
+
+### Archivos de Configuración Incluidos
+
+- **`render.yaml`**: Infraestructura como código (Blueprint) que crea automáticamente el servicio Web de Python y la Base de Datos PostgreSQL.
+- **`build.sh`**: Script de compilación que instala dependencias (`requirements.txt`), ejecuta `collectstatic` para los archivos estáticos y aplica las migraciones (`migrate`) automáticamente.
+- **`requirements.txt`**: Incluye dependencias optimizadas para producción (`gunicorn`, `dj-database-url`, `whitenoise`, `psycopg2-binary`).
+
+---
+
+### Opción A: Despliegue Automático mediante Blueprint (Recomendado)
+
+1. Sube todos los cambios a tu repositorio de GitHub / GitLab.
+2. Inicia sesión en el Dashboard de [Render](https://dashboard.render.com/).
+3. Haz clic en **New +** -> **Blueprint**.
+4. Conecta el repositorio de tu proyecto.
+5. Render detectará automáticamente el archivo `render.yaml` y creará:
+   - Una base de datos PostgreSQL (`uni-open-source-db`).
+   - Un servicio web Python (`uni-open-source`).
+6. Si deseas enviar correos de confirmación o reseteo, asigna las variables `EMAIL_HOST_USER` y `EMAIL_HOST_PASSWORD` en la pestaña de variables de entorno.
+7. Haz clic en **Apply**.
+
+---
+
+### Opción B: Despliegue Manual en Render
+
+#### 1. Crear la Base de Datos PostgreSQL
+1. En Render, presiona **New +** -> **PostgreSQL**.
+2. Asigna un nombre (ej. `uni-open-source-db`).
+3. Selecciona la opción gratuita (**Free Plan**).
+4. Guarda la **Internal Database URL** generada por Render.
+
+#### 2. Crear el Servicio Web
+1. En Render, presiona **New +** -> **Web Service**.
+2. Conecta tu repositorio de GitHub.
+3. Rellena los datos de configuración:
+   - **Name**: `uni-open-source`
+   - **Runtime**: `Python`
+   - **Build Command**: `./build.sh`
+   - **Start Command**: `gunicorn core.wsgi:application`
+
+#### 3. Variables de Entorno Requeridas
+
+Agrega las siguientes variables en la sección **Environment Variables** de tu Web Service:
+
+| Variable | Valor / Descripción |
+| :--- | :--- |
+| `DATABASE_URL` | Copia la **Internal Database URL** de tu PostgreSQL en Render |
+| `SECRET_KEY` | Una clave secreta segura para producción |
+| `DEBUG` | `False` |
+| `ALLOWED_HOSTS` | `.onrender.com` (o la URL que te asigne Render) |
+| `EMAIL_HOST_USER` | Tu correo de origen (ejemplo: usuario@gmail.com) |
+| `EMAIL_HOST_PASSWORD` | Contraseña de aplicación SMTP |
+
+4. Presiona **Deploy Web Service**. Render instalará todo, migrará la base de datos y servirá los archivos estáticos mediante WhiteNoise.
+
+
