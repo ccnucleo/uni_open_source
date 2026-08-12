@@ -78,32 +78,47 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASES = None
+
 if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
+    if DATABASE_URL.startswith(('http://', 'https://')):
+        print(
+            "WARNING: DATABASE_URL appears to be an HTTP/HTTPS URL instead of a database connection string. "
+            "PostgreSQL connection strings must start with 'postgresql://' or 'postgres://'."
         )
-    }
-elif os.getenv('DB_ENGINE') == 'postgresql' or os.getenv('DB_HOST'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'uni_open_source_dev'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-        },
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+    else:
+        ssl_require = 'supabase' in DATABASE_URL or os.getenv('DB_SSL_REQUIRE', 'False').lower() in ('true', '1', 't')
+        try:
+            parsed_db = dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=600,
+                conn_health_checks=True,
+                ssl_require=ssl_require,
+            )
+            if parsed_db:
+                DATABASES = {'default': parsed_db}
+        except ValueError as err:
+            print(f"WARNING: Failed to parse DATABASE_URL ({err}).")
+
+if not DATABASES:
+    if os.getenv('DB_ENGINE') == 'postgresql' or os.getenv('DB_HOST'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.getenv('DB_NAME', 'uni_open_source_dev'),
+                'USER': os.getenv('DB_USER', 'postgres'),
+                'PASSWORD': os.getenv('DB_PASSWORD', ''),
+                'HOST': os.getenv('DB_HOST', 'localhost'),
+                'PORT': os.getenv('DB_PORT', '5432'),
+            },
         }
-    }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 
 # Password validation

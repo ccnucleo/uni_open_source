@@ -281,62 +281,59 @@ Antes de abrir PR, verificar:
 
 Si vas a crear una nueva linea de negocio, sigue el flujo de las secciones 6 a 10 como plantilla base.
 
-## 14) Despliegue en Render Host
+## 14) Despliegue con Render Host y Supabase PostgreSQL
 
-El proyecto está preconfigurado para un despliegue directo en [Render.com](https://render.com/).
-
-### Archivos de Configuración Incluidos
-
-- **`render.yaml`**: Infraestructura como código (Blueprint) que crea automáticamente el servicio Web de Python y la Base de Datos PostgreSQL.
-- **`build.sh`**: Script de compilación que instala dependencias (`requirements.txt`), ejecuta `collectstatic` para los archivos estáticos y aplica las migraciones (`migrate`) automáticamente.
-- **`requirements.txt`**: Incluye dependencias optimizadas para producción (`gunicorn`, `dj-database-url`, `whitenoise`, `psycopg2-binary`).
+El proyecto utiliza **Render Host** para el servidor web (Django + Gunicorn + WhiteNoise) y **Supabase** como proveedor de base de datos PostgreSQL gestionada de alto rendimiento.
 
 ---
 
-### Opción A: Despliegue Automático mediante Blueprint (Recomendado)
+### Paso 1: Configurar la Base de Datos en Supabase
 
-1. Sube todos los cambios a tu repositorio de GitHub / GitLab.
-2. Inicia sesión en el Dashboard de [Render](https://dashboard.render.com/).
-3. Haz clic en **New +** -> **Blueprint**.
-4. Conecta el repositorio de tu proyecto.
-5. Render detectará automáticamente el archivo `render.yaml` y creará:
-   - Una base de datos PostgreSQL (`uni-open-source-db`).
-   - Un servicio web Python (`uni-open-source`).
-6. Si deseas enviar correos de confirmación o reseteo, asigna las variables `EMAIL_HOST_USER` y `EMAIL_HOST_PASSWORD` en la pestaña de variables de entorno.
-7. Haz clic en **Apply**.
+1. Inicia sesión en [Supabase](https://supabase.com/).
+2. Crea un nuevo proyecto (ej. `uni-open-source`).
+3. Define la contraseña de la base de datos PostgreSQL.
+4. Una vez creado el proyecto, ve a **Project Settings** -> **Database**.
+5. En la sección **Connection string**, selecciona el tab **URI** (o **Transaction Pooler** / **Direct Connection**).
+6. Copia el string de conexión con tu contraseña, por ejemplo:
+   ```text
+   postgresql://postgres:[TU-CONTRASEÑA]@db.xxxxxxxxxxxx.supabase.co:5432/postgres
+   ```
 
 ---
 
-### Opción B: Despliegue Manual en Render
+### Paso 2: Desplegar el Web Service en Render Host
 
-#### 1. Crear la Base de Datos PostgreSQL
-1. En Render, presiona **New +** -> **PostgreSQL**.
-2. Asigna un nombre (ej. `uni-open-source-db`).
-3. Selecciona la opción gratuita (**Free Plan**).
-4. Guarda la **Internal Database URL** generada por Render.
+#### Opción A: Mediante Blueprint (`render.yaml`)
 
-#### 2. Crear el Servicio Web
+1. Sube los cambios a tu repositorio de GitHub / GitLab.
+2. En el Dashboard de [Render](https://dashboard.render.com/), haz clic en **New +** -> **Blueprint**.
+3. Conecta tu repositorio.
+4. Render leerá `render.yaml` y solicitará la variable `DATABASE_URL`.
+5. Pega el URI de conexión de Supabase en `DATABASE_URL` y haz clic en **Apply**.
+
+---
+
+#### Opción B: Despliegue Manual del Servicio Web
+
 1. En Render, presiona **New +** -> **Web Service**.
 2. Conecta tu repositorio de GitHub.
-3. Rellena los datos de configuración:
+3. Rellena los datos del servicio:
    - **Name**: `uni-open-source`
    - **Runtime**: `Python`
    - **Build Command**: `./build.sh`
    - **Start Command**: `gunicorn core.wsgi:application`
 
-#### 3. Variables de Entorno Requeridas
-
-Agrega las siguientes variables en la sección **Environment Variables** de tu Web Service:
+4. En la pestaña **Environment Variables**, configura:
 
 | Variable | Valor / Descripción |
 | :--- | :--- |
-| `DATABASE_URL` | Copia la **Internal Database URL** de tu PostgreSQL en Render |
+| `DATABASE_URL` | URI de conexión PostgreSQL copiado desde Supabase |
 | `SECRET_KEY` | Una clave secreta segura para producción |
 | `DEBUG` | `False` |
-| `ALLOWED_HOSTS` | `.onrender.com` (o la URL que te asigne Render) |
-| `EMAIL_HOST_USER` | Tu correo de origen (ejemplo: usuario@gmail.com) |
-| `EMAIL_HOST_PASSWORD` | Contraseña de aplicación SMTP |
+| `ALLOWED_HOSTS` | `.onrender.com` (o tu dominio personalizado) |
+| `EMAIL_HOST_USER` | Tu dirección de correo para SMTP |
+| `EMAIL_HOST_PASSWORD` | Tu contraseña de aplicación para SMTP |
 
-4. Presiona **Deploy Web Service**. Render instalará todo, migrará la base de datos y servirá los archivos estáticos mediante WhiteNoise.
+5. Haz clic en **Deploy Web Service**. `build.sh` instalará las dependencias, compilará los estáticos con WhiteNoise y ejecutará `python manage.py migrate` sobre tu PostgreSQL en Supabase.
 
 
