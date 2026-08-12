@@ -79,9 +79,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'uni_open_source_dev'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    },
 }
 
 
@@ -136,15 +140,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Correo desde el que se enviarán los mensajes
-EMAIL_HOST_USER = 'angelhuamanivarg0206@gmail.com' 
-
-# Clave de 16 letras que te dio Google
-EMAIL_HOST_PASSWORD = 'zxkr rcvi chqo ixgv'
-
-# Cuando sea definitivo, guardar en .env para no revelar contraseña:
-#EMAIL_HOST_USER = os.getenv('EMAIL_USER') 
-#EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+# Credenciales de correo (protegidas en .env)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 # Carpeta donde se guardarán los archivos subidos (en la raíz de tu proyecto)
 MEDIA_URL = '/media/'
