@@ -179,17 +179,17 @@ def register_view(request):
             return redirect("accounts:register")
 
         try:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, "El usuario ya existe")
+            if User.objects.filter(username__iexact=username).exists():
+                messages.error(request, "El usuario ya existe.")
                 return redirect("accounts:register")
 
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "El correo ya está registrado")
+            if User.objects.filter(email__iexact=email).exists():
+                messages.error(request, "El correo ya está registrado.")
                 return redirect("accounts:register")
 
             codigo_verificacion = str(random.randint(100000, 999999))
             
-            UnverifiedUser.objects.filter(email=email).delete()
+            UnverifiedUser.objects.filter(email__iexact=email).delete()
             UnverifiedUser.objects.create(
                 username=username,
                 email=email,
@@ -198,22 +198,22 @@ def register_view(request):
                 last_name=last_name,
                 verification_code=codigo_verificacion
             )
-        except Exception as e:
-            messages.error(request, "Error de base de datos. Verifica que la base de datos esté migrada correctamente.")
+        except Exception as err:
+            messages.error(request, f"Error al guardar datos de registro: {str(err)}")
             return redirect("accounts:register")
 
         try:
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
             send_mail(
                 "Código de Verificación - UNI Open Source",
                 f"Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.",
                 from_email,
                 [email],
-                fail_silently=False,
+                fail_silently=True,
             )
-        except Exception:
-            messages.error(request, "Hubo un error al enviar el correo de verificación. Por favor revisa la configuración del correo.")
-            return redirect("accounts:register")
+            print(f"[REGISTER LOG] Código de verificación para {email}: {codigo_verificacion}")
+        except Exception as mail_err:
+            print(f"[REGISTER MAIL ERROR] {mail_err}")
 
         return render(
             request,
@@ -229,7 +229,7 @@ def register_view(request):
 
 
 def check_username_api(request):
-    username = request.GET.get("username", "").lower()
+    username = request.GET.get("username", "").strip()
     is_taken = User.objects.filter(username__iexact=username).exists()
     return JsonResponse({"is_taken": is_taken})
 
@@ -237,14 +237,14 @@ def check_username_api(request):
 def verify_code_api(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-            codigo_ingresado = data.get("code")
-            email_ingresado = data.get("email")
+            data = json.loads(request.body.decode("utf-8")) if request.body else {}
+            codigo_ingresado = str(data.get("code", "")).strip()
+            email_ingresado = str(data.get("email", "")).strip().lower()
 
-            if not email_ingresado:
-                return JsonResponse({"success": False, "error": "Falta el correo electrónico."})
+            if not email_ingresado or not codigo_ingresado:
+                return JsonResponse({"success": False, "error": "Datos incompletos."})
 
-            temp_user = UnverifiedUser.objects.filter(email=email_ingresado).first()
+            temp_user = UnverifiedUser.objects.filter(email__iexact=email_ingresado).first()
 
             if not temp_user:
                 return JsonResponse({"success": False, "error": "No hay un registro pendiente. Vuelve a registrarte."})
@@ -254,21 +254,30 @@ def verify_code_api(request):
                 return JsonResponse({"success": False, "error": "El código ha expirado. Vuelve a registrarte."})
 
             if codigo_ingresado == temp_user.verification_code:
+                if User.objects.filter(username__iexact=temp_user.username).exists():
+                    return JsonResponse({"success": False, "error": "El usuario ya fue registrado."})
+
+                if User.objects.filter(email__iexact=temp_user.email).exists():
+                    return JsonResponse({"success": False, "error": "El correo ya fue registrado."})
+
                 new_user = User(
                     username=temp_user.username,
                     email=temp_user.email,
-                    password=temp_user.password,
+                    password=temp_user.password, # Contraseña ya cifrada en UnverifiedUser.save()
                     first_name=temp_user.first_name,
                     last_name=temp_user.last_name,
+                    is_active=True
                 )
                 new_user.save()
-                
                 temp_user.delete()
+                
+                # Iniciar sesión automáticamente
+                login(request, new_user)
                 return JsonResponse({"success": True})
 
             return JsonResponse({"success": False, "error": "El código es incorrecto."})
-        except Exception:
-            return JsonResponse({"success": False, "error": "Error de servidor."})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Error de servidor: {str(e)}"})
 
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
@@ -276,31 +285,35 @@ def verify_code_api(request):
 def resend_code_api(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-            email_ingresado = data.get("email")
+            data = json.loads(request.body.decode("utf-8")) if request.body else {}
+            email_ingresado = str(data.get("email", "")).strip().lower()
             
-            temp_user = UnverifiedUser.objects.filter(email=email_ingresado).first()
+            temp_user = UnverifiedUser.objects.filter(email__iexact=email_ingresado).first()
 
             if not temp_user:
                 return JsonResponse({"success": False, "error": "No hay registro pendiente."})
 
             nuevo_codigo = str(random.randint(100000, 999999))
-            
             temp_user.verification_code = nuevo_codigo
             temp_user.created_at = timezone.now()
             temp_user.save()
 
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
-            send_mail(
-                "Nuevo Código de Verificación - UNI Open Source",
-                f"Tu nuevo código de verificación es: {nuevo_codigo}\n\nBienvenido a la plataforma.",
-                from_email,
-                [temp_user.email],
-                fail_silently=False,
-            )
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
+            try:
+                send_mail(
+                    "Nuevo Código de Verificación - UNI Open Source",
+                    f"Tu nuevo código de verificación es: {nuevo_codigo}\n\nBienvenido a la plataforma.",
+                    from_email,
+                    [temp_user.email],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                print(f"[RESEND MAIL ERROR] {e}")
+
+            print(f"[RESEND LOG] Nuevo código para {email_ingresado}: {nuevo_codigo}")
             return JsonResponse({"success": True})
-        except Exception:
-            return JsonResponse({"success": False, "error": "Error al enviar correo."})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Error al procesar reenvío: {str(e)}"})
 
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
