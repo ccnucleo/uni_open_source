@@ -94,10 +94,11 @@ if DATABASE_URL:
         )
     else:
         ssl_require = 'supabase' in DATABASE_URL or os.getenv('DB_SSL_REQUIRE', 'False').lower() in ('true', '1', 't')
+        conn_max_age = 0 if 'pooler.supabase.com' in DATABASE_URL else 600
         try:
             parsed_db = dj_database_url.config(
                 default=DATABASE_URL,
-                conn_max_age=600,
+                conn_max_age=conn_max_age,
                 conn_health_checks=True,
                 ssl_require=ssl_require,
             )
