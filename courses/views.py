@@ -126,6 +126,9 @@ def courses_collection_api(request):
     if not request.user.is_authenticated:
         return JsonResponse({"success": False, "message": "Autenticación requerida."}, status=401)
 
+    if not request.user.is_staff:
+        return JsonResponse({"success": False, "message": "Solo el equipo administrativo tiene permisos para publicar nuevos cursos."}, status=403)
+
     is_multipart = request.content_type.startswith('multipart/form-data')
     data = request.POST if is_multipart else (_parse_json_body(request) or {})
     files = request.FILES if is_multipart else {}

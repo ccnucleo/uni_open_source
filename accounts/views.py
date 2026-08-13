@@ -19,6 +19,9 @@ from django.utils import timezone
 from django.core.validators import URLValidator, validate_email
 from django.core.exceptions import ValidationError
 
+# Servicio centralizado de envíos de correo (Google Apps Script / SMTP Fallback)
+from core.emails import send_verification_email, send_password_reset_email
+
 # Modelos locales de la app accounts
 from .models import UnverifiedUser, Profile, Technology, Interest
 
@@ -202,19 +205,7 @@ def register_view(request):
             messages.error(request, f"Error al guardar datos de registro: {str(err)}")
             return redirect("accounts:register")
 
-        print(f"[REGISTER LOG] Código de verificación generado para {email}: {codigo_verificacion}")
-        try:
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
-            send_mail(
-                "Código de Verificación - UNI Open Source",
-                f"Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.",
-                from_email,
-                [email],
-                fail_silently=True,
-            )
-            print(f"[REGISTER MAIL SUCCESS] Correo enviado a {email}")
-        except Exception as mail_err:
-            print(f"[REGISTER MAIL ERROR] {mail_err}")
+        send_verification_email(email, codigo_verificacion, action_type="register")
 
         return render(
             request,
@@ -299,19 +290,7 @@ def resend_code_api(request):
             temp_user.created_at = timezone.now()
             temp_user.save()
 
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_HOST_USER")
-            try:
-                send_mail(
-                    "Nuevo Código de Verificación - UNI Open Source",
-                    f"Tu nuevo código de verificación es: {nuevo_codigo}\n\nBienvenido a la plataforma.",
-                    from_email,
-                    [temp_user.email],
-                    fail_silently=True,
-                )
-            except Exception as e:
-                print(f"[RESEND MAIL ERROR] {e}")
-
-            print(f"[RESEND LOG] Nuevo código para {email_ingresado}: {nuevo_codigo}")
+            send_verification_email(temp_user.email, nuevo_codigo, action_type="resend")
             return JsonResponse({"success": True})
         except Exception as e:
             return JsonResponse({"success": False, "error": f"Error al procesar reenvío: {str(e)}"})
@@ -334,17 +313,7 @@ def reset_password_request_view(request):
             # EL ERROR ESTABA AQUÍ: Se agregó /accounts/ a la ruta
             link = f"http://{dominio}/accounts/reset/{uid}/{token}/"
 
-            try:
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_HOST_USER")
-                send_mail(
-                    "Recupera tu contraseña - UNI Open Source",
-                    f"Hola,\n\nHemos recibido una solicitud para cambiar tu contraseña.\n\nHaz clic en el siguiente enlace para crear una nueva:\n{link}\n\nSi no fuiste tú, simplemente ignora este mensaje.",
-                    from_email,
-                    [email],
-                    fail_silently=False,
-                )
-            except Exception:
-                pass
+            send_password_reset_email(email, link)
 
         return render(request, "web/pages/auth/reset_password_request.html", {"show_modal": True})
 
