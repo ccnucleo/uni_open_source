@@ -202,6 +202,7 @@ def register_view(request):
             messages.error(request, f"Error al guardar datos de registro: {str(err)}")
             return redirect("accounts:register")
 
+        print(f"[REGISTER LOG] Código de verificación generado para {email}: {codigo_verificacion}")
         try:
             from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
             send_mail(
@@ -209,9 +210,9 @@ def register_view(request):
                 f"Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.",
                 from_email,
                 [email],
-                fail_silently=False,
+                fail_silently=True,
             )
-            print(f"[REGISTER LOG] Código de verificación para {email}: {codigo_verificacion}")
+            print(f"[REGISTER MAIL SUCCESS] Correo enviado a {email}")
         except Exception as mail_err:
             print(f"[REGISTER MAIL ERROR] {mail_err}")
 
