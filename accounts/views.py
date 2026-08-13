@@ -154,11 +154,16 @@ def register_view(request):
         return redirect("accounts:profile")
 
     if request.method == "POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email").lower()
-        password = request.POST.get("password")
-        first_name = request.POST.get("first_name", "").strip()
-        last_name = request.POST.get("last_name", "").strip()
+        username = (request.POST.get("username") or "").strip()
+        raw_email = request.POST.get("email") or ""
+        email = raw_email.lower().strip()
+        password = request.POST.get("password") or ""
+        first_name = (request.POST.get("first_name") or "").strip()
+        last_name = (request.POST.get("last_name") or "").strip()
+
+        if not username or not email or not password:
+            messages.error(request, "Por favor completa todos los campos obligatorios.")
+            return redirect("accounts:register")
 
         if first_name and (len(first_name) < 2 or not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', first_name)):
             messages.error(request, "El nombre debe ser válido y sin caracteres especiales ni números.")
@@ -168,25 +173,29 @@ def register_view(request):
             messages.error(request, "El apellido debe ser válido y sin caracteres especiales ni números.")
             return redirect("accounts:register")
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "El usuario ya existe")
-            return redirect("accounts:register")
+        try:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "El usuario ya existe")
+                return redirect("accounts:register")
 
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "El correo ya está registrado")
-            return redirect("accounts:register")
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "El correo ya está registrado")
+                return redirect("accounts:register")
 
-        codigo_verificacion = str(random.randint(100000, 999999))
-        
-        UnverifiedUser.objects.filter(email=email).delete()
-        UnverifiedUser.objects.create(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            verification_code=codigo_verificacion
-        )
+            codigo_verificacion = str(random.randint(100000, 999999))
+            
+            UnverifiedUser.objects.filter(email=email).delete()
+            UnverifiedUser.objects.create(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                verification_code=codigo_verificacion
+            )
+        except Exception as e:
+            messages.error(request, "Error de base de datos. Verifica que la base de datos esté migrada correctamente.")
+            return redirect("accounts:register")
 
         try:
             from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
@@ -198,7 +207,7 @@ def register_view(request):
                 fail_silently=False,
             )
         except Exception:
-            messages.error(request, "Hubo un error al enviar el correo. Intenta de nuevo.")
+            messages.error(request, "Hubo un error al enviar el correo de verificación. Por favor revisa la configuración del correo.")
             return redirect("accounts:register")
 
         return render(

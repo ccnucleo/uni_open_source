@@ -115,6 +115,20 @@ def toggle_like_api(request, project_id):
 def projects_collection_api(request):
     if not request.user.is_authenticated: return JsonResponse({"success": False, "message": "Autenticación requerida."}, status=401)
     
+    if request.method == "GET":
+        projects = Project.objects.filter(is_public=True).select_related("owner").order_by("-created_at")[:24]
+        data = [
+            {
+                "id": p.id,
+                "title": p.title,
+                "summary": p.summary,
+                "owner": p.owner.username,
+                "created_at": p.created_at.isoformat(),
+            }
+            for p in projects
+        ]
+        return JsonResponse({"success": True, "data": data})
+
     is_multipart = request.content_type.startswith('multipart/form-data')
     data = request.POST if is_multipart else (_parse_json_body(request) or {})
     files = request.FILES if is_multipart else {}
@@ -159,6 +173,10 @@ def projects_item_api(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if not request.user.is_authenticated or project.owner_id != request.user.id:
         return JsonResponse({"success": False, "message": "No tienes permisos."}, status=403)
+
+    if request.method == "DELETE":
+        project.delete()
+        return JsonResponse({"success": True, "message": "Proyecto eliminado."})
 
     is_multipart = request.content_type.startswith('multipart/form-data')
     data = request.POST if is_multipart else (_parse_json_body(request) or {})
