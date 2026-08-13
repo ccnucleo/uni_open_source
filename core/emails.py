@@ -82,10 +82,20 @@ def _send_via_apps_script(script_url, payload, subject, body, to_email):
         )
         with urllib.request.urlopen(req, timeout=12) as response:
             resp_text = response.read().decode("utf-8")
+            
+            try:
+                res_json = json.loads(resp_text)
+                if isinstance(res_json, dict) and res_json.get("status") == "error":
+                    err_msg = res_json.get("message", "Error desconocido en Apps Script")
+                    print(f"[APPS SCRIPT REJECTED] Apps Script rechazó el envío ({err_msg}). Intentando fallback a Django...")
+                    return _fallback_send_mail(subject, body, to_email)
+            except json.JSONDecodeError:
+                pass
+
             print(f"[APPS SCRIPT SUCCESS] Correo enviado a {to_email} vía Google Apps Script: {resp_text}")
             return True
     except Exception as err:
-        print(f"[APPS SCRIPT ERROR] Falló el envío vía Google Apps Script ({err}). Intentando fallback a Django...")
+        print(f"[APPS SCRIPT ERROR] Falló la conexión HTTP con Apps Script ({err}). Intentando fallback a Django...")
         return _fallback_send_mail(subject, body, to_email)
 
 
