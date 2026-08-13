@@ -233,18 +233,24 @@
 }
 
 .index-container .metric-card {
+  container-type: inline-size;
+  container-name: metric-card;
   flex: 1;
-  min-width: 220px;
+  min-width: 0;
   background: var(--white);
   border-radius: 16px;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
   border: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .index-container .metric-card:hover {
@@ -252,16 +258,23 @@
 }
 
 .index-container .metric-card .number {
-  font-size: 2.5rem;
+  font-size: clamp(1.2rem, 18cqi, 2.5rem);
   font-weight: 800;
   margin: 0;
-  line-height: 1;
+  line-height: 1.1;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .index-container .metric-card .label {
-  font-size: 1rem;
+  font-size: clamp(0.7rem, 8.5cqi, 1rem);
   margin: 0;
   color: var(--gray-500);
+  line-height: 1.25;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .index-container .c-orange {
@@ -720,11 +733,16 @@
 
   .index-container .metric-card {
     min-width: 0;
-    padding: 1.2rem 0.8rem;
+    padding: 1rem 0.5rem;
+    overflow: hidden;
   }
 
   .index-container .metric-card .number {
-    font-size: 1.6rem;
+    font-size: clamp(1.1rem, 16cqi, 1.8rem);
+  }
+
+  .index-container .metric-card .label {
+    font-size: clamp(0.65rem, 8cqi, 0.88rem);
   }
 
   .index-container .feature-card {

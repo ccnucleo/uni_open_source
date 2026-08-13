@@ -2,7 +2,7 @@
     const STORAGE_KEY = "uos-sidebar-collapsed";
 
     function isMobile() {
-        return window.innerWidth <= 768;
+        return window.innerWidth <= 900;
     }
 
     function applySidebarState(isCollapsed) {
