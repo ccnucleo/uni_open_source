@@ -497,11 +497,56 @@ a.btn-page {
 @media (max-width: 900px) {
     .community-wrapper {
         flex-direction: column;
+        padding: 10px 0;
     }
 
     .community-sidebar {
         width: 100%;
         position: relative;
         top: 0;
+        padding: 18px;
+    }
+
+    .community-header-banner {
+        padding: 20px 24px;
+    }
+
+    .community-header-banner h1 {
+        font-size: 22px;
+    }
+
+    .community-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .community-header-banner {
+        padding: 16px;
+        border-left-width: 4px;
+    }
+
+    .community-header-banner h1 {
+        font-size: 19px;
+    }
+
+    .community-header-banner p {
+        font-size: 13px;
+    }
+
+    .community-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .community-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .pagination-container {
+        flex-wrap: wrap;
+        gap: 10px;
     }
 }

@@ -197,3 +197,166 @@ body.modal-open { overflow: hidden; }
 .modal-body::-webkit-scrollbar-thumb:hover, 
 .modal-figma-body::-webkit-scrollbar-thumb:hover { background-color: var(--gray-400); }
 .img-box .delete-btn { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+/* =======================================
+   RESPONSIVE DESIGN (PROYECTOS)
+======================================= */
+@media (max-width: 900px) {
+    .project-content-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .hero-main-card {
+        height: auto;
+        min-height: 400px;
+    }
+
+    .hero-overlay-content {
+        padding: 24px 20px;
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 6vw, 3rem);
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+    }
+
+    .hero-stats-card {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    main.content-area.project-detail-area {
+        padding: 0;
+    }
+
+    .hero-main-card {
+        border-radius: 0;
+        min-height: auto;
+        padding-top: 10px;
+    }
+
+    .hero-overlay-content {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .hero-overlay-top {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 14px !important;
+    }
+
+    .hero-title {
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .hero-action-buttons {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn-action-pill {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .hero-desc {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .hero-contribution-buttons {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 8px !important;
+        padding-top: 12px !important;
+    }
+
+    .btn-action-pill.contribution-btn {
+        width: 100%;
+        flex: none;
+    }
+
+    .btn-edit-banner-float {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-bottom: 12px;
+        align-self: flex-start;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .detail-card {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+
+    .card-header-icon {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .tech-big-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 10px;
+    }
+
+    .tech-big-card {
+        padding: 16px 10px;
+        font-size: 0.9rem;
+    }
+
+    .tech-big-card i {
+        font-size: 1.8rem;
+    }
+
+    .modal-figma-edit, .modal-new-project-content {
+        max-width: calc(100vw - 20px) !important;
+        max-height: 90vh !important;
+        margin: 10px;
+        border-radius: 16px !important;
+    }
+
+    .modal-figma-body {
+        padding: 16px;
+    }
+
+    .figma-footer {
+        padding: 14px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-author-card {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .author-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .author-text strong {
+        font-size: 1rem;
+    }
+
+    .author-text span {
+        font-size: 0.78rem;
+    }
+}

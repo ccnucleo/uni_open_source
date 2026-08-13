@@ -374,3 +374,54 @@ body[data-theme="forest"], body.theme-forest, body.forest-mode, body.forest {
     .domain-grid { grid-template-columns: 1fr; }
     .filters-sidebar { position: static; margin-bottom: 2rem; max-height: none; }
 }
+
+@media (max-width: 768px) {
+    .domain-page {
+        margin: 1rem auto;
+        padding: 0 0.5rem 1.5rem;
+    }
+
+    .domain-header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+
+    .domain-header h1 {
+        font-size: clamp(1.6rem, 6vw, 2.2rem);
+    }
+
+    .domain-header p {
+        font-size: 0.9rem;
+    }
+
+    .course-img-wrapper {
+        height: 160px;
+    }
+
+    .card-content {
+        padding: 1rem;
+    }
+
+    .card-content h2 {
+        font-size: 1.05rem;
+    }
+
+    .course-actions {
+        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters-sidebar {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .domain-card-empty {
+        padding: 2rem 1rem;
+    }
+}
