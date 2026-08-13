@@ -168,7 +168,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Configuración de correo
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '').strip()
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '').strip()
-EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '3'))
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '10'))
 
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -178,7 +178,7 @@ if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or 'webmaster@localhost'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Carpeta de archivos subidos por los usuarios
 MEDIA_URL = '/media/'

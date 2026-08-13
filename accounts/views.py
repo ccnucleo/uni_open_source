@@ -209,7 +209,7 @@ def register_view(request):
                 f"Tu código de verificación es: {codigo_verificacion}\n\nBienvenido a la plataforma.",
                 from_email,
                 [email],
-                fail_silently=True,
+                fail_silently=False,
             )
             print(f"[REGISTER LOG] Código de verificación para {email}: {codigo_verificacion}")
         except Exception as mail_err:
@@ -298,7 +298,7 @@ def resend_code_api(request):
             temp_user.created_at = timezone.now()
             temp_user.save()
 
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_HOST_USER")
             try:
                 send_mail(
                     "Nuevo Código de Verificación - UNI Open Source",
@@ -334,7 +334,7 @@ def reset_password_request_view(request):
             link = f"http://{dominio}/accounts/reset/{uid}/{token}/"
 
             try:
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_USER")
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or os.getenv("EMAIL_HOST_USER")
                 send_mail(
                     "Recupera tu contraseña - UNI Open Source",
                     f"Hola,\n\nHemos recibido una solicitud para cambiar tu contraseña.\n\nHaz clic en el siguiente enlace para crear una nueva:\n{link}\n\nSi no fuiste tú, simplemente ignora este mensaje.",
