@@ -314,12 +314,94 @@
 #step-success strong { color: #f97316; }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE (TABLETS Y SMARTPHONES)
 ============================================ */
 @media (max-width: 1024px) { 
-    .password-checklist, .username-tooltip { display: none; } 
+    .password-checklist, .username-tooltip { 
+        position: relative;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 8px;
+        box-sizing: border-box;
+    } 
+    .password-checklist.active, .username-tooltip.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
+
 @media (max-width: 768px) { 
-    .input-group { flex-direction: column; align-items: flex-start; gap: 10px; } 
-    .input-group label, .input-group > input, .input-wrapper { width: 100%; }
+    .card {
+        padding: 32px 24px;
+        border-radius: 24px;
+    }
+    .card h1 {
+        font-size: 28px;
+        margin-bottom: 28px;
+    }
+    .input-group { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 8px; 
+        margin-bottom: 20px;
+    } 
+    .input-group label, .input-group > input, .input-wrapper { 
+        width: 100%; 
+    }
+    .input-group label {
+        font-size: 16px;
+    }
+    .btn-submit {
+        font-size: 18px;
+        padding: 13px;
+    }
+    .verification-card {
+        padding: 30px 20px;
+        width: 92%;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 24px 18px;
+        border-radius: 20px;
+    }
+    .card h1 {
+        font-size: 24px;
+        margin-bottom: 22px;
+    }
+    .input-group label {
+        font-size: 15px;
+    }
+    .input-group > input, .input-wrapper input {
+        height: 44px;
+        font-size: 15px;
+        padding: 0 40px 0 16px;
+    }
+    .input-group > input {
+        padding: 0 16px;
+    }
+    .btn-submit {
+        font-size: 17px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+    .code-inputs {
+        gap: 6px;
+    }
+    .code-box {
+        width: calc((100% - 30px) / 6);
+        max-width: 42px;
+        height: 46px;
+        font-size: 20px;
+    }
+    .verification-card h2 {
+        font-size: 20px;
+    }
+    .verification-card p {
+        font-size: 14px;
+    }
 }

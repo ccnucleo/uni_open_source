@@ -22,11 +22,9 @@ from django.core.exceptions import ValidationError
 # Modelos locales de la app accounts
 from .models import UnverifiedUser, Profile, Technology, Interest
 
-# Modelos de la app projects (Usamos alias para evitar conflictos con el Technology de accounts)
-from projects.models import Tag as ProjectTag, Technology as ProjectTechnology
-
-
-from projects.models import Project
+# Modelos de la app projects y courses
+from projects.models import Tag as ProjectTag, Technology as ProjectTechnology, Project
+from courses.models import Tag as CourseTag
 from django.conf import settings
 from django.db.models import Count
 
@@ -45,6 +43,12 @@ def index_view(request):
     total_proyectos = Project.objects.count()
     total_usuarios = User.objects.count()
 
+    project_tags = set(ProjectTag.objects.values_list("name", flat=True))
+    course_tags = set(CourseTag.objects.values_list("name", flat=True))
+    project_techs = set(ProjectTechnology.objects.values_list("name", flat=True))
+    unique_tags = {t.strip().lower() for t in (project_tags | course_tags | project_techs) if t and t.strip()}
+    total_tecnologias = len(unique_tags)
+
     proyectos_destacados = (
         Project.objects.filter(is_public=True)
         .select_related("owner")
@@ -62,6 +66,7 @@ def index_view(request):
             "colaboradores": colaboradores,
             "total_proyectos": total_proyectos,
             "total_usuarios": total_usuarios,
+            "total_tecnologias": total_tecnologias,
             "proyectos_destacados": proyectos_destacados,
         },
     )
