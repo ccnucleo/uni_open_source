@@ -1,119 +1,109 @@
-import json
+import logging
 import os
-import urllib.request
-import urllib.parse
-from django.core.mail import send_mail
+import resend
 from django.conf import settings
+from django.template.loader import render_to_string
+
+logger = logging.getLogger(__name__)
+
+
+def _get_resend_config():
+    """
+    Obtiene la API Key y el remitente desde settings o variables de entorno.
+    """
+    api_key = getattr(settings, "RESEND_API_KEY", "") or os.getenv("RESEND_API_KEY", "").strip()
+    from_email = getattr(settings, "RESEND_FROM_EMAIL", "") or os.getenv(
+        "RESEND_FROM_EMAIL", "UNI Open Source <onboarding@resend.dev>"
+    ).strip()
+    return api_key, from_email
+
+
+def _send_resend_email(to_email, subject, html_content, text_content):
+    """
+    Envía un correo electrónico a través de la API REST HTTPS de Resend.
+    Retorna True si el correo fue aceptado por la API de Resend, False en caso contrario.
+    """
+    api_key, from_email = _get_resend_config()
+
+    if not api_key:
+        logger.error(
+            "[RESEND EMAIL] Error: RESEND_API_KEY no está configurada en las variables de entorno."
+        )
+        return False
+
+    resend.api_key = api_key
+
+    params = {
+        "from": from_email,
+        "to": [to_email],
+        "subject": subject,
+        "html": html_content,
+        "text": text_content,
+    }
+
+    try:
+        response = resend.Emails.send(params)
+        logger.info(f"[RESEND EMAIL SUCCESS] Correo enviado a {to_email} - ID: {response.get('id', 'N/A')}")
+        return True
+    except Exception as err:
+        logger.error(f"[RESEND EMAIL ERROR] Falló el envío a {to_email}: {str(err)}")
+        return False
 
 
 def send_verification_email(to_email, code, action_type="register"):
     """
-    Envía el correo con el código de verificación usando Google Apps Script (Web App via HTTP POST).
-    Si GOOGLE_APPS_SCRIPT_URL no está configurado, utiliza el backend predeterminado de Django.
+    Envía el correo de verificación con el código de 6 dígitos al usuario usando Resend.
     """
-    script_url = os.getenv("GOOGLE_APPS_SCRIPT_URL", "").strip()
-    secret_key = os.getenv("GOOGLE_APPS_SCRIPT_SECRET", "").strip()
-
     if action_type == "resend":
         subject = "Nuevo Código de Verificación - UNI Open Source"
-        body = f"Tu nuevo código de verificación es: {code}\n\nBienvenido a la plataforma."
+        text_body = (
+            f"Hola,\n\nTu nuevo código de verificación es: {code}\n\n"
+            f"Este código es válido por 15 minutos.\n\nBienvenido a UNI Open Source."
+        )
     else:
         subject = "Código de Verificación - UNI Open Source"
-        body = f"Tu código de verificación es: {code}\n\nBienvenido a la plataforma."
+        text_body = (
+            f"Hola,\n\nTu código de verificación para UNI Open Source es: {code}\n\n"
+            f"Este código es válido por 15 minutos.\n\nBienvenido a la plataforma."
+        )
 
-    # Imprimir siempre en logs para respaldo y depuración
-    print(f"[EMAIL SERVICE] Código generado para {to_email} ({action_type}): {code}")
+    try:
+        html_body = render_to_string(
+            "web/emails/verification_code.html",
+            {
+                "code": code,
+                "action_type": action_type,
+            },
+        )
+    except Exception as e:
+        logger.warning(f"[EMAIL RENDER WARNING] Falló render_to_string HTML: {e}. Usando texto plano.")
+        html_body = f"<p>{text_body.replace('\n', '<br>')}</p>"
 
-    if script_url:
-        payload = {
-            "to": to_email,
-            "subject": subject,
-            "body": body,
-            "code": code,
-            "type": action_type,
-            "secret": secret_key
-        }
-        return _send_via_apps_script(script_url, payload, subject, body, to_email)
-    else:
-        return _fallback_send_mail(subject, body, to_email)
+    logger.info(f"[EMAIL SERVICE] Despachando correo de verificación a {to_email} ({action_type})")
+    return _send_resend_email(to_email, subject, html_body, text_body)
 
 
 def send_password_reset_email(to_email, link):
     """
-    Envía el correo de recuperación de contraseña usando Google Apps Script o el backend predeterminado.
+    Envía el correo de restablecimiento de contraseña usando Resend.
     """
-    script_url = os.getenv("GOOGLE_APPS_SCRIPT_URL", "").strip()
-    secret_key = os.getenv("GOOGLE_APPS_SCRIPT_SECRET", "").strip()
-
     subject = "Recupera tu contraseña - UNI Open Source"
-    body = (
-        f"Hola,\n\nHemos recibido una solicitud para cambiar tu contraseña.\n\n"
+    text_body = (
+        f"Hola,\n\nHemos recibido una solicitud para cambiar tu contraseña en UNI Open Source.\n\n"
         f"Haz clic en el siguiente enlace para crear una nueva:\n{link}\n\n"
         f"Si no fuiste tú, simplemente ignora este mensaje."
     )
 
-    print(f"[EMAIL SERVICE] Enlace de recuperación generado para {to_email}: {link}")
-
-    if script_url:
-        payload = {
-            "to": to_email,
-            "subject": subject,
-            "body": body,
-            "link": link,
-            "type": "password_reset",
-            "secret": secret_key
-        }
-        return _send_via_apps_script(script_url, payload, subject, body, to_email)
-    else:
-        return _fallback_send_mail(subject, body, to_email)
-
-
-def _send_via_apps_script(script_url, payload, subject, body, to_email):
-    """
-    Realiza una petición HTTP POST a la URL de Google Apps Script Web App.
-    """
     try:
-        data = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(
-            script_url,
-            data=data,
-            headers={"Content-Type": "application/json"},
-            method="POST"
+        html_body = render_to_string(
+            "web/emails/password_reset.html",
+            {
+                "link": link,
+            },
         )
-        with urllib.request.urlopen(req, timeout=12) as response:
-            resp_text = response.read().decode("utf-8")
-            
-            try:
-                res_json = json.loads(resp_text)
-                if isinstance(res_json, dict) and res_json.get("status") == "error":
-                    err_msg = res_json.get("message", "Error desconocido en Apps Script")
-                    print(f"[APPS SCRIPT REJECTED] Apps Script rechazó el envío ({err_msg}). Intentando fallback a Django...")
-                    return _fallback_send_mail(subject, body, to_email)
-            except json.JSONDecodeError:
-                pass
+    except Exception as e:
+        logger.warning(f"[EMAIL RENDER WARNING] Falló render_to_string HTML: {e}. Usando texto plano.")
+        html_body = f"<p>{text_body.replace('\n', '<br>')}</p>"
 
-            print(f"[APPS SCRIPT SUCCESS] Correo enviado a {to_email} vía Google Apps Script: {resp_text}")
-            return True
-    except Exception as err:
-        print(f"[APPS SCRIPT ERROR] Falló la conexión HTTP con Apps Script ({err}). Intentando fallback a Django...")
-        return _fallback_send_mail(subject, body, to_email)
-
-
-def _fallback_send_mail(subject, body, to_email):
-    """
-    Envío tradicional mediante la configuración de correo de Django.
-    """
-    try:
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or "noreply@uniopensource.com"
-        send_mail(
-            subject,
-            body,
-            from_email,
-            [to_email],
-            fail_silently=True,
-        )
-        print(f"[DJANGO MAIL SUCCESS] Correo enviado vía Django SMTP a {to_email}")
-        return True
-    except Exception as err:
-        print(f"[DJANGO MAIL ERROR] Error al enviar vía Django: {err}")
-        return False
+    logger.info(f"[EMAIL SERVICE] Despachando enlace de recuperación a {to_email}")
+    return _send_resend_email(to_email, subject, html_body, text_body)

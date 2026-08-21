@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Código de Verificación - UNI Open Source</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f1f5f9;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0b0f19; padding: 40px 10px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 520px; background-color: #111827; border: 1px solid #1f2937; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 32px 32px 20px 32px; text-align: center; border-bottom: 1px solid #1f2937;">
+                            <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #38bdf8; letter-spacing: -0.5px;">
+                                UNI Open Source
+                            </h1>
+                            <p style="margin: 6px 0 0 0; font-size: 13px; color: #94a3b8; font-weight: 500;">
+                                Comunidad de Desarrollo y Tecnología
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 32px;">
+                            <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #f8fafc;">
+                                {% if action_type == 'resend' %}Nuevo Código de Verificación{% else %}Verifica tu correo electrónico{% endif %}
+                            </h2>
+                            <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #cbd5e1;">
+                                {% if action_type == 'resend' %}
+                                Has solicitado un nuevo código para completar tu registro en <strong>UNI Open Source</strong>. Usa el siguiente código de 6 dígitos:
+                                {% else %}
+                                ¡Bienvenido a <strong>UNI Open Source</strong>! Para completar tu registro e iniciar sesión, ingresa el siguiente código de verificación de 6 dígitos:
+                                {% endif %}
+                            </p>
+
+                            <!-- Code Box -->
+                            <div style="text-align: center; margin: 28px 0;">
+                                <div style="display: inline-block; background-color: #0b0f19; border: 2px dashed #38bdf8; border-radius: 12px; padding: 16px 32px; font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);">
+                                    {{ code }}
+                                </div>
+                            </div>
+
+                            <p style="margin: 20px 0 0 0; font-size: 13px; line-height: 1.5; color: #94a3b8; text-align: center;">
+                                ⏱️ Este código es válido por <strong>15 minutos</strong>. Si no solicitaste este código, puedes ignorar este mensaje de manera segura.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 24px 32px; background-color: #0b0f19; text-align: center; border-top: 1px solid #1f2937;">
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">
+                                Este es un correo automático enviado por UNI Open Source. Por favor no respondas a este mensaje.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

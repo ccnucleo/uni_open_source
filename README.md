@@ -331,8 +331,8 @@ El proyecto utiliza **Render Host** para el servidor web (Django + Gunicorn + Wh
 | `SECRET_KEY` | Una clave secreta segura para producción |
 | `DEBUG` | `False` |
 | `ALLOWED_HOSTS` | `.onrender.com` (o tu dominio personalizado) |
-| `EMAIL_HOST_USER` | Tu dirección de correo para SMTP |
-| `EMAIL_HOST_PASSWORD` | Tu contraseña de aplicación para SMTP |
+| `RESEND_API_KEY` | Tu API Key obtenida en Resend.com |
+| `RESEND_FROM_EMAIL` | Remitente verificado en Resend (ej: `UNI Open Source <onboarding@resend.dev>`) |
 
 5. Haz clic en **Deploy Web Service**. `build.sh` instalará las dependencias, compilará los estáticos con WhiteNoise y ejecutará `python manage.py migrate` sobre tu PostgreSQL en Supabase.
 

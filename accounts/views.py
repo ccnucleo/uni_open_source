@@ -205,7 +205,23 @@ def register_view(request):
             messages.error(request, f"Error al guardar datos de registro: {str(err)}")
             return redirect("accounts:register")
 
-        send_verification_email(email, codigo_verificacion, action_type="register")
+        sent = send_verification_email(email, codigo_verificacion, action_type="register")
+        if not sent:
+            UnverifiedUser.objects.filter(email__iexact=email).delete()
+            messages.error(
+                request,
+                "No se pudo enviar el correo de verificación. Por favor comprueba tu dirección o inténtalo más tarde."
+            )
+            return render(
+                request,
+                "web/pages/auth/register.html",
+                {
+                    "email_digitado": email,
+                    "username_digitado": username,
+                    "first_name_digitado": first_name,
+                    "last_name_digitado": last_name,
+                },
+            )
 
         return render(
             request,
@@ -290,7 +306,10 @@ def resend_code_api(request):
             temp_user.created_at = timezone.now()
             temp_user.save()
 
-            send_verification_email(temp_user.email, nuevo_codigo, action_type="resend")
+            sent = send_verification_email(temp_user.email, nuevo_codigo, action_type="resend")
+            if not sent:
+                return JsonResponse({"success": False, "error": "No se pudo enviar el correo de verificación. Inténtalo de nuevo."})
+
             return JsonResponse({"success": True})
         except Exception as e:
             return JsonResponse({"success": False, "error": f"Error al procesar reenvío: {str(e)}"})
@@ -301,19 +320,22 @@ def resend_code_api(request):
 @never_cache
 def reset_password_request_view(request):
     if request.method == "POST":
-        email = request.POST.get("email").lower()
+        email = request.POST.get("email", "").lower().strip()
         user = User.objects.filter(email=email).first()
 
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
+            protocolo = "https" if request.is_secure() or not settings.DEBUG else "http"
             dominio = request.get_host()
             
-            # EL ERROR ESTABA AQUÍ: Se agregó /accounts/ a la ruta
-            link = f"http://{dominio}/accounts/reset/{uid}/{token}/"
+            link = f"{protocolo}://{dominio}/accounts/reset/{uid}/{token}/"
 
-            send_password_reset_email(email, link)
+            sent = send_password_reset_email(email, link)
+            if not sent:
+                messages.error(request, "No se pudo enviar el correo de recuperación. Inténtalo de nuevo más tarde.")
+                return render(request, "web/pages/auth/reset_password_request.html")
 
         return render(request, "web/pages/auth/reset_password_request.html", {"show_modal": True})
 
