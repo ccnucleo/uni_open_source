@@ -5,8 +5,7 @@ set -o errexit
 echo "============================================================"
 echo "==> [Vercel Build] 1. Instalando dependencias de Python..."
 echo "============================================================"
-python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --break-system-packages
 
 echo "============================================================"
 echo "==> [Vercel Build] 2. Recolectando archivos estáticos..."
