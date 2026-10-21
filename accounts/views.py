@@ -403,7 +403,12 @@ def update_profile_api(request):
                     
                 user.save()
                 profile.save()
-                return JsonResponse({'success': True, 'message': 'Información básica actualizada correctamente.'})
+                avatar_url = profile.avatar.url if profile.avatar else None
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Información básica actualizada correctamente.',
+                    'avatar_url': avatar_url,
+                })
                 
             elif update_type == 'detailed_info':
                 bio_val = request.POST.get('bio', profile.bio)

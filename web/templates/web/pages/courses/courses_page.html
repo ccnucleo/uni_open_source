@@ -1,10 +1,10 @@
 {% extends 'web/layouts/app_layout.html' %}
 {% load static %}
 
-{% block title %}Cursos | UNI Open Source{% endblock %}
+{% block title %}Cursos de Ingeniería | UNI Open Source{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}?v=4">
+<link rel="stylesheet" href="{% static 'web/css/pages/courses.css' %}?v=5">
 {% endblock %}
 
 {% block content %}
@@ -12,45 +12,81 @@
     <!-- ==========================================
          CABECERA DEL CATÁLOGO
     =========================================== -->
-    <section class="domain-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-        <div>
-            <h1>Ruta de Aprendizaje</h1>
-            <p>Los mejores recursos gratuitos seleccionados para potenciar tus habilidades en Desarrollo de Software.</p>
+    <section class="domain-header">
+        <div class="domain-header-info">
+            <h1>Ruta de Aprendizaje por Ingeniería</h1>
+            <p>Catálogo oficial de cursos y laboratorios 100% gratuitos verificados para Ingeniería Industrial,
+                Sistemas, Software e Inteligencia Artificial.</p>
         </div>
         {% if request.user.is_staff %}
-            <button type="button" class="btn btn-orange" id="btn-new-course-trigger" style="padding: 10px 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="fas fa-plus"></i> Publicar Curso / Recurso
-            </button>
+        <button type="button" class="btn btn-orange btn-header-action" id="btn-new-course-trigger">
+            <i class="fas fa-plus"></i> Publicar Curso / Recurso
+        </button>
         {% endif %}
     </section>
 
+    <!-- Barra de Selección de Carreras de Ingeniería -->
+    <nav class="career-nav-tabs" aria-label="Filtro por especialidad de ingeniería">
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if selected_platform %}plataforma={{ selected_platform }}&{% endif %}{% if selected_credential %}credencial={{ selected_credential }}&{% endif %}"
+            class="career-tab-btn {% if not selected_career %}active{% endif %}">
+            <i class="fas fa-th-large"></i> Todas las Especialidades
+        </a>
+        {% for car in careers %}
+        <a href="?carrera={{ car.code }}{% if query %}&q={{ query }}{% endif %}{% if selected_platform %}&plataforma={{ selected_platform }}{% endif %}{% if selected_credential %}&credencial={{ selected_credential }}{% endif %}"
+            class="career-tab-btn {% if selected_career == car.code %}active{% endif %}">
+            <i class="fas {{ car.icon|default:'fa-graduation-cap' }}"></i> {{ car.name }}
+        </a>
+        {% endfor %}
+    </nav>
+
     <div class="catalog-container">
-        
+
         <!-- ==========================================
              SIDEBAR: Filtros de Búsqueda
         =========================================== -->
         <aside class="filters-sidebar">
             <form method="get" id="filtersForm">
-                <h3>Filtrar Recursos</h3>
+                <h3><i class="fas fa-filter"></i> Filtrar Recursos</h3>
+
+                <!-- Preservar carrera seleccionada -->
+                {% if selected_career %}
+                <input type="hidden" name="carrera" value="{{ selected_career }}">
+                {% endif %}
 
                 <!-- Búsqueda por texto -->
                 <div class="filter-group">
-                    <label for="searchInput">Buscar por nombre del curso</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="searchInput" name="q" value="{{ query }}" placeholder="Ej. Python, React, SQL...">
-                        <button type="submit" class="btn btn-dark" style="white-space: nowrap;">Buscar</button>
+                    <label for="searchInput">Buscar por nombre</label>
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" name="q" value="{{ query }}"
+                            placeholder="Ej. Python, React, SQL...">
+                        <button type="submit" class="btn btn-dark">Buscar</button>
                     </div>
                 </div>
 
                 <!-- Filtro de Categorías -->
                 <div class="filter-group">
-                    <label for="categorySelect">Categoría Principal</label>
-                    <select id="categorySelect" name="categoria" onchange="document.getElementById('filtersForm').submit()">
+                    <label for="categorySelect">Categoría Temática</label>
+                    <select id="categorySelect" name="categoria"
+                        onchange="document.getElementById('filtersForm').submit()">
                         <option value="">Todas las categorías</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
+                        <option value="{{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro de Tipo de Credencial -->
+                <div class="filter-group">
+                    <label for="credentialSelect">Tipo de Credencial</label>
+                    <select id="credentialSelect" name="credencial"
+                        onchange="document.getElementById('filtersForm').submit()">
+                        <option value="">Todas las credenciales</option>
+                        {% for cred_code, cred_label in credential_types %}
+                        <option value="{{ cred_code }}" {% if selected_credential == cred_code %}selected{% endif %}>
+                            {{ cred_label }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -60,12 +96,27 @@
                     <label>Nivel de Dificultad</label>
                     <div class="checkbox-group">
                         {% for level_code, level_label in levels %}
-                            <label>
-                                <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if level_code in selected_levels %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
-                                {{ level_label }}
-                            </label>
+                        <label>
+                            <input type="checkbox" name="nivel" value="{{ level_code }}" class="level-cb" {% if level_code in selected_levels %}checked{% endif %}
+                                onchange="document.getElementById('filtersForm').submit()">
+                            {{ level_label }}
+                        </label>
                         {% endfor %}
                     </div>
+                </div>
+
+                <!-- Filtro de Plataforma -->
+                <div class="filter-group">
+                    <label for="platformSelect">Plataforma</label>
+                    <select id="platformSelect" name="plataforma"
+                        onchange="document.getElementById('filtersForm').submit()">
+                        <option value="">Todas las plataformas</option>
+                        {% for plat_code, plat_label in platforms %}
+                        <option value="{{ plat_code }}" {% if selected_platform == plat_code %}selected{% endif %}>
+                            {{ plat_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <!-- Filtro de Tecnologías (Tags) -->
@@ -73,21 +124,22 @@
                     <label>Tecnologías (Tags)</label>
                     <div class="tag-container-box">
                         {% for tag in tags %}
-                            <label style="font-weight: 500; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                                <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %} onchange="document.getElementById('filtersForm').submit()">
-                                <span style="margin-left: 8px;">{{ tag.name }}</span>
-                            </label>
+                        <label class="tag-checkbox-item">
+                            <input type="checkbox" name="tag" value="{{ tag.id }}" class="tag-cb" {% if tag.id|stringformat:'s' in selected_tag_ids %}checked{% endif %}
+                                onchange="document.getElementById('filtersForm').submit()">
+                            <span>{{ tag.name }}</span>
+                        </label>
                         {% empty %}
-                            <p style="font-size: 0.8rem; color: var(--text-secondary);">No hay tags disponibles.</p>
+                        <p class="source-meta-sub">No hay tags disponibles.</p>
                         {% endfor %}
                     </div>
                 </div>
 
                 <!-- Botón de Limpiar (Visible solo si hay filtros activos) -->
-                {% if query or selected_category_id or selected_levels or selected_tag_ids %}
-                    <a href="{% url 'courses:list' %}" class="btn btn-dark" style="display: block; text-align: center; margin-top: 10px;">
-                        Limpiar filtros
-                    </a>
+                {% if query or selected_category_id or selected_levels or selected_tag_ids or selected_platform or selected_career or selected_credential %}
+                <a href="{% url 'courses:list' %}" class="btn btn-dark btn-clear-filters">
+                    Limpiar filtros
+                </a>
                 {% endif %}
             </form>
         </aside>
@@ -97,77 +149,111 @@
         =========================================== -->
         <section class="domain-grid" id="coursesGrid">
             {% for course in courses %}
-                
-                <!-- Tarjeta de Curso: Wrapper interactivo (Full-card click) -->
-                <article class="domain-card" 
-                         onclick="window.location.href='{% url 'courses:detail' course.slug %}'" 
-                         style="cursor: pointer; transition: transform 0.2s ease-in-out;" 
-                         onmouseover="this.style.transform='translateY(-5px)'" 
-                         onmouseout="this.style.transform='translateY(0)'">
 
-                    <!-- Renderizado de Portada -->
-                    {% if course.image %}
-                        <div class="course-img-wrapper">
-                            <img src="{{ course.image.url }}" alt="Portada de {{ course.title }}" class="course-card-img" style="height: 200px; width: 100%; object-fit: cover; display: block;">
-                        </div>
-                    {% else %}
-                        <!-- Fallback visual para cursos sin imagen -->
-                        <div class="course-img-wrapper empty-img" style="height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border-bottom: 1px solid var(--border-color);">
-                            <span style="font-size: 2.5rem; font-weight: bold; color: var(--text-muted);">&lt;/&gt;</span>
-                        </div>
-                    {% endif %}
+            <!-- Tarjeta de Curso: Wrapper interactivo (Full-card click) -->
+            <article class="domain-card" onclick="window.location.href='{% url 'courses:detail' course.slug %}'">
 
-                    <div class="card-content">
-                        <!-- Categoría Principal -->
-                        <span class="category-label">{{ course.category.name|default:'General' }}</span>
-
-                        <!-- Título truncado (Evita deformar la grilla con textos largos) -->
-                        <h2 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-bottom: 10px;" title="{{ course.title }}">
-                            {{ course.title }}
-                        </h2>
-
-                        <!-- Metadatos (Badges) -->
-                        <div class="course-badges">
-                            <span class="badge badge-level">{{ course.get_level_display }}</span>
-                            <span class="badge badge-type">{{ course.get_resource_type_display }}</span>
-                            {% if course.has_certification %}
-                                <span class="badge cert-badge">🏆 Certificado</span>
-                            {% endif %}
-                        </div>
-
-                        <!-- Descripción corta (Máximo 2 líneas) -->
-                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            {{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}
-                        </p>
-
-                        <!-- Etiquetas secundarias -->
-                        <div class="course-tags">
-                            {% for tag in course.tags.all %}
-                                <span class="tag-pill">#{{ tag.name }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Acciones -->
-                    <div class="course-actions">
-                        {% if course.url %}
-                            <!-- event.stopPropagation() evita disparar el click global de la tarjeta -->
-                            <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange" onclick="event.stopPropagation();">
-                                Ir al recurso
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'courses:detail' course.slug %}" class="btn btn-dark" onclick="event.stopPropagation();">
-                            Detalles
-                        </a>
-                    </div>
-                </article>
-            
-            {% empty %}
-                <!-- Estado vacío: Búsqueda sin resultados -->
-                <div class="domain-card-empty" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                    <h2>Sin coincidencias</h2>
-                    <p>No encontramos cursos que coincidan con esos filtros. ¡Prueba otra combinación!</p>
+                <!-- Renderizado de Portada -->
+                {% if course.get_image_url %}
+                <div class="course-img-wrapper">
+                    <img src="{{ course.get_image_url }}" alt="Portada de {{ course.title }}" class="course-card-img"
+                        loading="lazy">
                 </div>
+                {% else %}
+                <!-- Fallback visual para cursos sin imagen -->
+                <div class="course-img-wrapper empty-img">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-content">
+                    <!-- Categoría y Carreras -->
+                    <div class="card-header-meta">
+                        <span class="category-label">{{ course.category.name|default:'General' }}</span>
+                        {% for cr in course.careers.all %}
+                        <span class="career-tag-pill">
+                            <i class="fas {{ cr.icon|default:'fa-graduation-cap' }}"></i> {{ cr.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Título del curso -->
+                    <h2 title="{{ course.title }}">{{ course.title }}</h2>
+
+                    <!-- Metadatos (Badges con Iconos Vectoriales) -->
+                    <div class="course-badges">
+                        {% if course.provider_name %}
+                        <span class="badge badge-provider">
+                            <i class="fas fa-building"></i> {{ course.provider_name }}
+                        </span>
+                        {% elif course.platform != 'manual' %}
+                        <span class="badge badge-platform">
+                            <i class="fas fa-laptop-code"></i> {{ course.get_platform_display }}
+                        </span>
+                        {% endif %}
+
+                        <span class="badge badge-level">
+                            <i class="fas fa-layer-group"></i> {{ course.get_level_display }}
+                        </span>
+
+                        {% if course.has_practical_labs %}
+                        <span class="badge badge-lab">
+                            <i class="fas fa-flask"></i> Lab Práctico
+                        </span>
+                        {% endif %}
+
+                        {% if course.credential_type == 'certificate' %}
+                        <span class="badge badge-cert">
+                            <i class="fas fa-certificate"></i> Certificado Gratuito
+                        </span>
+                        {% elif course.credential_type == 'skill_badge' %}
+                        <span class="badge badge-skill">
+                            <i class="fas fa-award"></i> Skill Badge
+                        </span>
+                        {% elif course.credential_type == 'completion' %}
+                        <span class="badge badge-completion">
+                            <i class="fas fa-file-alt"></i> Constancia
+                        </span>
+                        {% elif course.has_certification %}
+                        <span class="badge badge-cert">
+                            <i class="fas fa-certificate"></i> Certificado
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Descripción corta -->
+                    <p>{{ course.short_description|default:'Aprende las bases de esta tecnología paso a paso.' }}</p>
+
+                    <!-- Etiquetas secundarias -->
+                    <div class="course-tags">
+                        {% for tag in course.tags.all %}
+                        <span class="tag-pill">#{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="course-actions">
+                    {% if course.url %}
+                    <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange"
+                        onclick="event.stopPropagation();">
+                        <i class="fas fa-external-link-alt"></i> Ir al recurso
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'courses:detail' course.slug %}" class="btn btn-dark"
+                        onclick="event.stopPropagation();">
+                        <i class="fas fa-info-circle"></i> Detalles
+                    </a>
+                </div>
+            </article>
+
+            {% empty %}
+            <!-- Estado vacío -->
+            <div class="domain-card-empty">
+                <h2><i class="fas fa-search"></i> Sin coincidencias</h2>
+                <p>No encontramos cursos que coincidan con esos filtros. ¡Prueba otra combinación de carrera o
+                    tecnología!</p>
+            </div>
             {% endfor %}
         </section>
     </div>
@@ -176,118 +262,127 @@
          PAGINACIÓN
     =========================================== -->
     {% if page_obj.paginator.num_pages > 1 %}
-        <nav class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 2.5rem;">
-            {% if page_obj.has_previous %}
-                <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="btn btn-dark">&larr; Anterior</a>
-            {% endif %}
+    <nav class="pagination-container" aria-label="Navegación de páginas">
+        {% if page_obj.has_previous %}
+        <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="btn btn-dark">&larr; Anterior</a>
+        {% endif %}
 
-            <span style="color: var(--text-secondary);">
-                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-            </span>
+        <span class="pagination-info">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
 
-            {% if page_obj.has_next %}
-                <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="btn btn-dark">Siguiente &rarr;</a>
-            {% endif %}
-        </nav>
+        {% if page_obj.has_next %}
+        <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="btn btn-dark">Siguiente &rarr;</a>
+        {% endif %}
+    </nav>
     {% endif %}
 </main>
 
 {% if request.user.is_staff %}
 <!-- MODAL PUBLICAR CURSO -->
-<div class="modal-overlay" id="modal-new-course" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-    <div class="modal-content" style="max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color);">
-            <h3 style="margin: 0; color: var(--text-primary); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-graduation-cap" style="color: var(--primary-orange, #f97316);"></i> Publicar Nuevo Curso / Recurso
+<div class="modal-overlay" id="modal-new-course">
+    <div class="modal-content-card">
+        <div class="modal-header-bar">
+            <h3 class="modal-header-title">
+                <i class="fas fa-graduation-cap"></i> Publicar Nuevo Curso / Recurso
             </h3>
-            <button type="button" id="btn-close-new-course" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">&times;</button>
+            <button type="button" id="btn-close-new-course" class="modal-btn-close">&times;</button>
         </div>
 
-        <form id="form-new-course" enctype="multipart/form-data" style="padding: 25px;">
+        <form id="form-new-course" class="modal-form-body" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Título del Curso <span style="color:#ef4444;">*</span></label>
-                <input type="text" name="title" required maxlength="120" placeholder="Ej. Curso Completo de Python 3" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            <div class="form-field-group">
+                <label class="form-field-label">Título del Curso <span class="form-field-required">*</span></label>
+                <input type="text" name="title" required maxlength="120" placeholder="Ej. Curso Completo de Python 3"
+                    class="form-input-control">
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="form-row-2col">
                 <div>
-                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Categoría Principal</label>
-                    <select name="category" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                    <label class="form-field-label">Categoría Principal</label>
+                    <select name="category" class="form-input-control">
                         <option value="">Selecciona una categoría</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        <option value="{{ category.id }}">{{ category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div>
-                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Nivel de Dificultad</label>
-                    <select name="level" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                    <label class="form-field-label">Nivel de Dificultad</label>
+                    <select name="level" class="form-input-control">
                         {% for level_code, level_label in levels %}
-                            <option value="{{ level_code }}">{{ level_label }}</option>
+                        <option value="{{ level_code }}">{{ level_label }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="form-row-2col">
                 <div>
-                    <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tipo de Recurso</label>
-                    <select name="resource_type" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+                    <label class="form-field-label">Tipo de Recurso</label>
+                    <select name="resource_type" class="form-input-control">
                         <option value="youtube">Lista de YouTube</option>
                         <option value="platform">Plataforma Web</option>
                         <option value="docs">Documentación / Lectura</option>
                     </select>
                 </div>
-                <div style="display: flex; align-items: center; padding-top: 24px;">
-                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" name="has_certification" value="true" style="width: 18px; height: 18px;">
+                <div>
+                    <label class="form-field-label">Certificación</label>
+                    <label class="form-checkbox-label">
+                        <input type="checkbox" name="has_certification" value="true">
                         ¿Incluye Certificado?
                     </label>
                 </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Enlace Oficial al Curso (URL) <span style="color:#ef4444;">*</span></label>
-                <input type="url" name="url" required placeholder="https://..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            <div class="form-field-group">
+                <label class="form-field-label">Enlace Oficial al Curso (URL) <span
+                        class="form-field-required">*</span></label>
+                <input type="url" name="url" required placeholder="https://..." class="form-input-control">
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Corta</label>
-                <input type="text" name="short_description" maxlength="255" placeholder="Resumen breve para la tarjeta..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;">
+            <div class="form-field-group">
+                <label class="form-field-label">Descripción Corta</label>
+                <input type="text" name="short_description" maxlength="255"
+                    placeholder="Resumen breve para la tarjeta..." class="form-input-control">
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Descripción Detallada</label>
-                <textarea name="description" rows="4" placeholder="Detalles sobre lo que aprenderán en este curso..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); outline: none;"></textarea>
+            <div class="form-field-group">
+                <label class="form-field-label">Descripción Detallada</label>
+                <textarea name="description" rows="4" placeholder="Detalles sobre lo que aprenderán en este curso..."
+                    class="form-input-control"></textarea>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Imagen de Portada (Miniatura)</label>
-                <div id="course-drop-area" style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; background: var(--bg-main);">
-                    <i class="fas fa-image fa-2x" style="color: var(--text-secondary); margin-bottom: 8px;"></i>
-                    <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Haz clic para seleccionar una imagen</div>
+            <div class="form-field-group">
+                <label class="form-field-label">Imagen de Portada (Miniatura)</label>
+                <div id="course-drop-area" class="drop-zone-box">
+                    <i class="fas fa-image fa-2x drop-zone-icon"></i>
+                    <div class="drop-zone-text">Haz clic para seleccionar una imagen</div>
                     <input type="file" id="course-file-input" name="image" accept="image/*" hidden>
                 </div>
-                <div id="course-preview-container" style="display: none; text-align: center; margin-top: 10px;">
-                    <img id="course-preview-img" src="" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <button type="button" id="course-btn-remove-img" style="display: block; margin: 8px auto 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; font-weight: bold;">Eliminar Imagen</button>
+                <div id="course-preview-container" class="source-card-box"
+                    style="display: none; justify-content: center; margin-top: 10px;">
+                    <img id="course-preview-img" src="" alt="Vista previa" class="detail-cover-img"
+                        style="max-height: 120px; width: auto; margin-bottom: 0;">
+                    <button type="button" id="course-btn-remove-img" class="btn btn-dark"
+                        style="color: #ef4444;">Eliminar Imagen</button>
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Tecnologías / Etiquetas (Tags)</label>
-                <div style="border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 12px; background: var(--bg-main);">
-                    <div id="pills-course-tag" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;"></div>
-                    <input type="text" id="input-course-tag" placeholder="Escribe un tag y presiona Enter..." style="border: none; background: transparent; color: var(--text-primary); outline: none; width: 100%; font-size: 0.9rem;">
+            <div class="form-field-group">
+                <label class="form-field-label">Tecnologías / Etiquetas (Tags)</label>
+                <div class="tags-input-container">
+                    <div id="pills-course-tag" class="tags-pills-wrapper"></div>
+                    <input type="text" id="input-course-tag" placeholder="Escribe un tag y presiona Enter..."
+                        class="tags-text-input">
                 </div>
                 <input type="hidden" id="hidden-course-tags" name="tags">
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                <button type="button" id="btn-cancel-new-course" class="btn btn-dark" style="padding: 10px 20px;">Cancelar</button>
-                <button type="submit" class="btn btn-orange" style="padding: 10px 24px; font-weight: bold;"><i class="fas fa-save"></i> Publicar Curso</button>
+            <div class="modal-footer-actions">
+                <button type="button" id="btn-cancel-new-course" class="btn btn-dark">Cancelar</button>
+                <button type="submit" class="btn btn-orange"><i class="fas fa-save"></i> Publicar Curso</button>
             </div>
         </form>
     </div>

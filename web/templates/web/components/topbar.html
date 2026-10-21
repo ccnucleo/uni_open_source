@@ -8,7 +8,9 @@
 
         <div class="page-heading-group">
             <div class="platform-name"><strong>UNI</strong> OPEN SOURCE</div>
-            <h1 class="app-page-title">{{ page_title|default:'Panel' }}</h1>
+            {% if active_section != 'home' and page_title and page_title != 'Inicio' %}
+            <h1 class="app-page-title">{{ page_title }}</h1>
+            {% endif %}
         </div>
     </div>
 

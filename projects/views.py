@@ -20,8 +20,13 @@ def projects_page(request):
     date_from = request.GET.get('date_from', '').strip()
     date_to = request.GET.get('date_to', '').strip()
 
-    # 2. QuerySet base
-    projects = Project.objects.select_related("owner").prefetch_related("technologies", "tags").annotate(likes_count=Count('likes', distinct=True))
+    # 2. QuerySet base optimizado para evitar N+1 (incluye perfil del autor)
+    projects = (
+        Project.objects.filter(is_public=True)
+        .select_related("owner", "owner__profile")
+        .prefetch_related("technologies", "tags")
+        .annotate(likes_count=Count('likes', distinct=True))
+    )
 
     # 3. Aplicar Filtros dinámicos
     if q:
@@ -50,16 +55,13 @@ def projects_page(request):
     else: # Por defecto: más recientes
         projects = projects.order_by('-created_at')
 
-    # Limitamos los resultados
+    # Limitamos los resultados para rendimiento óptimo
     projects = projects[:24]
 
-    # Extraemos TODOS los datos (en uso y pre-creados) para el autocompletado predictivo
-    all_tags = list(Tag.objects.values_list('name', flat=True))
-    all_techs = list(Technology.objects.values_list('name', flat=True))
-    all_authors = list(User.objects.filter(owned_projects__isnull=False).values_list('username', flat=True).distinct())
-
-    # Obtenemos a todos los usuarios de la base de datos
-    all_users = list(User.objects.values_list('username', flat=True))
+    # Extraemos filtros predictivos optimizados (distinct para no enviar duplicados)
+    all_tags = list(Tag.objects.values_list('name', flat=True).distinct()[:40])
+    all_techs = list(Technology.objects.values_list('name', flat=True).distinct()[:40])
+    all_authors = list(User.objects.filter(owned_projects__isnull=False).values_list('username', flat=True).distinct()[:40])
 
     return render(
         request, 
@@ -67,12 +69,13 @@ def projects_page(request):
         {
             "projects": projects, 
             "active_section": "projects",
+            "page_title": "Proyectos",
             "all_tags": all_tags,
             "all_techs": all_techs,
             "all_authors": all_authors,
-            "all_users": json.dumps(all_users),
         }
     )
+
 
 def project_detail_page(request, project_id):
     project = get_object_or_404(Project.objects.select_related("owner").prefetch_related('gallery', 'collaborators', 'likes', 'tags', 'technologies'), pk=project_id)

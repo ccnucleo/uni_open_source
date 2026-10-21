@@ -4,18 +4,22 @@
         <img src="{% static 'web/img/logo_uos.png' %}" alt="Logo UNI Open Source" class="sidebar-logo-img">
     </div>
     <nav class="sidebar-menu">
-        <a href="/" class="sidebar-link{% if active_section == 'home' %} active{% endif %}">
+        <a href="{% url 'index' %}" class="sidebar-link{% if active_section == 'home' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-home"></i></div>
             <span>Inicio</span>
         </a>
-        <a href="/projects/" class="sidebar-link{% if active_section == 'projects' %} active{% endif %}">
+        <a href="{% url 'projects:list' %}" class="sidebar-link{% if active_section == 'projects' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-search"></i></div>
             <span>Proyectos</span>
         </a>
         {% if user.is_authenticated %}
-        <a href="/courses/" class="sidebar-link{% if active_section == 'courses' %} active{% endif %}">
+        <a href="{% url 'courses:list' %}" class="sidebar-link{% if active_section == 'courses' %} active{% endif %}">
             <div class="sidebar-icon"><i class="fas fa-graduation-cap"></i></div>
             <span>Cursos</span>
+        </a>
+        <a href="{% url 'jobs:list' %}" class="sidebar-link{% if active_section == 'jobs' %} active{% endif %}">
+            <div class="sidebar-icon"><i class="fas fa-briefcase"></i></div>
+            <span>Empleos</span>
         </a>
         <a href="{% url 'community:list' %}"
             class="sidebar-link{% if active_section == 'community' %} active{% endif %}">
@@ -23,12 +27,19 @@
             <span>Comunidad</span>
         </a>
         {% else %}
-        <a href="/courses/" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="courses" title="Acceso restringido a miembros">
+        <a href="{% url 'courses:list' %}" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="courses" title="Acceso restringido a miembros">
             <div class="sidebar-icon">
                 <i class="fas fa-graduation-cap"></i>
                 <i class="fas fa-lock sidebar-lock-icon"></i>
             </div>
             <span>Cursos</span>
+        </a>
+        <a href="{% url 'jobs:list' %}" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="jobs" title="Acceso restringido a miembros">
+            <div class="sidebar-icon">
+                <i class="fas fa-briefcase"></i>
+                <i class="fas fa-lock sidebar-lock-icon"></i>
+            </div>
+            <span>Empleos</span>
         </a>
         <a href="{% url 'community:list' %}" class="sidebar-link sidebar-link-locked js-guest-lock-trigger" data-target="community" title="Acceso restringido a miembros">
             <div class="sidebar-icon">
@@ -134,6 +145,11 @@ document.addEventListener('DOMContentLoaded', function () {
             icon: '<i class="fas fa-graduation-cap"></i>',
             title: '¡Desbloquea los Cursos de UNI Open Source!',
             subtitle: 'Regístrate o inicia sesión para acceder a nuestras rutas de aprendizaje, talleres prácticos y material educativo en programación.'
+        },
+        jobs: {
+            icon: '<i class="fas fa-briefcase"></i>',
+            title: '¡Desbloquea la Bolsa de Empleos y Prácticas!',
+            subtitle: 'Regístrate o inicia sesión para explorar vacantes verificadas en ingeniería, guardar postulaciones y recibir recomendaciones de cursos.'
         },
         community: {
             icon: '<i class="fas fa-users"></i>',

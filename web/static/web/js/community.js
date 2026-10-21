@@ -164,25 +164,69 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnCloseMessageModal = document.getElementById('btn-close-message-modal');
     const btnCancelMessageModal = document.getElementById('btn-cancel-message-modal');
     const formSendMessage = document.getElementById('form-send-message');
+    const textareaMsgBody = document.getElementById('textarea-msg-body');
+    const msgCharCounter = document.getElementById('msg-char-counter');
+    const btnSubmitMessage = document.getElementById('btn-submit-message');
 
-    if (btnOpenMessageModal && modalSendMessage) {
-        btnOpenMessageModal.addEventListener('click', function () {
-            modalSendMessage.style.display = 'flex';
+    function openMessageModal() {
+        if (!modalSendMessage) return;
+        modalSendMessage.style.display = 'flex';
+        requestAnimationFrame(() => {
+            modalSendMessage.classList.add('active');
         });
+        if (textareaMsgBody) {
+            textareaMsgBody.focus();
+        }
     }
 
     function closeMessageModal() {
-        if (modalSendMessage) modalSendMessage.style.display = 'none';
+        if (!modalSendMessage) return;
+        modalSendMessage.classList.remove('active');
+        setTimeout(() => {
+            modalSendMessage.style.display = 'none';
+        }, 220);
+    }
+
+    if (btnOpenMessageModal) {
+        btnOpenMessageModal.addEventListener('click', openMessageModal);
     }
 
     if (btnCloseMessageModal) btnCloseMessageModal.addEventListener('click', closeMessageModal);
     if (btnCancelMessageModal) btnCancelMessageModal.addEventListener('click', closeMessageModal);
+
+    // Cerrar al hacer clic fuera de la tarjeta
+    if (modalSendMessage) {
+        modalSendMessage.addEventListener('click', function (e) {
+            if (e.target === modalSendMessage) {
+                closeMessageModal();
+            }
+        });
+    }
+
+    // Contador dinámico de caracteres
+    if (textareaMsgBody && msgCharCounter) {
+        textareaMsgBody.addEventListener('input', function () {
+            const length = this.value.length;
+            const max = this.getAttribute('maxlength') || 500;
+            msgCharCounter.textContent = `${length}/${max}`;
+            if (length >= max) {
+                msgCharCounter.classList.add('limit');
+            } else {
+                msgCharCounter.classList.remove('limit');
+            }
+        });
+    }
 
     if (formSendMessage) {
         formSendMessage.addEventListener('submit', function (e) {
             e.preventDefault();
             const userId = formSendMessage.getAttribute('data-user-id');
             const formData = new FormData(formSendMessage);
+
+            if (btnSubmitMessage) {
+                btnSubmitMessage.disabled = true;
+                btnSubmitMessage.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Enviando...</span>';
+            }
 
             fetch(`/comunidad/api/message/${userId}/`, {
                 method: 'POST',
@@ -197,11 +241,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     showToast(data.message || 'Mensaje enviado correctamente.');
                     closeMessageModal();
                     formSendMessage.reset();
+                    if (msgCharCounter) msgCharCounter.textContent = '0/500';
                 } else {
                     showToast(data.message || 'Error al enviar el mensaje.', 'error');
                 }
             })
-            .catch(() => showToast('Error de servidor.', 'error'));
+            .catch(() => showToast('Error de servidor al enviar el mensaje.', 'error'))
+            .finally(() => {
+                if (btnSubmitMessage) {
+                    btnSubmitMessage.disabled = false;
+                    btnSubmitMessage.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Enviar Mensaje</span>';
+                }
+            });
         });
     }
 });

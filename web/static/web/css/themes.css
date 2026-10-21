@@ -460,9 +460,71 @@ body.theme-dark .tag-tech {
 }
 
 body.theme-dark .tag-theme {
-    background: rgba(236, 72, 153, 0.15);
-    color: #ec4899;
-    border-color: rgba(236, 72, 153, 0.3);
+    background: rgba(159, 18, 57, 0.25);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.35);
+}
+
+/* Tags vinotinto institucionales en Tema Oscuro */
+body.theme-dark .tag {
+    background: rgba(159, 18, 57, 0.18);
+    border-color: rgba(244, 63, 94, 0.35);
+}
+
+body.theme-dark .tag:nth-child(3n+1) {
+    background: rgba(159, 18, 57, 0.22);
+    border-color: rgba(244, 63, 94, 0.4);
+}
+
+body.theme-dark .tag:nth-child(3n+2) {
+    background: rgba(136, 19, 55, 0.25);
+    border-color: rgba(251, 113, 133, 0.35);
+}
+
+body.theme-dark .tag:nth-child(3n+3) {
+    background: rgba(190, 24, 93, 0.2);
+    border-color: rgba(244, 63, 94, 0.35);
+}
+
+body.theme-dark .tag-content,
+body.theme-dark .tag-input {
+    color: #fecdd3;
+}
+
+body.theme-dark .edit-mode .tag:hover {
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+    border-color: #fb7185;
+}
+
+/* Badges azulados de proyectos en Tema Oscuro */
+body.theme-dark .project-pill-primary {
+    background: rgba(59, 130, 246, 0.22);
+    color: #bfdbfe;
+    border-color: rgba(96, 165, 250, 0.4);
+}
+
+body.theme-dark .project-pill-tech {
+    background: rgba(37, 99, 235, 0.16);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.theme-dark .project-pill-count {
+    background: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+    border-color: rgba(148, 163, 184, 0.25);
+}
+
+body.theme-dark .project-showcase-card:hover .project-pill-primary {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: #60a5fa;
+    color: #ffffff;
+}
+
+body.theme-dark .project-showcase-card:hover .project-pill-tech {
+    background: rgba(37, 99, 235, 0.28);
+    border-color: #60a5fa;
+    color: #bfdbfe;
 }
 
 body.theme-dark .project-card-meta {
@@ -478,8 +540,8 @@ body.theme-dark .allies-track .carousel-item {
 }
 
 body.theme-dark .allies-track .carousel-item:hover {
-    box-shadow: 0 8px 24px rgba(255, 156, 63, 0.35);
-    transform: scale(1.05);
+    box-shadow: 0 10px 26px rgba(255, 156, 63, 0.4);
+    transform: translateY(-4px) scale(1.05);
 }
 
 body.theme-dark .ally-text {

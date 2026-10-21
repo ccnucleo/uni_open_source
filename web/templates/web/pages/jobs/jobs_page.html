@@ -1,0 +1,425 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}Bolsa Laboral y Empleos | UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/jobs.css' %}?v=1">
+{% endblock %}
+
+{% block content %}
+<main class="jobs-page-wrapper">
+    <!-- ==========================================
+         CABECERA DE LA BOLSA LABORAL
+    =========================================== -->
+    <header class="jobs-hero-header">
+        <div class="jobs-hero-content">
+            <h1><i class="fas fa-briefcase"></i> Bolsa Laboral y Vacantes de Ingeniería</h1>
+            <p>
+                Recopilatorio oficial y verificado de vacantes laborales, prácticas pre y profesionales para
+                Ingeniería Industrial, Sistemas, Software e Inteligencia Artificial recopiladas de los principales
+                portales del país y el mundo.
+            </p>
+        </div>
+        <div class="jobs-header-stats">
+            <div class="jobs-stat-badge">
+                <i class="fas fa-check-circle"></i>
+                <span><strong>{{ page_obj.paginator.count }}</strong> vacantes activas</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Selección de Carreras de Ingeniería -->
+    <nav class="jobs-career-tabs" aria-label="Filtro por especialidad de ingeniería">
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if selected_portal %}portal={{ selected_portal }}&{% endif %}{% if selected_modality %}modalidad={{ selected_modality }}&{% endif %}{% if selected_contract %}contrato={{ selected_contract }}&{% endif %}"
+            class="jobs-career-tab {% if not selected_career %}active{% endif %}">
+            <i class="fas fa-th-large"></i> Todas las Especialidades
+        </a>
+        {% for car in careers %}
+        <a href="?carrera={{ car.code }}{% if query %}&q={{ query }}{% endif %}{% if selected_portal %}&portal={{ selected_portal }}{% endif %}{% if selected_modality %}&modalidad={{ selected_modality }}{% endif %}{% if selected_contract %}&contrato={{ selected_contract }}{% endif %}"
+            class="jobs-career-tab {% if selected_career == car.code %}active{% endif %}">
+            <i class="fas {{ car.icon|default:'fa-graduation-cap' }}"></i> {{ car.name }}
+        </a>
+        {% endfor %}
+    </nav>
+
+    <!-- ==========================================
+         LAYOUT PRINCIPAL: SIDEBAR + FEED
+    =========================================== -->
+    <div class="jobs-main-layout">
+
+        <!-- ==========================================
+             SIDEBAR DE FILTROS
+        =========================================== -->
+        <aside class="jobs-filters-card">
+            <div class="jobs-filters-header">
+                <h3><i class="fas fa-filter"></i> Filtrar Vacantes</h3>
+                {% if query or selected_career or selected_portal or selected_modality or selected_contract or selected_seniorities or selected_tag_ids %}
+                <a href="{% url 'jobs:list' %}" class="btn-clear-filters">Limpiar</a>
+                {% endif %}
+            </div>
+
+            <form method="get" id="jobsFiltersForm">
+                <!-- Preservar carrera si está seleccionada -->
+                {% if selected_career %}
+                <input type="hidden" name="carrera" value="{{ selected_career }}">
+                {% endif %}
+
+                <!-- Búsqueda por palabra clave o empresa -->
+                <div class="jobs-filter-group">
+                    <label for="filter-q" class="jobs-filter-label">Buscar puesto o empresa</label>
+                    <div class="jobs-search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="filter-q" name="q" value="{{ query }}"
+                            placeholder="Ej. Python, React, Analista..." class="jobs-input-text">
+                    </div>
+                </div>
+
+                <!-- Modalidad de Trabajo -->
+                <div class="jobs-filter-group">
+                    <label for="filter-modality" class="jobs-filter-label">Modalidad</label>
+                    <select id="filter-modality" name="modalidad" class="jobs-select">
+                        <option value="">Todas las modalidades</option>
+                        {% for val, label in modalities %}
+                        <option value="{{ val }}" {% if selected_modality == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Portal de Origen -->
+                <div class="jobs-filter-group">
+                    <label for="filter-portal" class="jobs-filter-label">Portal de Origen</label>
+                    <select id="filter-portal" name="portal" class="jobs-select">
+                        <option value="">Todos los portales</option>
+                        {% for val, label in portals %}
+                        <option value="{{ val }}" {% if selected_portal == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Tipo de Contrato -->
+                <div class="jobs-filter-group">
+                    <label for="filter-contract" class="jobs-filter-label">Tipo de Contrato</label>
+                    <select id="filter-contract" name="contrato" class="jobs-select">
+                        <option value="">Todos los contratos</option>
+                        {% for val, label in contracts %}
+                        <option value="{{ val }}" {% if selected_contract == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Seniority / Experiencia -->
+                <div class="jobs-filter-group">
+                    <label class="jobs-filter-label">Nivel de Experiencia</label>
+                    <div class="jobs-filter-checkboxes">
+                        {% for val, label in seniorities %}
+                        <label class="jobs-checkbox-label">
+                            <input type="checkbox" name="seniority" value="{{ val }}"
+                                {% if val in selected_seniorities %}checked{% endif %}>
+                            <span>{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Tags / Tecnologías -->
+                {% if tags %}
+                <div class="jobs-filter-group">
+                    <label class="jobs-filter-label">Tecnologías Clave</label>
+                    <div class="jobs-filter-checkboxes">
+                        {% for t in tags %}
+                        <label class="jobs-checkbox-label">
+                            <input type="checkbox" name="tag" value="{{ t.id }}"
+                                {% if t.id|stringformat:"i" in selected_tag_ids %}checked{% endif %}>
+                            <span>{{ t.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn-filter-submit">
+                    <i class="fas fa-sliders"></i> Aplicar Filtros
+                </button>
+            </form>
+        </aside>
+
+        <!-- ==========================================
+             CONTENIDO PRINCIPAL: FEED DE VACANTES
+        =========================================== -->
+        <section class="jobs-feed-column">
+            <div class="jobs-feed-header">
+                <p class="jobs-count-text">
+                    Mostrando <strong>{{ page_obj.start_index|default:0 }}-{{ page_obj.end_index|default:0 }}</strong> de <strong>{{ page_obj.paginator.count }}</strong> vacantes
+                </p>
+            </div>
+
+            {% if jobs %}
+            <div class="jobs-grid">
+                {% for job in jobs %}
+                <article class="job-card">
+                    <!-- Top de la tarjeta: Empresa, Portal y Guardar -->
+                    <div class="job-card-top">
+                        <div class="job-company-block">
+                            <div class="job-company-avatar">
+                                {% if job.company_logo_url %}
+                                <img src="{{ job.company_logo_url }}" alt="{{ job.company_name }}" loading="lazy"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <span class="company-initial" style="display:none;">{{ job.company_name|slice:":1"|upper }}</span>
+                                {% else %}
+                                <span class="company-initial">{{ job.company_name|slice:":1"|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="job-company-details">
+                                <span class="job-company-name">{{ job.company_name }}</span>
+                                <span class="job-location-meta">
+                                    <i class="fas fa-location-dot"></i> {{ job.city }}{% if job.country %}, {{ job.country }}{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="job-card-top-actions">
+                            <span class="job-portal-badge">
+                                {% if job.portal == 'getonbrd' %}
+                                <i class="fas fa-rocket"></i> Get on Board
+                                {% elif job.portal == 'remoteok' %}
+                                <i class="fas fa-globe"></i> RemoteOK
+                                {% elif job.portal == 'empleos_peru' %}
+                                <i class="fas fa-landmark"></i> Empleos Perú
+                                {% elif job.portal == 'computrabajo' %}
+                                <i class="fas fa-building"></i> Computrabajo
+                                {% else %}
+                                <i class="fas fa-briefcase"></i> {{ job.get_portal_display }}
+                                {% endif %}
+                            </span>
+
+                            <button type="button" class="btn-bookmark-toggle {% if job.id in user_bookmarks_map %}bookmarked{% endif %}"
+                                data-job-id="{{ job.id }}"
+                                data-bookmarked="{% if job.id in user_bookmarks_map %}true{% else %}false{% endif %}"
+                                title="Guardar vacante para seguimiento"
+                                aria-label="Guardar vacante">
+                                <i class="{% if job.id in user_bookmarks_map %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <a href="{% url 'jobs:detail' job.slug %}" class="job-title-link">
+                        {{ job.title }}
+                    </a>
+
+                    <!-- Badges de especificaciones -->
+                    <div class="job-specs-row">
+                        {% if job.modality == 'remoto' %}
+                        <span class="spec-badge spec-badge-remote">
+                            <i class="fas fa-house-laptop"></i> Remoto
+                        </span>
+                        {% elif job.modality == 'hibrido' %}
+                        <span class="spec-badge spec-badge-hybrid">
+                            <i class="fas fa-people-arrows"></i> Híbrido
+                        </span>
+                        {% else %}
+                        <span class="spec-badge spec-badge-onsite">
+                            <i class="fas fa-building-user"></i> Presencial
+                        </span>
+                        {% endif %}
+
+                        <span class="spec-badge spec-badge-default">
+                            {% if job.seniority == 'practicante' %}
+                            <i class="fas fa-user-graduate"></i> Practicante
+                            {% elif job.seniority == 'junior' %}
+                            <i class="fas fa-seedling"></i> Junior
+                            {% elif job.seniority == 'semi_senior' %}
+                            <i class="fas fa-user-gear"></i> Semi-Senior
+                            {% elif job.seniority == 'senior' %}
+                            <i class="fas fa-user-tie"></i> Senior
+                            {% else %}
+                            <i class="fas fa-chess-king"></i> {{ job.get_seniority_display }}
+                            {% endif %}
+                        </span>
+
+                        <span class="spec-badge spec-badge-default">
+                            <i class="fas fa-clock"></i> {{ job.get_contract_type_display }}
+                        </span>
+                    </div>
+
+                    <!-- Resumen corto -->
+                    {% if job.short_description %}
+                    <p class="job-short-desc">{{ job.short_description }}</p>
+                    {% endif %}
+
+                    <!-- Carreras y Tags -->
+                    <div class="job-tags-row">
+                        {% for c in job.careers.all %}
+                        <span class="job-career-pill">
+                            <i class="fas {{ c.icon|default:'fa-graduation-cap' }}"></i> {{ c.name }}
+                        </span>
+                        {% endfor %}
+
+                        {% for t in job.tags.all|slice:":5" %}
+                        <span class="job-tech-tag">{{ t.name }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Footer de la tarjeta -->
+                    <div class="job-card-footer">
+                        <div class="job-salary-box">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>{{ job.salary_display }}</span>
+                        </div>
+
+                        <div class="job-card-actions">
+                            {% if job.published_at %}
+                            <span class="job-pub-date">
+                                <i class="fas fa-calendar-alt"></i> {{ job.published_at|date:"d M Y" }}
+                            </span>
+                            {% endif %}
+                            <a href="{% url 'jobs:detail' job.slug %}" class="btn-job-detail">
+                                Ver Vacante <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav class="jobs-pagination" aria-label="Navegación de páginas">
+                {% if page_obj.has_previous %}
+                <a href="?page=1{% if querystring %}&{{ querystring }}{% endif %}" class="jobs-page-btn" title="Primera página">
+                    <i class="fas fa-angles-left"></i>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" class="jobs-page-btn" title="Página anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        {% if p == page_obj.number %}
+                        <span class="jobs-page-btn active">{{ p }}</span>
+                        {% else %}
+                        <a href="?page={{ p }}{% if querystring %}&{{ querystring }}{% endif %}" class="jobs-page-btn">{{ p }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" class="jobs-page-btn" title="Página siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}" class="jobs-page-btn" title="Última página">
+                    <i class="fas fa-angles-right"></i>
+                </a>
+                {% endif %}
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- Estado Vacío -->
+            <div class="jobs-empty-state">
+                <div class="jobs-empty-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h3>No se encontraron vacantes</h3>
+                <p>
+                    No encontramos ofertas que coincidan exactamente con tus criterios de búsqueda. Intenta ajustar o limpiar los filtros seleccionados.
+                </p>
+                <a href="{% url 'jobs:list' %}" class="btn-job-detail">
+                    <i class="fas fa-rotate-left"></i> Ver todas las vacantes
+                </a>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</main>
+
+<!-- Toast de Notificación -->
+<div class="jobs-toast" id="jobsToast">
+    <i class="fas fa-circle-check"></i>
+    <span id="jobsToastText">Vacante guardada correctamente</span>
+</div>
+
+<!-- Script interactivo para Guardar / Bookmark -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toast = document.getElementById('jobsToast');
+    const toastText = document.getElementById('jobsToastText');
+    let toastTimeout;
+
+    function showToast(message, isError = false) {
+        if (!toast) return;
+        toastText.textContent = message;
+        toast.classList.add('show');
+        if (isError) {
+            toast.style.background = '#dc2626';
+        } else {
+            toast.style.background = '#0f172a';
+        }
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2800);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    document.querySelectorAll('.btn-bookmark-toggle').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            const jobId = this.getAttribute('data-job-id');
+            const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+            const action = isBookmarked ? 'remove' : 'toggle';
+
+            try {
+                const response = await fetch(`/empleos/api/bookmark/${jobId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const icon = this.querySelector('i');
+                    if (data.bookmarked) {
+                        this.classList.add('bookmarked');
+                        this.setAttribute('data-bookmarked', 'true');
+                        icon.className = 'fas fa-bookmark';
+                        showToast('Vacante guardada en tus postulaciones');
+                    } else {
+                        this.classList.remove('bookmarked');
+                        this.setAttribute('data-bookmarked', 'false');
+                        icon.className = 'far fa-bookmark';
+                        showToast('Vacante eliminada de tus guardados');
+                    }
+                } else {
+                    showToast('Error al actualizar el estado', true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error de conexión con el servidor', true);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

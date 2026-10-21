@@ -1,0 +1,392 @@
+{% extends 'web/layouts/app_layout.html' %}
+{% load static %}
+
+{% block title %}{{ job.title }} - {{ job.company_name }} | UNI Open Source{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'web/css/pages/jobs.css' %}?v=1">
+{% endblock %}
+
+{% block content %}
+<main class="job-detail-container">
+    <!-- Barra de retorno -->
+    <div class="job-detail-back-bar">
+        <a href="{% url 'jobs:list' %}" class="btn-back-jobs">
+            <i class="fas fa-arrow-left"></i> Volver a la Bolsa de Empleos
+        </a>
+    </div>
+
+    <!-- Hero Header de la Vacante -->
+    <header class="job-detail-hero">
+        <div class="job-hero-top">
+            <div class="job-hero-company-box">
+                <div class="job-hero-logo">
+                    {% if job.company_logo_url %}
+                    <img src="{{ job.company_logo_url }}" alt="{{ job.company_name }}"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span class="company-initial" style="display:none;">{{ job.company_name|slice:":1"|upper }}</span>
+                    {% else %}
+                    <span class="company-initial">{{ job.company_name|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="job-hero-info">
+                    <h1>{{ job.title }}</h1>
+                    <p class="job-hero-company-name">
+                        <i class="fas fa-building"></i> {{ job.company_name }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="job-card-top-actions">
+                <span class="job-portal-badge">
+                    {% if job.portal == 'getonbrd' %}
+                    <i class="fas fa-rocket"></i> Get on Board
+                    {% elif job.portal == 'remoteok' %}
+                    <i class="fas fa-globe"></i> RemoteOK
+                    {% elif job.portal == 'empleos_peru' %}
+                    <i class="fas fa-landmark"></i> Empleos Perú
+                    {% elif job.portal == 'computrabajo' %}
+                    <i class="fas fa-building"></i> Computrabajo
+                    {% else %}
+                    <i class="fas fa-briefcase"></i> {{ job.get_portal_display }}
+                    {% endif %}
+                </span>
+
+                <button type="button" class="btn-bookmark-toggle {% if bookmark %}bookmarked{% endif %}"
+                    id="btn-detail-bookmark"
+                    data-job-id="{{ job.id }}"
+                    data-bookmarked="{% if bookmark %}true{% else %}false{% endif %}"
+                    title="Guardar vacante"
+                    aria-label="Guardar vacante">
+                    <i class="{% if bookmark %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Métricas clave en cuadrícula -->
+        <div class="job-meta-grid">
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    {% if job.modality == 'remoto' %}
+                    <i class="fas fa-house-laptop"></i>
+                    {% elif job.modality == 'hibrido' %}
+                    <i class="fas fa-people-arrows"></i>
+                    {% else %}
+                    <i class="fas fa-building-user"></i>
+                    {% endif %}
+                </div>
+                <div class="job-meta-content">
+                    <span>Modalidad</span>
+                    <strong>{{ job.get_modality_display }}</strong>
+                </div>
+            </div>
+
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="job-meta-content">
+                    <span>Seniority</span>
+                    <strong>{{ job.get_seniority_display }}</strong>
+                </div>
+            </div>
+
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="job-meta-content">
+                    <span>Tipo Contrato</span>
+                    <strong>{{ job.get_contract_type_display }}</strong>
+                </div>
+            </div>
+
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    <i class="fas fa-location-dot"></i>
+                </div>
+                <div class="job-meta-content">
+                    <span>Ubicación</span>
+                    <strong>{{ job.city }}{% if job.country %}, {{ job.country }}{% endif %}</strong>
+                </div>
+            </div>
+
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="job-meta-content">
+                    <span>Compensación</span>
+                    <strong>{{ job.salary_display }}</strong>
+                </div>
+            </div>
+
+            <div class="job-meta-item">
+                <div class="job-meta-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="job-meta-content">
+                    <span>Publicado</span>
+                    <strong>{{ job.published_at|date:"d M Y"|default:"Reciente" }}</strong>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cuerpo del Detalle -->
+    <div class="job-detail-body">
+
+        <!-- Columna Izquierda: Requisitos y Descripción -->
+        <div class="job-detail-main-column">
+
+            <!-- Carreras Afines -->
+            {% if job.careers.exists %}
+            <div class="job-content-card">
+                <h2><i class="fas fa-graduation-cap"></i> Carreras de Ingeniería Afines</h2>
+                <div class="job-tags-row">
+                    {% for c in job.careers.all %}
+                    <span class="job-career-pill">
+                        <i class="fas {{ c.icon|default:'fa-graduation-cap' }}"></i> {{ c.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Tecnologías y Habilidades Clave -->
+            {% if job.tags.exists %}
+            <div class="job-content-card">
+                <h2><i class="fas fa-code"></i> Tecnologías y Habilidades Requeridas</h2>
+                <div class="job-tags-row">
+                    {% for t in job.tags.all %}
+                    <span class="job-tech-tag">{{ t.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Descripción del Puesto -->
+            <div class="job-content-card">
+                <h2><i class="fas fa-file-lines"></i> Descripción de la Posición</h2>
+                <div class="job-description-text">
+                    {{ job.description|linebreaks }}
+                </div>
+
+                {% if job.requirements_summary %}
+                <div class="job-requirements-box">
+                    <h4><i class="fas fa-list-check"></i> Requisitos Destacados</h4>
+                    <p>{{ job.requirements_summary|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Recomendaciones para la Postulación -->
+            <div class="job-content-card">
+                <h2><i class="fas fa-lightbulb"></i> Consejo para Postulantes UNI</h2>
+                <div class="job-description-text">
+                    <p>
+                        Para destacar en esta convocatoria, asegúrate de adjuntar en tu CV tus proyectos de software
+                        o repositorios open source desarrollados en <strong>UNI Open Source</strong>.
+                        Si te faltan requisitos técnicos en alguna tecnología requerida, revisa la sección lateral de
+                        <strong>Cursos Recomendados</strong> para completar laboratorios prácticos con certificación.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Sticky Sidebar de Postulación y Cursos -->
+        <aside class="job-sticky-sidebar">
+
+            <!-- Card de Postulación Oficial -->
+            <div class="job-cta-card">
+                <a href="{{ job.url }}" target="_blank" rel="noopener noreferrer" class="btn-apply-portal">
+                    <span>Postular en Portal Oficial</span>
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                </a>
+                <p class="job-apply-disclaimer">
+                    <i class="fas fa-shield-alt"></i> Redirección oficial verificada al portal emisor ({{ job.get_portal_display }}).
+                </p>
+            </div>
+
+            <!-- Card de Seguimiento de Postulación para el Estudiante -->
+            <div class="job-tracking-card">
+                <h3><i class="fas fa-clipboard-check"></i> Seguimiento de Postulación</h3>
+                <p class="job-recommended-desc">
+                    Lleva control de tu proceso para esta vacante:
+                </p>
+
+                <div class="job-filter-group">
+                    <label for="tracking-status-select" class="jobs-filter-label">Estado actual</label>
+                    <select id="tracking-status-select" class="jobs-select">
+                        <option value="guardado" {% if bookmark.status == 'guardado' or not bookmark %}selected{% endif %}>
+                            Guardado en favoritos
+                        </option>
+                        <option value="postulado" {% if bookmark.status == 'postulado' %}selected{% endif %}>
+                            Postulación enviada
+                        </option>
+                        <option value="en_proceso" {% if bookmark.status == 'en_proceso' %}selected{% endif %}>
+                            En proceso de entrevistas
+                        </option>
+                        <option value="oferta" {% if bookmark.status == 'oferta' %}selected{% endif %}>
+                            Oferta recibida
+                        </option>
+                        <option value="descartado" {% if bookmark.status == 'descartado' %}selected{% endif %}>
+                            Descartado
+                        </option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn-filter-submit" id="btn-save-status">
+                    <i class="fas fa-floppy-disk"></i> Actualizar Estado
+                </button>
+            </div>
+
+            <!-- Card de Cursos Recomendados -->
+            {% if recommended_courses %}
+            <div class="job-recommended-card">
+                <h3><i class="fas fa-sparkles"></i> Potencia tu Postulación</h3>
+                <p class="job-recommended-desc">
+                    Cursos y laboratorios 100% gratuitos verificados para las competencias de este puesto:
+                </p>
+                <div class="job-courses-mini-list">
+                    {% for course in recommended_courses %}
+                    <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="mini-course-item">
+                        <div class="mini-course-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="mini-course-info">
+                            <span class="mini-course-title">{{ course.title|truncatechars:48 }}</span>
+                            <span class="mini-course-meta">
+                                <i class="fas fa-award"></i> {{ course.get_platform_display }} &bull; {{ course.get_credential_type_display }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </aside>
+    </div>
+</main>
+
+<!-- Toast de Notificación -->
+<div class="jobs-toast" id="jobsToast">
+    <i class="fas fa-circle-check"></i>
+    <span id="jobsToastText">Estado actualizado correctamente</span>
+</div>
+
+<!-- Script interactivo de actualización de estado y bookmark -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toast = document.getElementById('jobsToast');
+    const toastText = document.getElementById('jobsToastText');
+    const bookmarkBtn = document.getElementById('btn-detail-bookmark');
+    const statusSelect = document.getElementById('tracking-status-select');
+    const saveStatusBtn = document.getElementById('btn-save-status');
+    const jobId = "{{ job.id }}";
+    let toastTimeout;
+
+    function showToast(message, isError = false) {
+        if (!toast) return;
+        toastText.textContent = message;
+        toast.classList.add('show');
+        if (isError) {
+            toast.style.background = '#dc2626';
+        } else {
+            toast.style.background = '#0f172a';
+        }
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2800);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+            const action = isBookmarked ? 'remove' : 'toggle';
+
+            try {
+                const response = await fetch(`/empleos/api/bookmark/${jobId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const icon = this.querySelector('i');
+                    if (data.bookmarked) {
+                        this.classList.add('bookmarked');
+                        this.setAttribute('data-bookmarked', 'true');
+                        icon.className = 'fas fa-bookmark';
+                        showToast('Vacante guardada en tus postulaciones');
+                    } else {
+                        this.classList.remove('bookmarked');
+                        this.setAttribute('data-bookmarked', 'false');
+                        icon.className = 'far fa-bookmark';
+                        showToast('Vacante eliminada de tus guardados');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error de conexión', true);
+            }
+        });
+    }
+
+    if (saveStatusBtn && statusSelect) {
+        saveStatusBtn.addEventListener('click', async function () {
+            const newStatus = statusSelect.value;
+            try {
+                const response = await fetch(`/empleos/api/bookmark/${jobId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ action: 'update', status: newStatus })
+                });
+
+                if (response.ok) {
+                    if (bookmarkBtn) {
+                        bookmarkBtn.classList.add('bookmarked');
+                        bookmarkBtn.setAttribute('data-bookmarked', 'true');
+                        const icon = bookmarkBtn.querySelector('i');
+                        if (icon) icon.className = 'fas fa-bookmark';
+                    }
+                    showToast('Estado de postulación actualizado con éxito');
+                } else {
+                    showToast('Error al actualizar el estado', true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error de conexión', true);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

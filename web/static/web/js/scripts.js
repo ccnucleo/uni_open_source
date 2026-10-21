@@ -380,10 +380,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                     if (topbarAv) {
                                         topbarAv.innerHTML = `<div class="auto-avatar" data-name="${username}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800;color:white;background:${bgColor};">${initials}</div>`;
                                     }
-                                } else if (croppedAvatarBlob) {
-                                    // Subir foto nueva -> mostrar img
+                                } else if (croppedAvatarBlob || data.avatar_url) {
+                                    // Subir foto nueva -> mostrar img confirmada por backend
                                     const previewEl = document.getElementById('photo-preview-img');
-                                    const newSrc = previewEl && previewEl.tagName === 'IMG' ? previewEl.src : '';
+                                    const verifiedUrl = data.avatar_url ? (data.avatar_url + '?t=' + Date.now()) : '';
+                                    const newSrc = verifiedUrl || (previewEl && previewEl.tagName === 'IMG' ? previewEl.src : '');
                                     const oldEl = document.getElementById('profile-avatar');
                                     if (oldEl && oldEl.tagName === 'IMG') {
                                         oldEl.src = newSrc;

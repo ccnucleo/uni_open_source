@@ -4,31 +4,50 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Tag
+from .models import Course, Category, Tag, Career
 
 COURSES_PER_PAGE = 9
 
 @login_required(login_url="accounts:login")
 def courses_page(request):
     """
-    Renderiza el catálogo de cursos con soporte para paginación y filtros múltiples.
+    Renderiza el catálogo de cursos con soporte para paginación,
+    carreras de ingeniería, plataformas y filtros múltiples.
     """
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('categoria', '').strip()
+    career_code = request.GET.get('carrera', '').strip()
+    credential_type = request.GET.get('credencial', '').strip()
     selected_levels = request.GET.getlist('nivel')
     selected_tag_ids = request.GET.getlist('tag')
+    selected_platform = request.GET.get('plataforma', '').strip()
+    selected_language = request.GET.get('idioma', '').strip()
 
-    courses = Course.objects.select_related('category').prefetch_related('tags').all()
+    courses = (
+        Course.objects
+        .select_related('category', 'owner')
+        .prefetch_related('tags', 'careers')
+        .filter(is_published=True)
+        .exclude(sync_status='inactive')
+    )
 
     # Aplicación de filtros
     if query:
         courses = courses.filter(title__icontains=query)
+    if career_code:
+        courses = courses.filter(careers__code=career_code)
+    if credential_type:
+        courses = courses.filter(credential_type=credential_type)
     if category_id:
         courses = courses.filter(category_id=category_id)
     if selected_levels:
         courses = courses.filter(level__in=selected_levels)
     if selected_tag_ids:
         courses = courses.filter(tags__id__in=selected_tag_ids).distinct()
+    if selected_platform:
+        courses = courses.filter(platform=selected_platform)
+    if selected_language:
+        courses = courses.filter(language=selected_language)
 
     # Paginación
     paginator = Paginator(courses, COURSES_PER_PAGE)
@@ -41,18 +60,29 @@ def courses_page(request):
 
     categories = Category.objects.all().order_by('name')
     tags = Tag.objects.filter(course__isnull=False).distinct().order_by('name')
+    careers = Career.objects.all().order_by('order', 'name')
 
     context = {
         'page_obj': page_obj,
         'courses': page_obj.object_list,
         'categories': categories,
         'tags': tags,
+        'careers': careers,
         'levels': Course.LEVEL_CHOICES,
+        'platforms': Course.PLATFORM_SOURCE_CHOICES,
+        'credential_types': Course.CREDENTIAL_TYPE_CHOICES,
+        'languages': [("es", "Español"), ("en", "Inglés")],
         'query': query,
+        'selected_career': career_code,
+        'selected_credential': credential_type,
         'selected_category_id': category_id,
         'selected_levels': selected_levels,
         'selected_tag_ids': selected_tag_ids,
+        'selected_platform': selected_platform,
+        'selected_language': selected_language,
         'querystring': querystring.urlencode(),
+        'active_section': 'courses',
+        'page_title': 'Cursos de Ingeniería',
     }
     return render(request, 'web/pages/courses/courses_page.html', context)
 
@@ -108,9 +138,20 @@ def _serialize_course(course):
         "url": course.url,
         "resource_type": course.resource_type,
         "has_certification": course.has_certification,
-        "image_url": course.image.url if course.image else None,
-        "owner": course.owner.username,
+        "credential_type": course.credential_type,
+        "credential_type_display": course.get_credential_type_display(),
+        "is_free_credential": course.is_free_credential,
+        "has_practical_labs": course.has_practical_labs,
+        "provider_name": course.provider_name,
+        "image_url": course.get_image_url,
+        "platform": course.platform,
+        "platform_display": course.get_platform_display(),
+        "language": course.language,
+        "instructor_name": course.instructor_name,
+        "duration_hours": float(course.duration_hours) if course.duration_hours else None,
+        "owner": course.owner.username if course.owner else "Sistema",
         "is_published": course.is_published,
+        "careers": [{"code": cr.code, "name": cr.name} for cr in course.careers.all()],
         "tags": [t.name for t in course.tags.all()],
         "created_at": course.created_at.isoformat(),
         "updated_at": course.updated_at.isoformat(),

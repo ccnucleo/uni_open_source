@@ -1,11 +1,19 @@
 from django.core.management.base import BaseCommand
-from courses.models import Category, Tag
+from courses.models import Category, Tag, Career
 
 class Command(BaseCommand):
-    help = 'Inyecta la estructura profesional de Categorías y Etiquetas en la base de datos'
+    help = 'Inyecta la estructura profesional de Categorías, Etiquetas y Carreras en la base de datos'
 
     def handle(self, *args, **kwargs):
-        # 1. ÁREAS DE ESTUDIO (Categorías Principales)
+        # 1. CARRERAS DE INGENIERÍA
+        carreras = [
+            ("industrial", "Ingeniería Industrial", "fa-industry", 1),
+            ("systems", "Ingeniería de Sistemas", "fa-network-wired", 2),
+            ("software", "Ingeniería de Software", "fa-code", 3),
+            ("ai", "Inteligencia Artificial", "fa-brain", 4),
+        ]
+
+        # 2. ÁREAS DE ESTUDIO (Categorías Principales)
         categorias = [
             "Fundamentos y Lógica",
             "Desarrollo Web (Frontend)",
@@ -20,7 +28,7 @@ class Command(BaseCommand):
             "Habilidades Blandas (Soft Skills)"
         ]
 
-        # 2. HERRAMIENTAS Y LENGUAJES (Etiquetas / Tags)
+        # 3. HERRAMIENTAS Y LENGUAJES (Etiquetas / Tags)
         etiquetas = [
             # Lenguajes Core
             "Python", "JavaScript", "TypeScript", "Java", "C++", "C#", "Go", "Rust",
@@ -33,6 +41,13 @@ class Command(BaseCommand):
         ]
 
         self.stdout.write(self.style.WARNING('Iniciando el sembrado de datos...'))
+
+        # Crear Carreras
+        carreras_creadas = 0
+        for code, name, icon, order in carreras:
+            obj, created = Career.objects.get_or_create(code=code, defaults={"name": name, "icon": icon, "order": order})
+            if created:
+                carreras_creadas += 1
 
         # Crear Categorías
         categorias_creadas = 0
@@ -48,6 +63,7 @@ class Command(BaseCommand):
             if created:
                 etiquetas_creadas += 1
 
+        self.stdout.write(self.style.SUCCESS(f'¡Éxito! Se crearon {carreras_creadas} carreras nuevas.'))
         self.stdout.write(self.style.SUCCESS(f'¡Éxito! Se crearon {categorias_creadas} categorías nuevas.'))
         self.stdout.write(self.style.SUCCESS(f'¡Éxito! Se crearon {etiquetas_creadas} etiquetas nuevas.'))
-        self.stdout.write(self.style.SUCCESS('El catálogo está listo para usarse.'))
+        self.stdout.write(self.style.SUCCESS('El catálogo está listo para usarse.'))

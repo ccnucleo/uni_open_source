@@ -301,39 +301,27 @@ El proyecto utiliza **Render Host** para el servidor web (Django + Gunicorn + Wh
 
 ---
 
-### Paso 2: Desplegar el Web Service en Render Host
-
-#### Opción A: Mediante Blueprint (`render.yaml`)
+### Paso 2: Desplegar en Vercel
 
 1. Sube los cambios a tu repositorio de GitHub / GitLab.
-2. En el Dashboard de [Render](https://dashboard.render.com/), haz clic en **New +** -> **Blueprint**.
-3. Conecta tu repositorio.
-4. Render leerá `render.yaml` y solicitará la variable `DATABASE_URL`.
-5. Pega el URI de conexión de Supabase en `DATABASE_URL` y haz clic en **Apply**.
-
----
-
-#### Opción B: Despliegue Manual del Servicio Web
-
-1. En Render, presiona **New +** -> **Web Service**.
-2. Conecta tu repositorio de GitHub.
-3. Rellena los datos del servicio:
-   - **Name**: `uni-open-source`
-   - **Runtime**: `Python`
-   - **Build Command**: `./build.sh`
-   - **Start Command**: `gunicorn core.wsgi:application`
-
-4. En la pestaña **Environment Variables**, configura:
+2. Ingresa a tu panel en [Vercel](https://vercel.com/) y haz clic en **Add New...** -> **Project**.
+3. Importa tu repositorio `uni_open_source`.
+4. Vercel detectará automáticamente la configuración definida en `vercel.json` y `build_files.sh`.
+5. En la sección **Environment Variables**, agrega las siguientes variables de entorno:
 
 | Variable | Valor / Descripción |
 | :--- | :--- |
-| `DATABASE_URL` | URI de conexión PostgreSQL copiado desde Supabase |
-| `SECRET_KEY` | Una clave secreta segura para producción |
+| `DATABASE_URL` | URI de conexión PostgreSQL (Transaction Pooler) copiado desde Supabase |
+| `SECRET_KEY` | Clave secreta segura para producción (ej. generada con `get_random_secret_key()`) |
 | `DEBUG` | `False` |
-| `ALLOWED_HOSTS` | `.onrender.com` (o tu dominio personalizado) |
+| `ALLOWED_HOSTS` | `.vercel.app` (o tu dominio personalizado) |
+| `CSRF_TRUSTED_ORIGINS` | `https://*.vercel.app` (o tu dominio personalizado con https) |
 | `RESEND_API_KEY` | Tu API Key obtenida en Resend.com |
 | `RESEND_FROM_EMAIL` | Remitente verificado en Resend (ej: `UNI Open Source <onboarding@resend.dev>`) |
+| `DJANGO_SUPERUSER_USERNAME` | (Opcional) Usuario administrador inicial |
+| `DJANGO_SUPERUSER_PASSWORD` | (Opcional) Contraseña de administrador |
+| `DJANGO_SUPERUSER_EMAIL` | (Opcional) Correo electrónico del administrador |
 
-5. Haz clic en **Deploy Web Service**. `build.sh` instalará las dependencias, compilará los estáticos con WhiteNoise y ejecutará `python manage.py migrate` sobre tu PostgreSQL en Supabase.
+6. Haz clic en **Deploy**. Vercel ejecutará `build_files.sh` (instalación de paquetes, `collectstatic` hacia el CDN global y migraciones en Supabase) y expondrá el servidor WSGI mediante Serverless Functions.
 
 
